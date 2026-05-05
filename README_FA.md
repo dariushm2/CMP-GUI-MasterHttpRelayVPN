@@ -260,7 +260,46 @@ json
 **در سایر دستگاه‌ها:** آن‌ها را طوری پیکربندی کنید که از آدرس IP کامپیوتر شما در شبکه محلی (که در لاگ راه‌اندازی نمایش داده می‌شود) و پورت 8085 به عنوان پروکسی HTTP استفاده کنند.
 
 ---
+## Docker (اختیاری)
 
+اگر ترجیح می‌دهید پروکسی را در یک container اجرا کنید، Docker پشتیبانی می‌شود.
+
+**پیش‌نیاز:** [Docker](https://docs.docker.com/get-docker/) و [Docker Compose](https://docs.docker.com/compose/)
+
+### راه‌اندازی
+
+۱. فایل config را کپی و تکمیل کنید:
+   ```bash
+   cp config.example.json config.json
+   # script_id و auth_key را پر کنید
+   ```
+
+۲. Build و start کنید:
+   ```bash
+   docker compose up -d
+   ```
+
+Container به‌طور خودکار روی `0.0.0.0` گوش می‌دهد، پس هر دو پورت از host قابل دسترس هستند:
+- `127.0.0.1:8085` — HTTP proxy
+- `127.0.0.1:1080` — SOCKS5 proxy
+
+### گواهی CA در Docker
+
+در اولین اجرا، container فایل `ca/ca.crt` را داخل volume مربوط به `./ca` روی host می‌سازد. آن را به صورت دستی در مرورگر نصب کنید — مرحله ۶ را ببینید. اجرای `--install-cert` داخل container تأثیری روی cert store سیستم host ندارد.
+
+### دستورهای مفید
+
+```bash
+docker compose up -d          # اجرا در پس‌زمینه
+docker compose logs -f        # دنبال کردن لاگ
+docker compose restart        # ری‌استارت بعد از تغییر config
+docker compose down           # توقف و حذف container
+docker compose build          # بازسازی image بعد از تغییر کد
+```
+
+> **فایل `config.json` به صورت read-only** داخل container mount می‌شود و هرگز داخل image قرار نمی‌گیرد، پس اطلاعات شما روی host باقی می‌ماند.
+
+---
 ## تنظیمات اصلی
 
 | تنظیم | توضیح |

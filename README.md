@@ -309,6 +309,47 @@ By default, the proxy only listens on `127.0.0.1` (localhost), meaning only your
 
 ---
 
+## Docker (Optional)
+
+If you prefer running the proxy in a container instead of managing a Python environment, Docker is supported.
+
+**Requirements:** [Docker](https://docs.docker.com/get-docker/) and [Docker Compose](https://docs.docker.com/compose/)
+
+### Setup
+
+1. Copy and fill in your config:
+   ```bash
+   cp config.example.json config.json
+   # Edit config.json — set your script_id and auth_key
+   ```
+
+2. Build and start:
+   ```bash
+   docker compose up -d
+   ```
+
+The container automatically listens on `0.0.0.0`, so both ports are reachable from the host:
+- `127.0.0.1:8085` — HTTP proxy
+- `127.0.0.1:1080` — SOCKS5 proxy
+
+### CA Certificate in Docker
+
+On first run, the container generates `ca/ca.crt` into the `./ca` volume on your host. Install it in your browser manually — see [Step 6](#step-6-install-the-ca-certificate-required-for-https) above. Running `--install-cert` inside the container has no effect on the host OS certificate store.
+
+### Useful Commands
+
+```bash
+docker compose up -d          # Start in background
+docker compose logs -f        # Follow logs
+docker compose restart        # Restart after config change
+docker compose down           # Stop and remove container
+docker compose build          # Rebuild image after code change
+```
+
+> **`config.json` is mounted read-only** into the container and is never baked into the image, so your secrets stay on the host.
+
+---
+
 ## Modes Overview
 
 This project is centered on the **Apps Script** relay (free, no VPS needed). For destinations that block Google egress, you can optionally chain an edge exit node (Cloudflare Workers, Deno Deploy, or your own VPS).
@@ -494,6 +535,8 @@ MasterHttpRelayVPN/
 ├── start.bat / start.sh       # One-click launcher (venv + deps + wizard + run)
 ├── config.example.json        # Copy to config.json and fill in your values
 ├── requirements.txt           # Python dependencies
+├── Dockerfile                 # Container image definition
+├── docker-compose.yml         # Compose config: ports, volumes, restart policy
 ├── apps_script/
 │   ├── Code.gs                # The relay script you deploy to Google Apps Script
 │   ├── cloudflare_worker.js   # Exit node template for Cloudflare Workers
