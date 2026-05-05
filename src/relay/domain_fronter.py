@@ -145,6 +145,9 @@ class DomainFronter:
 
         self.auth_key = config.get("auth_key", "")
         self.verify_ssl = config.get("verify_ssl", True)
+        # Build the SSLContext once so every TLS connection open reuses it
+        # instead of rebuilding the CA bundle and context on each dial.
+        self._ssl_context: ssl.SSLContext = self._build_ssl_ctx(self.verify_ssl)
         self._relay_timeout = self._cfg_float(
             config, "relay_timeout", RELAY_TIMEOUT, minimum=1.0,
         )
@@ -298,17 +301,21 @@ class DomainFronter:
             except Exception as exc:
                 log.debug("Execution logger error: %s", exc)
 
-    def _ssl_ctx(self) -> ssl.SSLContext:
+    @staticmethod
+    def _build_ssl_ctx(verify_ssl: bool) -> ssl.SSLContext:
         ctx = ssl.create_default_context()
         if certifi is not None:
             try:
                 ctx.load_verify_locations(cafile=certifi.where())
             except Exception:
                 pass
-        if not self.verify_ssl:
+        if not verify_ssl:
             ctx.check_hostname = False
             ctx.verify_mode = ssl.CERT_NONE
         return ctx
+
+    def _ssl_ctx(self) -> ssl.SSLContext:
+        return self._ssl_context
 
     def _h2_available(self) -> bool:
         return (
@@ -747,7 +754,7 @@ class DomainFronter:
         per_site.sort(key=lambda x: x["bytes"], reverse=True)
         now = time.time()
         blacklisted = [
-            {"sid": sid[-12:] if len(sid) > 12 else sid,
+            {"sid": _mask_sid(sid),
              "expires_in_s": int(max(0, until - now))}
             for sid, until in self._sid_blacklist.items() if until > now
         ]
@@ -1329,12 +1336,7 @@ class DomainFronter:
             # Coalesce concurrent GETs for the same URL.
             # CRITICAL: do NOT coalesce when a Range header is present —
             # parallel range downloads MUST each hit the server independently.
-            has_range = False
-            if headers:
-                for k in headers:
-                    if k.lower() == "range":
-                        has_range = True
-                        break
+            has_range = bool(self._header_value(headers, "range"))
             if method == "GET" and not body and not has_range:
                 result = await self._coalesced_submit(
                     self._coalesce_key(url, headers), payload,
@@ -1847,9 +1849,13 @@ class DomainFronter:
         if headers:
             # Strip headers that would leak the user's real IP or expose
             # internal proxy metadata to the upstream destination server.
+            # IMPORTANT: always use the filtered dict — never fall back to
+            # the original headers even when filt is empty, because that would
+            # re-send the very IP-leak headers we just stripped.
             filt = {k: v for k, v in headers.items()
                     if k.lower() not in self._STRIP_HEADERS}
-            payload["h"] = filt if filt else headers
+            if filt:
+                payload["h"] = filt
         if body:
             payload["b"] = base64.b64encode(body).decode()
             ct = headers.get("Content-Type") or headers.get("content-type")
@@ -1947,10 +1953,10 @@ class DomainFronter:
         return await future
 
     async def _batch_timer(self):
-        """Two-tier batch window: 5ms micro + 45ms macro.
+        """Two-tier batch window: 15ms micro + 120ms macro.
 
-        Single requests (link clicks) get only 5ms delay.
-        Burst traffic (page sub-resources, range chunks) gets a 50ms
+        Single requests (link clicks) get only 15ms delay.
+        Burst traffic (page sub-resources, range chunks) gets a 120ms
         window to accumulate, enabling much larger batches.
         """
         # Tier 1: micro-window — detect if burst or single
