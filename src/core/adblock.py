@@ -36,7 +36,9 @@ _DEFAULT_MAX_AGE = 86_400          # 24 hours
 _DOWNLOAD_TIMEOUT = 30             # seconds per HTTP request
 
 # Cache sits next to the project root (same dir as main.py / config.json).
-_CACHE_DIR = pathlib.Path("adblock_cache")
+# Anchored to this file's location so the cache is always found regardless
+# of the working directory the user launches the proxy from.
+_CACHE_DIR = pathlib.Path(__file__).parent.parent.parent / "adblock_cache"
 
 # Patterns used during line parsing
 _IP_RE = re.compile(

@@ -2182,6 +2182,50 @@ class DomainFronter:
 
         return parse_relay_response(body, self._max_response_body_bytes)
 
+    async def _follow_redirects(
+        self,
+        reader: asyncio.StreamReader,
+        writer: asyncio.StreamWriter,
+        status: int,
+        resp_headers: dict,
+        resp_body: bytes,
+        original_body: bytes,
+    ) -> tuple[int, dict, bytes]:
+        """Follow up to 5 HTTP redirects on an existing H1 connection.
+
+        307/308 preserve the request method and body; all others become
+        GET with an empty body (RFC 7231 §6.4).
+        """
+        for _ in range(5):
+            if status not in (301, 302, 303, 307, 308):
+                break
+            location = resp_headers.get("location")
+            if not location:
+                break
+            parsed = urlparse(location)
+            rpath = parsed.path + ("?" + parsed.query if parsed.query else "")
+            if status in (307, 308):
+                redirect_method = "POST"
+                redirect_body = original_body
+            else:
+                redirect_method = "GET"
+                redirect_body = b""
+            request_lines = [
+                f"{redirect_method} {rpath} HTTP/1.1",
+                f"Host: {parsed.netloc}",
+                "Accept-Encoding: gzip",
+                "Connection: keep-alive",
+            ]
+            if redirect_body:
+                request_lines.append(f"Content-Length: {len(redirect_body)}")
+            request = "\r\n".join(request_lines) + "\r\n\r\n"
+            writer.write(request.encode() + redirect_body)
+            await writer.drain()
+            status, resp_headers, resp_body = await read_http_response(
+                reader, max_bytes=self._max_response_body_bytes
+            )
+        return status, resp_headers, resp_body
+
     async def _relay_single(self, payload: dict) -> bytes:
         """Execute a single relay POST → redirect → parse."""
         # Add auth key
@@ -2207,36 +2251,12 @@ class DomainFronter:
             await writer.drain()
             self._record_execution(sid)
 
-            status, resp_headers, resp_body = await read_http_response(reader, max_bytes=self._max_response_body_bytes)
-
-            # Follow redirect chain on the SAME connection
-            for _ in range(5):
-                if status not in (301, 302, 303, 307, 308):
-                    break
-                location = resp_headers.get("location")
-                if not location:
-                    break
-
-                parsed = urlparse(location)
-                rpath = parsed.path + ("?" + parsed.query if parsed.query else "")
-                if status in (307, 308):
-                    redirect_method = "POST"
-                    redirect_body = json_body
-                else:
-                    redirect_method = "GET"
-                    redirect_body = b""
-                request_lines = [
-                    f"{redirect_method} {rpath} HTTP/1.1",
-                    f"Host: {parsed.netloc}",
-                    "Accept-Encoding: gzip",
-                    "Connection: keep-alive",
-                ]
-                if redirect_body:
-                    request_lines.append(f"Content-Length: {len(redirect_body)}")
-                request = "\r\n".join(request_lines) + "\r\n\r\n"
-                writer.write(request.encode() + redirect_body)
-                await writer.drain()
-                status, resp_headers, resp_body = await read_http_response(reader, max_bytes=self._max_response_body_bytes)
+            status, resp_headers, resp_body = await read_http_response(
+                reader, max_bytes=self._max_response_body_bytes
+            )
+            status, resp_headers, resp_body = await self._follow_redirects(
+                reader, writer, status, resp_headers, resp_body, json_body
+            )
 
             await self._release(reader, writer, created)
             return parse_relay_response(resp_body, self._max_response_body_bytes)
@@ -2295,35 +2315,12 @@ class DomainFronter:
                 await writer.drain()
                 self._record_execution(sid)
 
-                status, resp_headers, resp_body = await read_http_response(reader, max_bytes=self._max_response_body_bytes)
-
-                # Follow redirects
-                for _ in range(5):
-                    if status not in (301, 302, 303, 307, 308):
-                        break
-                    location = resp_headers.get("location")
-                    if not location:
-                        break
-                    parsed = urlparse(location)
-                    rpath = parsed.path + ("?" + parsed.query if parsed.query else "")
-                    if status in (307, 308):
-                        redirect_method = "POST"
-                        redirect_body = json_body
-                    else:
-                        redirect_method = "GET"
-                        redirect_body = b""
-                    request_lines = [
-                        f"{redirect_method} {rpath} HTTP/1.1",
-                        f"Host: {parsed.netloc}",
-                        "Accept-Encoding: gzip",
-                        "Connection: keep-alive",
-                    ]
-                    if redirect_body:
-                        request_lines.append(f"Content-Length: {len(redirect_body)}")
-                    request = "\r\n".join(request_lines) + "\r\n\r\n"
-                    writer.write(request.encode() + redirect_body)
-                    await writer.drain()
-                    status, resp_headers, resp_body = await read_http_response(reader, max_bytes=self._max_response_body_bytes)
+                status, resp_headers, resp_body = await read_http_response(
+                    reader, max_bytes=self._max_response_body_bytes
+                )
+                status, resp_headers, resp_body = await self._follow_redirects(
+                    reader, writer, status, resp_headers, resp_body, json_body
+                )
 
                 await self._release(reader, writer, created)
 

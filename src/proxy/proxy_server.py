@@ -866,21 +866,14 @@ class ProxyServer:
             return
         writer._transport = new_transport
 
-        # Step 2: open outgoing TLS to target IP with the safe SNI
-        ssl_ctx_client = ssl.create_default_context()
-        if certifi is not None:
-            try:
-                ssl_ctx_client.load_verify_locations(cafile=certifi.where())
-            except Exception:
-                pass
-        if not self.fronter.verify_ssl:
-            ssl_ctx_client.check_hostname = False
-            ssl_ctx_client.verify_mode = ssl.CERT_NONE
+        # Step 2: open outgoing TLS to target IP with the safe SNI.
+        # Reuse the SSLContext already built by DomainFronter (certifi bundle,
+        # verify_ssl flag) — no need to rebuild it on every CONNECT.
         try:
             r_out, w_out = await asyncio.wait_for(
                 asyncio.open_connection(
                     target_ip, port,
-                    ssl=ssl_ctx_client,
+                    ssl=self.fronter._ssl_ctx(),
                     server_hostname=sni_out,
                 ),
                 timeout=self._tcp_connect_timeout,
@@ -1160,12 +1153,8 @@ class ProxyServer:
         """
         if method == "GET" and not body:
             # Respect client's own Range header verbatim.
-            if headers:
-                for k in headers:
-                    if k.lower() == "range":
-                        return await self.fronter.relay(
-                            method, url, headers, body
-                        )
+            if header_value(headers, "range"):
+                return await self.fronter.relay(method, url, headers, body)
             # Only probe with Range when the URL looks like a big file.
             if self._is_likely_download(url, headers):
                 return await self.fronter.relay_parallel(
@@ -1198,10 +1187,8 @@ class ProxyServer:
                                      writer) -> bool:
         if method.upper() != "GET" or body:
             return False
-        if headers:
-            for key in headers:
-                if key.lower() == "range":
-                    return False
+        if header_value(headers, "range"):
+            return False
         effective_headers = headers or {}
         if not self._is_likely_download(url, effective_headers):
             return False
