@@ -245,9 +245,13 @@ def main():
     if isinstance(script_ids, list):
         log.info("Script IDs        : %d scripts (sticky per-host)", len(script_ids))
         for i, sid in enumerate(script_ids):
-            log.info("  [%d] %s", i + 1, sid)
+            _s = str(sid)
+            masked = f"{_s[:6]}…{_s[-4:]}" if len(_s) > 12 else _s
+            log.info("  [%d] %s", i + 1, masked)
     else:
-        log.info("Script ID         : %s", script_ids)
+        _s = str(script_ids) if script_ids else "(none)"
+        masked = f"{_s[:6]}…{_s[-4:]}" if len(_s) > 12 else _s
+        log.info("Script ID         : %s", masked)
 
     # Ensure CA file exists before checking / installing it.
     # MITMCertManager generates ca/ca.crt on first instantiation.

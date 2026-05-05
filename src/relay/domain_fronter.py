@@ -73,6 +73,21 @@ from .http_reader import read_http_response
 log = logging.getLogger("Fronter")
 
 
+def _mask_sid(sid: str) -> str:
+    """Return a safe display form of an Apps Script deployment ID.
+
+    Full deployment IDs look like ``AKfycbwLd8Ca2BIsMWs5uN3x7...``
+    and should never appear in log files or screenshots that users might
+    share in issue reports.  Show only the first 6 and last 4 characters
+    so it's identifiable but not usable to hijack the deployment:
+
+        AKfycb…5dGE
+    """
+    if not sid or len(sid) <= 12:
+        return sid or "(none)"
+    return f"{sid[:6]}\u2026{sid[-4:]}"
+
+
 class DomainFronter:
     _STATIC_EXTS = STATIC_EXTS
     _H2_FAILURE_COOLDOWN = 60.0
@@ -576,7 +591,7 @@ class DomainFronter:
             return  # Nothing to fall back to — blacklist would be pointless.
         self._sid_blacklist[sid] = time.time() + self._blacklist_ttl
         log.warning("Blacklisted script %s for %ds%s",
-                    sid[-8:] if len(sid) > 8 else sid,
+                    _mask_sid(sid),
                     int(self._blacklist_ttl),
                     f" ({reason})" if reason else "")
 
@@ -763,7 +778,7 @@ class DomainFronter:
                     )
                 if snap["blacklisted_scripts"]:
                     log.debug("  blacklisted scripts: %s",
-                              ", ".join(f"{b['sid']} ({b['expires_in_s']}s)"
+                              ", ".join(f"{_mask_sid(b['sid'])} ({b['expires_in_s']}s)"
                                         for b in snap["blacklisted_scripts"]))
             except asyncio.CancelledError:
                 break
