@@ -284,13 +284,29 @@ def main():
     # print concrete IPv4 addresses users can use on other devices.
     lan_mode = lan_sharing or listen_host in ("0.0.0.0", "::")
     if lan_mode:
+        http_port = config.get("http_port", config.get("listen_port", 8080))
         socks_port = config.get("socks5_port", 1080)
-        log_lan_access(config.get("http_port", config.get("listen_port", 8080)), socks_port)
+        log_lan_access(http_port, socks_port)
+
+        if lan_sharing:
+            # Log CA download URLs so LAN devices know where to get the cert.
+            from core.lan_utils import get_lan_ips
+            ca_urls = [f"http://{addr}/ca.crt" for addr in get_lan_ips(http_port)]
+            if ca_urls:
+                log.info(
+                    "CA certificate download (install on other devices): %s",
+                    "  OR  ".join(ca_urls),
+                )
+            else:
+                log.info(
+                    "CA certificate download: http://<your-LAN-IP>:%d/ca.crt", http_port
+                )
 
     try:
         asyncio.run(_run(config))
     except KeyboardInterrupt:
         log.info("Stopped")
+
 
 
 def _make_exception_handler(log):

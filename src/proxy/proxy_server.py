@@ -188,12 +188,17 @@ class ProxyServer:
             self._SNI_REWRITE_SUFFIXES = SNI_REWRITE_SUFFIXES
 
         try:
-            from .mitm import MITMCertManager
+            from .mitm import MITMCertManager, CA_CERT_FILE
             self.mitm = MITMCertManager()
+            self._ca_cert_file = CA_CERT_FILE
         except ImportError:
             log.error("Apps Script relay requires the 'cryptography' package.")
             log.error("Run: pip install cryptography")
             raise SystemExit(1)
+
+        # When LAN sharing is active, serve the CA cert over HTTP so other
+        # devices on the network can download and install it easily.
+        self._lan_sharing: bool = bool(config.get("lan_sharing", False))
 
     # ── Host-policy helpers ───────────────────────────────────────
 
@@ -366,6 +371,31 @@ class ProxyServer:
 
     # ── client handler ────────────────────────────────────────────
 
+    async def _serve_ca_cert(self, writer: asyncio.StreamWriter) -> None:
+        """Serve the MITM CA certificate so LAN devices can install it."""
+        import os as _os
+        ca_path = getattr(self, "_ca_cert_file", None)
+        if not ca_path or not _os.path.exists(ca_path):
+            writer.write(
+                b"HTTP/1.1 404 Not Found\r\n"
+                b"Content-Length: 0\r\n"
+                b"Connection: close\r\n\r\n"
+            )
+            await writer.drain()
+            return
+        with open(ca_path, "rb") as f:
+            cert_data = f.read()
+        headers = (
+            b"HTTP/1.1 200 OK\r\n"
+            b"Content-Type: application/x-x509-ca-cert\r\n"
+            b"Content-Disposition: attachment; filename=\"ca.crt\"\r\n"
+            + b"Content-Length: " + str(len(cert_data)).encode() + b"\r\n"
+            + b"Connection: close\r\n\r\n"
+        )
+        writer.write(headers + cert_data)
+        await writer.drain()
+        log.info("Served CA certificate to LAN device")
+
     async def _on_client(self, reader: asyncio.StreamReader, writer: asyncio.StreamWriter):
         addr = writer.get_extra_info("peername")
         task = self._track_current_task()
@@ -401,6 +431,11 @@ class ProxyServer:
                 return
 
             method = parts[0].upper()
+            path = parts[1] if len(parts) >= 2 else "/"
+
+            if method == "GET" and path == "/ca.crt" and self._lan_sharing:
+                await self._serve_ca_cert(writer)
+                return
 
             if method == "CONNECT":
                 await self._do_connect(parts[1], reader, writer)
