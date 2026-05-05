@@ -112,6 +112,16 @@ def classify_relay_error(raw: str) -> str:
     """
     lower = raw.lower()
 
+    # Relay loop detected by Code.gs or a Cloudflare Worker exit node.
+    if "loop detected" in lower or lower == "loop_detected":
+        return (
+            "Relay loop detected. "
+            "Your exit node URL is misconfigured — it points back to a "
+            "Google Apps Script deployment or to the Cloudflare Worker itself. "
+            "Set 'exit_node_url' in config.json to the actual exit node address "
+            "(Cloudflare Worker, Deno Deploy, or VPS), not to a GAS script URL."
+        )
+
     if any(p in lower for p in _QUOTA_PATTERNS):
         return (
             "Apps Script quota exhausted. "

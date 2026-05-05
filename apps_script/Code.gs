@@ -24,7 +24,14 @@ const SKIP_HEADERS = {
   // IP-leaking / proxy-metadata headers
   "x-forwarded-for": 1, "x-forwarded-host": 1, "x-forwarded-proto": 1,
   "x-forwarded-port": 1, "x-real-ip": 1, "forwarded": 1, "via": 1,
+  // Internal relay hop-count header — must not be forwarded to target sites.
+  "x-mhr-hop": 1,
 };
+
+// Pattern that matches any Google Apps Script execution endpoint.
+// Used to detect relay loops when an exit node is misconfigured to
+// point back at a GAS deployment.
+var _GAS_URL_RE = /^https?:\/\/script\.google\.com\/macros\//i;
 
 // If fetchAll fails, only retry methods that are safe to replay.
 const SAFE_REPLAY_METHODS = { GET: 1, HEAD: 1, OPTIONS: 1 };
@@ -47,6 +54,13 @@ function doPost(e) {
 function _doSingle(req) {
   if (!req.u || typeof req.u !== "string" || !req.u.match(/^https?:\/\//i)) {
     return _json({ e: "bad url" });
+  }
+  // Loop guard: refuse to relay back to any Apps Script deployment.
+  // This fires when an exit node URL is misconfigured to point at a GAS
+  // script — without this check the script would call itself indefinitely
+  // and burn through the daily UrlFetch quota in seconds.
+  if (_GAS_URL_RE.test(req.u)) {
+    return _json({ e: "loop detected: relay target cannot be a Google Apps Script URL" });
   }
   var opts = _buildOpts(req);
   var resp = UrlFetchApp.fetch(req.u, opts);
@@ -71,6 +85,10 @@ function _doBatch(items) {
     }
     if (!item.u || typeof item.u !== "string" || !item.u.match(/^https?:\/\//i)) {
       errorMap[i] = "bad url";
+      continue;
+    }
+    if (_GAS_URL_RE.test(item.u)) {
+      errorMap[i] = "loop detected: relay target cannot be a Google Apps Script URL";
       continue;
     }
     try {
@@ -146,15 +164,21 @@ function _buildOpts(req) {
     validateHttpsCertificates: true,
     escaping: false,
   };
+  // Always mark outgoing UrlFetchApp requests with a relay hop counter.
+  // Exit nodes and downstream relays can inspect this header to detect
+  // loops before consuming quota or making recursive calls.
+  var headers = { "x-mhr-hop": "1" };
   if (req.h && typeof req.h === "object") {
-    var headers = {};
     for (var k in req.h) {
-      if (req.h.hasOwnProperty(k) && !SKIP_HEADERS[k.toLowerCase()]) {
+      // Use call() so a crafted req.h that overrides hasOwnProperty cannot
+      // bypass the check (prototype-pollution hardening).
+      if (Object.prototype.hasOwnProperty.call(req.h, k) &&
+          !SKIP_HEADERS[k.toLowerCase()]) {
         headers[k] = req.h[k];
       }
     }
-    opts.headers = headers;
   }
+  opts.headers = headers;
   if (req.b) {
     opts.payload = Utilities.base64Decode(req.b);
     if (req.ct) opts.contentType = req.ct;
