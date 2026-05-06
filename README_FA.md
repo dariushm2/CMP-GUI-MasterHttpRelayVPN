@@ -519,6 +519,12 @@ MasterHttpRelayVPN/
 - هر دیپلویمنت روی گوگل اسکریپت دارای محدودیت 20,000 درخواست در هر 24 ساعت است
 ---
 
+## منابع
+
+- **لیست‌های فیلتر آگهی:** [PersianBlocker](https://github.com/MasterKia/PersianBlocker/) نوشته MasterKia
+
+---
+
 ## License
 
 MIT

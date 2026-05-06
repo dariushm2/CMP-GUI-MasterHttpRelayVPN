@@ -588,6 +588,10 @@ MasterHttpRelayVPN/
 
 Special thanks to [@abolix](https://github.com/abolix) for making this project possible.
 
+## Sources
+
+- **Ad blocker filter lists:** [PersianBlocker](https://github.com/MasterKia/PersianBlocker/) by MasterKia
+
 ## License
 
 MIT
