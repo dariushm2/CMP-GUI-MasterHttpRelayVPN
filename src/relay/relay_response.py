@@ -21,7 +21,6 @@ classify_relay_error(raw) -> str
 """
 
 import base64
-import codecs
 import gzip
 import json
 import logging
@@ -233,6 +232,15 @@ def parse_relay_json(data: dict, max_body_bytes: int) -> bytes:
     resp_headers = data.get("h", {})
     resp_body = base64.b64decode(data.get("b", ""))
 
+    # Decompress relay-level gzip applied by Code.gs to shrink bytes-on-wire
+    # over DPI-shaped connections.  The "gz" flag is set when Code.gs found
+    # that gzip saved space (all text content: JS, CSS, HTML, JSON).
+    if data.get("gz"):
+        try:
+            resp_body = gzip.decompress(resp_body)
+        except Exception as _exc:
+            log.debug("relay gz decompress failed: %s", _exc)
+
     # ── Decompress if the target sent a compressed body ─────────────────────────
     # UrlFetchApp does NOT auto-decompress gzip/deflate responses, so if the
     # client's Accept-Encoding header was forwarded and the server compressed
@@ -304,7 +312,13 @@ def parse_relay_json(data: dict, max_body_bytes: int) -> bytes:
 
 
 def extract_apps_script_user_html(text: str) -> str | None:
-    """Extract embedded user HTML from an Apps Script HTML-page response."""
+    """Extract embedded user HTML from an Apps Script HTML-page response.
+
+    Google's IFRAME_SANDBOX mode returns /exec responses wrapped in an HTML
+    page that includes a goog.script.init("...") call. The first argument is
+    a JS string literal (\\xNN hex escapes) containing a JSON payload with
+    a ``userHtml`` field that holds the actual relay response.
+    """
     marker = 'goog.script.init("'
     start = text.find(marker)
     if start == -1:
@@ -316,7 +330,17 @@ def extract_apps_script_user_html(text: str) -> str | None:
 
     encoded = text[start:end]
     try:
-        decoded = codecs.decode(encoded, "unicode_escape")
+        # The JS string uses \xNN hex escapes and \/ for forward-slash.
+        # Also unescape \\ → \ (JS double-backslash = literal backslash).
+        # Order: hex first, then double-backslash, then \/ so that
+        # \\/ (JS for literal-backslash + /) works correctly.
+        decoded = re.sub(
+            r'\\x([0-9a-fA-F]{2})',
+            lambda m: chr(int(m.group(1), 16)),
+            encoded,
+        )
+        decoded = decoded.replace("\\\\", "\\")
+        decoded = decoded.replace("\\/", "/")
         payload = json.loads(decoded)
     except Exception:
         return None

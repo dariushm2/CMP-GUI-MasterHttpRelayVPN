@@ -17,6 +17,8 @@
 	"tls_connect_timeout": 15,
 	"tcp_connect_timeout": 10,
 	"parallel_relay": 1,
+	"h2_connections": 2,
+	"enable_sub_batch": true,
 	"block_hosts": [
 		"ads.example.com",
 		".doubleclick.net"

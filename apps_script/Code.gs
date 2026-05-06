@@ -55,6 +55,21 @@ function doPost(e) {
   }
 }
 
+// Compress a byte array with gzip to reduce bytes-on-wire over DPI-shaped
+// connections. Returns {b: byteArray, gz: true} if compression saves space,
+// otherwise {b: original, gz: false}. This can cut text payloads by 60-80%.
+function _maybeGzip(bytes) {
+  try {
+    var compressed = Utilities.gzip(Utilities.newBlob(bytes)).getBytes();
+    if (compressed.length < bytes.length) {
+      return { b: compressed, gz: true };
+    }
+  } catch (e) {
+    // Gzip failed — fall through to uncompressed
+  }
+  return { b: bytes, gz: false };
+}
+
 function _doSingle(req) {
   if (!req.u || typeof req.u !== "string" || !req.u.match(/^https?:\/\//i)) {
     return _json({ e: "bad url" });
@@ -68,11 +83,14 @@ function _doSingle(req) {
   }
   var opts = _buildOpts(req);
   var resp = UrlFetchApp.fetch(req.u, opts);
-  return _json({
+  var gz = _maybeGzip(resp.getContent());
+  var result = {
     s: resp.getResponseCode(),
     h: _respHeaders(resp),
-    b: Utilities.base64Encode(resp.getContent()),
-  });
+    b: Utilities.base64Encode(gz.b),
+  };
+  if (gz.gz) result.gz = 1;
+  return _json(result);
 }
 
 function _doBatch(items) {
@@ -149,11 +167,14 @@ function _doBatch(items) {
       if (!resp) {
         results.push({ e: "fetch failed" });
       } else {
-        results.push({
+        var gz = _maybeGzip(resp.getContent());
+        var item = {
           s: resp.getResponseCode(),
           h: _respHeaders(resp),
-          b: Utilities.base64Encode(resp.getContent()),
-        });
+          b: Utilities.base64Encode(gz.b),
+        };
+        if (gz.gz) item.gz = 1;
+        results.push(item);
       }
     }
   }
