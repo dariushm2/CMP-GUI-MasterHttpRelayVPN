@@ -1392,12 +1392,8 @@ class DomainFronter:
         # Script quota usage.  _relay_with_retry bypasses batching entirely.
         raw = await self._batch_submit(outer)
 
-        # raw is now the response from the exit node (inner relay JSON)
-        # _parse_relay_response will decode it into the final HTTP response.
-        # But we need to unwrap one level: Apps Script gives us exit node HTTP
-        # response body (which is itself a relay JSON), so parse twice.
-        _, _, apps_script_body = split_raw_response(raw)
-        result = parse_relay_response(apps_script_body, self._max_response_body_bytes)
+        _, _, vps_relay_bytes = split_raw_response(raw)
+        result = parse_relay_response(vps_relay_bytes, self._max_response_body_bytes)
         log.debug("Exit node relay OK: %s", payload.get("u", "")[:80])
         return result
 
