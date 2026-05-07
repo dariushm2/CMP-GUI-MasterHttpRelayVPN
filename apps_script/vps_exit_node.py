@@ -96,6 +96,21 @@ _OUTBOUND_TIMEOUT = 30
 _PSK: str = ""
 
 # ---------------------------------------------------------------------------
+# HTTP client — no-redirect opener
+# ---------------------------------------------------------------------------
+
+_NO_REDIRECT_OPENER = urllib.request.OpenerDirector()
+for _h in (
+    urllib.request.UnknownHandler(),
+    urllib.request.HTTPDefaultErrorHandler(),
+    urllib.request.HTTPErrorProcessor(),
+    urllib.request.HTTPHandler(),
+    urllib.request.HTTPSHandler(),
+):
+    _NO_REDIRECT_OPENER.add_handler(_h)
+del _h
+
+# ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
 
@@ -152,7 +167,7 @@ def _relay_request(
         request.data = body
 
     try:
-        with urllib.request.urlopen(request, timeout=_OUTBOUND_TIMEOUT) as resp:
+        with _NO_REDIRECT_OPENER.open(request, timeout=_OUTBOUND_TIMEOUT) as resp:
             data = resp.read(_MAX_RESPONSE_BODY)
             resp_headers: dict[str, str] = {}
             for k, v in resp.headers.items():
