@@ -268,6 +268,15 @@ def _decode_target_body(body: bytes, encoding: str) -> tuple[bytes, bool]:
     if not body or not encodings:
         return body, False
 
+    # Apps Script's UrlFetchApp transparently decompresses gzip/br/deflate
+    # responses but preserves the original Content-Encoding header in the
+    # forwarded metadata. The body therefore arrives as already-plain bytes
+    # while still being labelled (e.g.) "br". Detect that case up front so
+    # we don't pay the CPU cost of a guaranteed-failing brotli/zstd decode
+    # on every relayed response.
+    if _looks_like_plain_body(body):
+        return body, True
+
     decoded = body
     for layer in reversed(encodings):
         before = decoded
