@@ -11,6 +11,13 @@ A free tool that lets you access the internet freely by hiding your traffic behi
 
 ---
 
+## 🎉 Latest Updates
+
+> YouTube restrictions (SafeSearch enforcement, live video blocking) are now resolved and work seamlessly without requiring an exit node. The relay now intelligently handles YouTube's content policies out of the box.
+
+> **✨ YouTube SafeSearch & Live Now Fully Working!**
+>
+
 ## Announcement and Support Channel 📢
 
 For the latest news, releases, and project updates, follow our Telegram channel: [Telegram Channel](https://t.me/masterdnsvpn)
@@ -597,7 +604,7 @@ Special thanks to [@abolix](https://github.com/abolix) for making this project p
 
 - [MHRWindowsApp Windows Client](https://github.com/AriPath/MHRWindowsApp)
 
-> A Windows application built on top of MasterHttpRelay.  
+> A Windows application built on top of MasterHttpRelay.
 > This project is developed by AriPath and allows users to use MHR with just one click, without any setup or technical prerequisites.
 ---
 ## License
