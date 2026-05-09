@@ -179,12 +179,25 @@ class ProxyServer:
 
         # Route YouTube through the relay when requested; the Google frontend
         # IP can enforce SafeSearch on the SNI-rewrite path.
-        if config.get("youtube_via_relay", False):
+        # Also force YouTube through relay if exit_node is in full mode,
+        # so the exit node can intercept ALL traffic including YouTube.
+        _youtube_via_relay = config.get("youtube_via_relay", False)
+        _exit_node_full_mode = (
+            self.fronter._exit_node_enabled and
+            self.fronter._exit_node_mode == "full"
+        )
+
+        if _youtube_via_relay or _exit_node_full_mode:
             self._SNI_REWRITE_SUFFIXES = tuple(
                 s for s in SNI_REWRITE_SUFFIXES
                 if s not in self._YOUTUBE_SNI_SUFFIXES
             )
-            log.info("youtube_via_relay enabled — YouTube routed through relay")
+            reason = []
+            if _youtube_via_relay:
+                reason.append("youtube_via_relay=true")
+            if _exit_node_full_mode:
+                reason.append("exit_node.mode=full")
+            log.info("YouTube routed through relay (%s)", ", ".join(reason))
         else:
             self._SNI_REWRITE_SUFFIXES = SNI_REWRITE_SUFFIXES
 
@@ -195,10 +208,9 @@ class ProxyServer:
         # MITM-decrypt and inspect paths. Requests whose URL contains the full
         # pattern go to relay; all other paths on that host are forwarded
         # directly via SNI-rewrite HTTP (fast path).
-        # When youtube_via_relay is true, RELAY_URL_PATTERNS is ignored entirely
-        # so all of youtube.com goes through relay without path inspection.
+        # When youtube_via_relay is true or exit_node.mode=full, RELAY_URL_PATTERNS
+        # is still applied so those hosts get MITM-decrypted.
         # Defaults to RELAY_URL_PATTERNS from constants.py; config key extends it.
-        _youtube_via_relay: bool = config.get("youtube_via_relay", False)
         relay_patterns: list[str] = [
             p.strip() for p in config.get("relay_url_patterns", []) if str(p).strip()
         ]
@@ -616,23 +628,25 @@ class ProxyServer:
             await self._do_sni_rewrite_tunnel(host, port, reader, writer,
                                               connect_ip=override_ip)
         elif self._is_google_domain(host):
-            if self._direct_temporarily_disabled(host):
-                log.info("Relay fallback → %s (direct tunnel temporarily disabled)", host)
-                if port == 443:
-                    await self._do_mitm_connect(host, port, reader, writer)
-                else:
-                    await self._do_plain_http_tunnel(host, port, reader, writer)
-                return
+            if not self._direct_temporarily_disabled(host):
+                log.info("Direct tunnel → %s (Google domain, skipping relay)", host)
+                ok = await self._do_direct_tunnel(host, port, reader, writer)
+                if ok:
+                    return
+                self._remember_direct_failure(host)
 
-            log.info("Direct tunnel → %s (Google domain, skipping relay)", host)
-            ok = await self._do_direct_tunnel(host, port, reader, writer)
-            if ok:
-                return
-
-            self._remember_direct_failure(host)
-            log.warning("Direct tunnel fallback → %s (switching to relay)", host)
+            # Direct failed or is temporarily disabled.
+            # For port 443: try SNI-rewrite through configured google_ip before
+            # burning an Apps Script execution on a plain Google domain.
             if port == 443:
-                await self._do_mitm_connect(host, port, reader, writer)
+                log.info(
+                    "SNI-rewrite fallback → %s via %s (direct blocked)",
+                    host, self.fronter.connect_host,
+                )
+                await self._do_sni_rewrite_tunnel(
+                    host, port, reader, writer,
+                    connect_ip=self.fronter.connect_host,
+                )
             else:
                 await self._do_plain_http_tunnel(host, port, reader, writer)
         elif port == 443:
