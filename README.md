@@ -11,25 +11,39 @@ Browser -> Local proxy -> Google front -> Your Apps Script relay -> Target site
                          network filter sees a Google-facing connection
 ```
 
-## Choose Your Path
+## Quick Menu
 
-| I want to... | Go here |
-|-------------|---------|
-| Set it up for the first time | [Getting Started](docs/GETTING_STARTED.md) |
-| Run with Docker | [Docker Guide](docs/DOCKER.md) |
-| Share the proxy on my LAN | [LAN Sharing](docs/LAN_SHARING.md) |
-| Use an exit node for blocked destinations | [Exit Node Guide](docs/exit-node/EXIT_NODE_DEPLOYMENT.md) |
-| Understand every config option | [Configuration Reference](docs/CONFIGURATION.md) |
-| Fix a problem | [Troubleshooting](docs/TROUBLESHOOTING.md) |
-| Review safety notes | [Security Notes](docs/SECURITY.md) |
-| Understand the internals | [Architecture](docs/ARCHITECTURE.md) |
+[Getting Started](docs/GETTING_STARTED.md) | [Docker](docs/DOCKER.md) | [LAN Sharing](docs/LAN_SHARING.md) | [Exit Node](docs/exit-node/EXIT_NODE_DEPLOYMENT.md)
+
+[Configuration](docs/CONFIGURATION.md) | [Troubleshooting](docs/TROUBLESHOOTING.md) | [Security](docs/SECURITY.md) | [Architecture](docs/ARCHITECTURE.md)
 
 ## Fast Start
 
-Before running the local proxy, deploy the Google relay from [apps_script/Code.gs](apps_script/Code.gs) and keep two values ready:
+Before running the local proxy, deploy the Google relay once. You only need a Google account and about two minutes.
+
+## Deploy The Google Relay
+
+1. Open [Google Apps Script](https://script.google.com/) and sign in.
+2. Click **New project**.
+3. Delete the default editor content.
+4. Open [apps_script/Code.gs](apps_script/Code.gs), copy everything, and paste it into Apps Script.
+5. Find this line and replace it with your own long secret:
+
+    ```javascript
+    const AUTH_KEY = "your-secret-password-here";
+    ```
+
+6. Click **Deploy** -> **New deployment** -> **Web app**.
+7. Set **Execute as** to **Me**.
+8. Set **Who has access** to **Anyone**.
+9. Click **Deploy**, approve the permission screen, and copy the **Deployment ID**.
+
+Keep these two values ready for the setup wizard:
 
 - `Deployment ID` from Google Apps Script
 - `AUTH_KEY`, a long secret that must match `auth_key` in your local config
+
+If you want screenshots and more detail, use [Getting Started](docs/GETTING_STARTED.md#2-deploy-the-google-relay).
 
 Download the project with either Git or ZIP, then run the one-click launcher.
 
