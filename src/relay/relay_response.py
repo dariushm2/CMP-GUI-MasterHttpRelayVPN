@@ -787,11 +787,13 @@ def parse_relay_response(body: bytes, max_body_bytes: int) -> bytes:
         elif preview_lower.startswith("<"):
             # HTML response from script.google.com usually indicates that
             # Deployment ID is wrong/archived or the deployment was not updated.
-            # This signature commonly appears as a generic Google Docs wrapper.
+            # Match only Apps Script-specific wrappers to avoid false positives
+            # when the destination site itself is RTL or hosted on docs.google.com.
             if any(sig in preview_lower for sig in (
                 "web word processing, presentations and spreadsheets",
-                "docs.google.com",
-                "google docs",
+                "goog.script.init",
+                "script.google.com/macros",
+                "/macros/s/",
             )):
                 error_msg = (
                     "Wrong Apps Script deployment (script_id). "
