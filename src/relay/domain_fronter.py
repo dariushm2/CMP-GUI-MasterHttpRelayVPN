@@ -110,6 +110,7 @@ class DomainFronter:
         "sec-fetch-site",
     )
     _SAFE_RETRY_METHODS = {"GET", "HEAD", "OPTIONS"}
+    _EXIT_NODE_BYPASS_SUFFIXES = ("googlevideo.com",)
     _APPS_SCRIPT_DEFAULT_LANG = "en"
 
     def __init__(self, config: dict):
@@ -1389,12 +1390,17 @@ class DomainFronter:
         """Return True if this URL should be routed through the exit node."""
         if not self._exit_node_enabled or not self._exit_node_url:
             return False
-        if self._exit_node_mode == "full":
-            return True
-        # selective: check if destination hostname matches configured list
         host = self._host_key(url)
         if not host:
             return False
+        # googlevideo flows are large/CPU-heavy; keep them on direct Google relay
+        # and never chain through Cloudflare/Deno/VPS exit nodes.
+        if any(host == suffix or host.endswith("." + suffix)
+               for suffix in self._EXIT_NODE_BYPASS_SUFFIXES):
+            return False
+        if self._exit_node_mode == "full":
+            return True
+        # selective: check if destination hostname matches configured list
         for pattern in self._exit_node_hosts:
             if host == pattern or host.endswith("." + pattern):
                 return True

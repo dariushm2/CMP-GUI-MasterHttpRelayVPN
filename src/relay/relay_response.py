@@ -250,8 +250,7 @@ def _build_502_html(message: str) -> str:
             gap: 8px;
         }}
         .resource-title {{
-            font-size: 0.72em;
-            text-transform: uppercase;
+            font-size: 0.82em;
             letter-spacing: 0.08em;
             color: #93c5fd;
             margin-right: 6px;
