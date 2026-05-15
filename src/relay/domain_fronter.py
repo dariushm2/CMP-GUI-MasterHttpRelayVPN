@@ -129,7 +129,7 @@ class DomainFronter:
         self._script_ids = script if isinstance(script, list) else [script]
         self._script_idx = 0
         self.script_id = self._script_ids[0]  # backward compat / logging
-        self._dev_available = False  # True if /dev endpoint works (no redirect, ~400ms faster)
+        self._dev_available = False  # Always False — /exec is used exclusively
         self._apps_script_lang = str(
             config.get("apps_script_lang", self._APPS_SCRIPT_DEFAULT_LANG)
         ).strip().lower() or self._APPS_SCRIPT_DEFAULT_LANG
@@ -959,10 +959,10 @@ class DomainFronter:
         return self._exec_path_for_sid(sid)
 
     def _exec_path_for_sid(self, sid: str) -> str:
-        """Build the /macros/s/<sid>/(dev|exec) path for a specific script ID."""
-        endpoint = "dev" if self._dev_available else "exec"
-        # Force Google Apps Script UI/errors to English for stable diagnostics.
-        return f"/macros/s/{sid}/{endpoint}?hl={self._apps_script_lang}"
+        """Build the /macros/s/<sid>/exec path for a specific script ID."""
+        # Always use /exec (production endpoint). /dev is a test-deployment path
+        # with unstable auth/latency behaviour and is not used in production.
+        return f"/macros/s/{sid}/exec?hl={self._apps_script_lang}"
 
     def _apps_script_headers(self) -> dict[str, str]:
         """Headers for Apps Script relay calls (control-plane, not target origin)."""
@@ -1154,36 +1154,13 @@ class DomainFronter:
             self._keepalive_task = self._spawn(self._keepalive_loop())
 
     async def _prewarm_script(self):
-        """Pre-warm Apps Script and detect /dev fast path (no redirect)."""
+        """Pre-warm Apps Script via /exec."""
         payload = json.dumps(
             {"m": "GET", "u": "http://example.com/", "k": self.auth_key}
         ).encode()
         hdrs = self._apps_script_headers()
         sid = self._script_ids[0]
 
-        # Test /dev endpoint — returns data inline (no 302 redirect).
-        # If it works, saves ~400ms per request by eliminating one round trip.
-        try:
-            dev_path = f"/macros/s/{sid}/dev?hl={self._apps_script_lang}"
-            t0 = time.perf_counter()
-            self._record_execution(sid)
-            status, _, body = await asyncio.wait_for(
-                self._h2.request(
-                    method="POST", path=dev_path, host=self.http_host,
-                    headers=hdrs, body=payload,
-                ),
-                timeout=15,
-            )
-            dt = (time.perf_counter() - t0) * 1000
-            data = load_relay_json(body.decode(errors="replace"))
-            if "s" in data:
-                self._dev_available = True
-                log.info("/dev fast path active (%.0fms, no redirect)", dt)
-                return
-        except Exception as e:
-            log.debug("/dev test failed: %s", e)
-
-        # Fallback: warm up with /exec
         try:
             exec_path = f"/macros/s/{sid}/exec?hl={self._apps_script_lang}"
             t0 = time.perf_counter()
@@ -1196,7 +1173,7 @@ class DomainFronter:
                 timeout=15,
             )
             dt = (time.perf_counter() - t0) * 1000
-            log.info("Apps Script pre-warmed in %.0fms", dt)
+            log.info("Apps Script pre-warmed via /exec in %.0fms", dt)
         except Exception as e:
             log.debug("Pre-warm failed: %s", e)
 
