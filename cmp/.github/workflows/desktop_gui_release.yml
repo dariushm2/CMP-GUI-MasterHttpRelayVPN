@@ -65,7 +65,7 @@ jobs:
       - name: Bundle Python Executable into Compose Resources
         shell: bash
         run: |
-          python scripts/bundle_for_gui.py --force
+          python bundle_for_gui.py --force
 
       - name: Build Desktop Application Packages
         shell: bash

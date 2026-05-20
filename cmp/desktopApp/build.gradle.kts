@@ -43,7 +43,7 @@ tasks.register<Exec>("bundlePythonExecutable") {
     val isWindows = System.getProperty("os.name").lowercase().contains("win")
     val pythonCmd = if (isWindows) "python" else "python3"
 
-    commandLine(pythonCmd, "scripts/bundle_for_gui.py")
+    commandLine(pythonCmd, "cmp/bundle_for_gui.py")
 }
 
 // Hook the bundle task into standard execution and packaging tasks
