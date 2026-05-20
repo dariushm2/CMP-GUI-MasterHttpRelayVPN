@@ -64,7 +64,40 @@ def ensure_pyinstaller_installed() -> bool:
             return False
 
 
+def check_and_bootstrap_venv() -> None:
+    in_venv = (sys.prefix != sys.base_prefix) or hasattr(sys, 'real_prefix')
+    if in_venv:
+        return
+
+    script_dir = Path(__file__).resolve().parent
+    repo_root = script_dir.parent
+    venv_dir = repo_root / ".venv"
+
+    if sys.platform.startswith("win"):
+        venv_python = venv_dir / "Scripts" / "python.exe"
+    else:
+        venv_python = venv_dir / "bin" / "python"
+
+    if not venv_dir.exists():
+        log(f"Virtual environment not found at {venv_dir}. Creating it...")
+        try:
+            subprocess.run([sys.executable, "-m", "venv", str(venv_dir)], check=True)
+            log("Virtual environment created successfully.")
+        except Exception as e:
+            error(f"Failed to create virtual environment: {e}")
+            sys.exit(1)
+
+    if venv_python.exists():
+        log(f"Re-executing script within virtual environment: {venv_python}")
+        os.execv(str(venv_python), [str(venv_python)] + sys.argv)
+    else:
+        error(f"Virtual environment python not found at {venv_python}")
+        sys.exit(1)
+
+
 def main() -> int:
+    check_and_bootstrap_venv()
+
     parser = argparse.ArgumentParser(description="Bundle Python backend for KMP GUI.")
     parser.add_argument("--force", action="store_true", help="Force rebuild even if sources haven't changed.")
     args = parser.parse_args()
