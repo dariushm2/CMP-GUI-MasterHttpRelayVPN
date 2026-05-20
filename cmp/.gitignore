@@ -3,6 +3,7 @@
 .kotlin
 .gradle
 **/build/
+/desktopApp/bin
 xcuserdata
 !src/**/build/
 local.properties
