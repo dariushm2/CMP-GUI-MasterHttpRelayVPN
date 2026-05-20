@@ -4,14 +4,20 @@ import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import java.io.File
 
 fun loadSavedConfig(): Pair<String, String> {
     try {
-        val resourcesDir = System.getProperty("compose.application.resources.dir")
-            ?: "/home/dariush/Projects/CMP-GUI-MasterHttpRelayVPN/"
+        val binaryPath = getPythonExecutablePath()
+        val binaryFile = File(binaryPath)
+        val configFile = if (binaryFile.parentFile != null) {
+            File(binaryFile.parentFile, "config.json")
+        } else {
+            File(findResourcesDir(), "config.json")
+        }
 
-        val configFile = File(resourcesDir, "config.json")
         if (configFile.exists()) {
             val content = configFile.readText(Charsets.UTF_8)
             
@@ -37,17 +43,24 @@ fun loadSavedConfig(): Pair<String, String> {
 
 fun saveConfigLocally(deploymentId: String, authKey: String): Boolean {
     try {
-        val resourcesDir = System.getProperty("compose.application.resources.dir")
-            ?:"/home/dariush/Projects/CMP-GUI-MasterHttpRelayVPN/"
-
+        val resourcesDir = findResourcesDir()
         val exampleFile = File(resourcesDir, "config.example.json")
-        val configFile = File(resourcesDir, "config.json")
+        
+        val binaryPath = getPythonExecutablePath()
+        val binaryFile = File(binaryPath)
+        
+        // Write config.json in the exact same platform-specific directory containing the python executable
+        val configFile = if (binaryFile.parentFile != null) {
+            File(binaryFile.parentFile, "config.json")
+        } else {
+            File(resourcesDir, "config.json")
+        }
         
         // If config.example.json doesn't exist in resourcesDir, check fallback for dev mode
         val resolvedExampleFile = if (exampleFile.exists()) {
             exampleFile
         } else {
-            File("/home/dariush/Projects/CMP-GUI-MasterHttpRelayVPN/config.example.json")
+            File(findRepoRoot(), "config.example.json")
         }
 
         if (!resolvedExampleFile.exists()) {
@@ -60,6 +73,9 @@ fun saveConfigLocally(deploymentId: String, authKey: String): Boolean {
         // Safe drop-in replacements for the script ID and Auth Key placeholders
         content = content.replace("YOUR_APPS_SCRIPT_DEPLOYMENT_ID", deploymentId)
         content = content.replace("CHANGE_ME_TO_A_STRONG_SECRET", authKey)
+        
+        // Make sure parent directories exist
+        configFile.parentFile?.mkdirs()
         
         configFile.writeText(content, Charsets.UTF_8)
         println("[Config JVM] Saved new config.json to: ${configFile.absolutePath}")
@@ -82,10 +98,13 @@ fun main() = application {
     ) {
         currentWindowHolder.window = this.window
         val viewModel: AppViewModel = koinViewModel<AppViewModel>()
+        val isVpnRunning by viewModel.isVpnRunning.collectAsState()
+
         App(
             connectivityHandler = koinInject(),
             initialScriptId = initialScriptId,
             initialAuthKey = initialAuthKey,
+            isVpnRunning = isVpnRunning,
             onSaveConfig = { id, key ->
                 saveConfigLocally(id, key)
             },

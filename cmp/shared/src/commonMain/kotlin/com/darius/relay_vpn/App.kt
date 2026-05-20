@@ -27,6 +27,7 @@ fun App(
     connectivityHandler: ConnectivityHandler,
     initialScriptId: String = "",
     initialAuthKey: String = "",
+    isVpnRunning: Boolean = false,
     onSaveConfig: (String, String) -> Unit = { _, _ -> },
     onClick: (Event) -> Unit = {},
 ) {
@@ -60,6 +61,7 @@ fun App(
                     navController = navController,
                     initialScriptId = initialScriptId,
                     initialAuthKey = initialAuthKey,
+                    isVpnRunning = isVpnRunning,
                     onSaveConfig = onSaveConfig,
                     onClick = onClick
                 )
@@ -74,6 +76,7 @@ private fun NavGraph(
     navController: NavHostController,
     initialScriptId: String,
     initialAuthKey: String,
+    isVpnRunning: Boolean,
     onSaveConfig: (String, String) -> Unit,
     onClick: (Event) -> Unit,
 ) {
@@ -86,6 +89,7 @@ private fun NavGraph(
                 navController = navController,
                 initialScriptId = initialScriptId,
                 initialAuthKey = initialAuthKey,
+                isVpnRunning = isVpnRunning,
                 onSaveConfig = onSaveConfig,
                 onClick = onClick
             ) 

@@ -4,15 +4,28 @@ import java.lang.ProcessBuilder
 import kotlin.concurrent.thread
 import java.io.File
 
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+
 object ProcessRunner {
 
+    private val platform = getPlatform()
     private val binaryPath = getPythonExecutablePath()
 
     private var process: Process? = null
 
+    private val _isVpnRunning = MutableStateFlow(false)
+    val isVpnRunning: StateFlow<Boolean> = _isVpnRunning.asStateFlow()
+
     fun installCert() {
         println("Installing Certificate for: $binaryPath")
-        val processBuilder = ProcessBuilder( "pkexec", binaryPath, "--install-cert")
+
+        val processBuilder = when {
+            platform.isWin() -> ProcessBuilder(binaryPath, "--install-cert")
+            platform.isMac() -> ProcessBuilder(binaryPath, "--install-cert")
+            else -> ProcessBuilder("pkexec", binaryPath, "--install-cert")
+        }
 
         processBuilder.runProcess { isSuccess ->
             if (isSuccess) println("[VPN Process] Certificate was installed successfully!")
@@ -27,16 +40,23 @@ object ProcessRunner {
         }
 
         println("Launching Python VPN binary: $binaryPath")
-        val processBuilder = ProcessBuilder( binaryPath)
+        val processBuilder = ProcessBuilder(binaryPath)
 
         process = processBuilder.runProcess {
             println("[VPN Process] Process stopped!")
+            _isVpnRunning.value = false
+            process = null
+        }
+        
+        if (process != null) {
+            _isVpnRunning.value = true
         }
     }
 
     fun stop() {
         process?.destroy()
         process = null
+        _isVpnRunning.value = false
     }
 
     private fun ProcessBuilder.runProcess(
@@ -54,6 +74,7 @@ object ProcessRunner {
         return try {
             val process = this.start()
             process.onExit().thenAccept { finishedProcess ->
+                _isVpnRunning.value = false
                 onExit(finishedProcess.exitValue() == 0)
             }
             // Read output asynchronously to prevent blocking Compose UI thread
@@ -71,6 +92,7 @@ object ProcessRunner {
             process
         } catch (e: Exception) {
             println("[VPN Process] Failed to start process: ${e.message}")
+            _isVpnRunning.value = false
             null
         }
     }

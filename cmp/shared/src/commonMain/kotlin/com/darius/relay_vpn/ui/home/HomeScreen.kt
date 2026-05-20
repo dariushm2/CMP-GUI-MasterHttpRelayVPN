@@ -2,11 +2,13 @@ package com.darius.relay_vpn.ui.home
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -28,6 +30,7 @@ fun HomeScreen(
     navController: NavHostController,
     initialScriptId: String,
     initialAuthKey: String,
+    isVpnRunning: Boolean,
     onSaveConfig: (String, String) -> Unit,
     onClick: (Event) -> Unit,
     modifier: Modifier = Modifier,
@@ -37,6 +40,11 @@ fun HomeScreen(
     var isSavedSuccessfully by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
+
+    // Clean tracking of whether the application has been successfully configured
+    var isConfigured by remember { 
+        mutableStateOf(initialScriptId.isNotEmpty() && initialAuthKey.isNotEmpty()) 
+    }
 
     Scaffold(
         modifier = Modifier
@@ -67,7 +75,7 @@ fun HomeScreen(
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(bottom = 24.dp),
+                        .padding(bottom = 16.dp),
                     shape = RoundedCornerShape(20.dp),
                     colors = CardDefaults.cardColors(
                         containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.9f)
@@ -77,7 +85,7 @@ fun HomeScreen(
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(20.dp),
+                            .padding(16.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(
@@ -98,164 +106,228 @@ fun HomeScreen(
                     }
                 }
 
-                // Configuration Details Card
+                // Dynamic Status & Control Section
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(bottom = 24.dp),
+                        .padding(bottom = 16.dp),
                     shape = RoundedCornerShape(16.dp),
                     colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surface
+                        containerColor = if (isVpnRunning) Color(0xFFE8F5E9) else MaterialTheme.colorScheme.surface
                     ),
                     elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
                 ) {
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(20.dp),
-                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                            .padding(16.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Text(
-                            text = "Relay Configuration Settings",
-                            style = MaterialTheme.typography.titleMedium.copy(
-                                fontWeight = FontWeight.SemiBold,
-                                color = MaterialTheme.colorScheme.primary
-                            )
-                        )
-
-                        // Deployment ID OutlinedTextField
-                        OutlinedTextField(
-                            value = scriptId,
-                            onValueChange = {
-                                scriptId = it
-                                isSavedSuccessfully = false
-                                errorMessage = ""
-                            },
-                            label = { Text("Apps Script Deployment ID") },
-                            placeholder = { Text("Enter your Google Apps Script Deployment ID") },
-                            leadingIcon = {
-                                Icon(
-                                    imageVector = Icons.Default.Info,
-                                    contentDescription = "Deployment ID Icon"
-                                )
-                            },
-                            modifier = Modifier.fillMaxWidth(),
-                            singleLine = true,
-                            shape = RoundedCornerShape(12.dp),
-                            colors = OutlinedTextFieldDefaults.colors(
-                                focusedBorderColor = MaterialTheme.colorScheme.primary,
-                                unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
-                            )
-                        )
-
-                        // Auth Key OutlinedTextField
-                        OutlinedTextField(
-                            value = authKey,
-                            onValueChange = {
-                                authKey = it
-                                isSavedSuccessfully = false
-                                errorMessage = ""
-                            },
-                            label = { Text("Relay Auth Key") },
-                            placeholder = { Text("Enter your secure Auth Key") },
-                            leadingIcon = {
-                                Icon(
-                                    imageVector = Icons.Default.Lock,
-                                    contentDescription = "Auth Key Icon"
-                                )
-                            },
-                            trailingIcon = {
-                                TextButton(onClick = { passwordVisible = !passwordVisible }) {
-                                    Text(
-                                        text = if (passwordVisible) "Hide" else "Show",
-                                        style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold)
-                                    )
-                                }
-                            },
-                            visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-                            modifier = Modifier.fillMaxWidth(),
-                            singleLine = true,
-                            shape = RoundedCornerShape(12.dp),
-                            colors = OutlinedTextFieldDefaults.colors(
-                                focusedBorderColor = MaterialTheme.colorScheme.primary,
-                                unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
-                            )
-                        )
-
-                        // Save Configuration Action Button
-                        Button(
-                            onClick = {
-                                if (scriptId.isBlank()) {
-                                    errorMessage = "Deployment ID cannot be blank."
-                                } else if (authKey.isBlank()) {
-                                    errorMessage = "Auth Key cannot be blank."
-                                } else {
-                                    onSaveConfig(scriptId.trim(), authKey.trim())
-                                    isSavedSuccessfully = true
-                                    errorMessage = ""
-                                }
-                            },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(48.dp),
-                            shape = RoundedCornerShape(12.dp),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = if (isSavedSuccessfully) Color(0xFF2E7D32) else MaterialTheme.colorScheme.primary
-                            )
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center
                         ) {
+                            // Pulsating/Active status indicator dot
+                            Box(
+                                modifier = Modifier
+                                    .size(12.dp)
+                                    .background(
+                                        color = if (isVpnRunning) Color(0xFF2E7D32) else Color(0xFF757575),
+                                        shape = CircleShape
+                                    )
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
                             Text(
-                                text = if (isSavedSuccessfully) "✓ Configuration Saved!" else "Save Configuration",
-                                style = MaterialTheme.typography.labelLarge.copy(
+                                text = if (isVpnRunning) "VPN SERVER RUNNING" else "VPN DISCONNECTED",
+                                style = MaterialTheme.typography.titleMedium.copy(
                                     fontWeight = FontWeight.Bold,
-                                    fontSize = 15.sp
+                                    color = if (isVpnRunning) Color(0xFF1B5E20) else MaterialTheme.colorScheme.onSurface
+                                )
+                            )
+                        }
+
+                        if (isVpnRunning) {
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Text(
+                                text = "Traffic is securely relayed through Google Apps Script proxy.",
+                                style = MaterialTheme.typography.bodyMedium.copy(
+                                    color = Color(0xFF2E7D32),
+                                    textAlign = TextAlign.Center
                                 )
                             )
                         }
                     }
                 }
 
-                // Success / Error Feedback Section
-                if (isSavedSuccessfully) {
+                // Configuration Section (Hidden when configured successfully)
+                if (!isConfigured) {
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(bottom = 24.dp),
-                        shape = RoundedCornerShape(12.dp),
+                            .padding(bottom = 16.dp),
+                        shape = RoundedCornerShape(16.dp),
                         colors = CardDefaults.cardColors(
-                            containerColor = Color(0xFFE8F5E9)
-                        )
+                            containerColor = MaterialTheme.colorScheme.surface
+                        ),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            verticalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            Text(
+                                text = "Relay Configuration Settings",
+                                style = MaterialTheme.typography.titleMedium.copy(
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                            )
+
+                            OutlinedTextField(
+                                value = scriptId,
+                                onValueChange = {
+                                    scriptId = it
+                                    isSavedSuccessfully = false
+                                    errorMessage = ""
+                                },
+                                label = { Text("Apps Script Deployment ID") },
+                                placeholder = { Text("Enter your Google Apps Script Deployment ID") },
+                                leadingIcon = {
+                                    Icon(
+                                        imageVector = Icons.Default.Info,
+                                        contentDescription = "Deployment ID Icon"
+                                    )
+                                },
+                                modifier = Modifier.fillMaxWidth(),
+                                singleLine = true,
+                                shape = RoundedCornerShape(12.dp)
+                            )
+
+                            OutlinedTextField(
+                                value = authKey,
+                                onValueChange = {
+                                    authKey = it
+                                    isSavedSuccessfully = false
+                                    errorMessage = ""
+                                },
+                                label = { Text("Relay Auth Key") },
+                                placeholder = { Text("Enter your secure Auth Key") },
+                                leadingIcon = {
+                                    Icon(
+                                        imageVector = Icons.Default.Lock,
+                                        contentDescription = "Auth Key Icon"
+                                    )
+                                },
+                                trailingIcon = {
+                                    TextButton(onClick = { passwordVisible = !passwordVisible }) {
+                                        Text(
+                                            text = if (passwordVisible) "Hide" else "Show",
+                                            style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold)
+                                        )
+                                    }
+                                },
+                                visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                                modifier = Modifier.fillMaxWidth(),
+                                singleLine = true,
+                                shape = RoundedCornerShape(12.dp)
+                            )
+
+                            Button(
+                                onClick = {
+                                    if (scriptId.isBlank()) {
+                                        errorMessage = "Deployment ID cannot be blank."
+                                    } else if (authKey.isBlank()) {
+                                        errorMessage = "Auth Key cannot be blank."
+                                    } else {
+                                        onSaveConfig(scriptId.trim(), authKey.trim())
+                                        isSavedSuccessfully = true
+                                        isConfigured = true
+                                        errorMessage = ""
+                                    }
+                                },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(48.dp),
+                                shape = RoundedCornerShape(12.dp)
+                            ) {
+                                Text(
+                                    text = "Save Configuration",
+                                    style = MaterialTheme.typography.labelLarge.copy(
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 15.sp
+                                    )
+                                )
+                            }
+                        }
+                    }
+                } else {
+                    // Configuration Active - Mini visual display
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 16.dp),
+                        shape = RoundedCornerShape(16.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+                        ),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
                     ) {
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(12.dp),
+                                .padding(16.dp),
                             verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Center
+                            horizontalArrangement = Arrangement.SpaceBetween
                         ) {
-                            Icon(
-                                imageVector = Icons.Default.CheckCircle,
-                                contentDescription = "Success",
-                                tint = Color(0xFF2E7D32),
-                                modifier = Modifier.size(20.dp)
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text(
-                                text = "config.json written successfully! Ready to connect.",
-                                style = MaterialTheme.typography.bodyMedium.copy(
-                                    color = Color(0xFF1B5E20),
-                                    fontWeight = FontWeight.Medium
-                                ),
-                                textAlign = TextAlign.Center
-                            )
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    text = "Active Configuration",
+                                    style = MaterialTheme.typography.labelMedium.copy(
+                                        fontWeight = FontWeight.Bold,
+                                        color = MaterialTheme.colorScheme.primary
+                                    )
+                                )
+                                Spacer(modifier = Modifier.height(2.dp))
+                                // Mask Deployment ID partly for premium, secure aesthetic
+                                val displayId = if (scriptId.length > 10) {
+                                    "${scriptId.take(6)}...${scriptId.takeLast(4)}"
+                                } else {
+                                    "Configured"
+                                }
+                                Text(
+                                    text = "Deployment ID: $displayId",
+                                    style = MaterialTheme.typography.bodyMedium
+                                )
+                            }
+
+                            // Reveal edit panel button (only when not connected)
+                            if (!isVpnRunning) {
+                                OutlinedButton(
+                                    onClick = { isConfigured = false },
+                                    shape = RoundedCornerShape(10.dp),
+                                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Settings,
+                                        contentDescription = "Edit Config",
+                                        modifier = Modifier.size(16.dp)
+                                    )
+                                    Spacer(modifier = Modifier.width(4.dp))
+                                    Text("Edit", style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold))
+                                }
+                            }
                         }
                     }
                 }
 
+                // Error Feedback Banner
                 if (errorMessage.isNotEmpty()) {
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(bottom = 24.dp),
+                            .padding(bottom = 16.dp),
                         shape = RoundedCornerShape(12.dp),
                         colors = CardDefaults.cardColors(
                             containerColor = MaterialTheme.colorScheme.errorContainer
@@ -277,30 +349,31 @@ fun HomeScreen(
 
                 Spacer(modifier = Modifier.weight(1f))
 
-                Button(
-                    onClick = { onClick(Event.Certificate) },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(56.dp),
-                    shape = RoundedCornerShape(14.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.secondary
-                    ),
-                    elevation = ButtonDefaults.buttonElevation(defaultElevation = 2.dp)
-                ) {
-                    Text(
-                        text = "Install Certificate (Sudo privileges are needed)",
-                        style = MaterialTheme.typography.titleMedium.copy(
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onSecondary,
-                            letterSpacing = 0.5.sp
+                // Certificate Setup Section (Only shown when disconnected)
+                if (!isVpnRunning) {
+                    Button(
+                        onClick = { onClick(Event.Certificate) },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(48.dp)
+                            .padding(bottom = 8.dp),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                            contentColor = MaterialTheme.colorScheme.onSecondaryContainer
                         )
-                    )
+                    ) {
+                        Text(
+                            text = "Install HTTPS Certificate (Requires privileges)",
+                            style = MaterialTheme.typography.labelLarge.copy(
+                                fontWeight = FontWeight.Bold
+                            )
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(8.dp))
                 }
 
-                Spacer(modifier = Modifier.weight(1f))
-
-                // Connection Control Button
+                // Main Connect / Disconnect button (toggled dynamically based on running state)
                 Button(
                     onClick = { onClick(Event.Connect) },
                     modifier = Modifier
@@ -308,15 +381,16 @@ fun HomeScreen(
                         .height(56.dp),
                     shape = RoundedCornerShape(14.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.secondary
+                        containerColor = if (isVpnRunning) Color(0xFFC62828) else MaterialTheme.colorScheme.primary
                     ),
-                    elevation = ButtonDefaults.buttonElevation(defaultElevation = 2.dp)
+                    elevation = ButtonDefaults.buttonElevation(defaultElevation = 4.dp),
+                    enabled = scriptId.isNotEmpty() && authKey.isNotEmpty() // Require configuration to connect
                 ) {
                     Text(
-                        text = "Connect & Start VPN Server",
+                        text = if (isVpnRunning) "Disconnect & Stop VPN Server" else "Connect & Start VPN Server",
                         style = MaterialTheme.typography.titleMedium.copy(
                             fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onSecondary,
+                            color = Color.White,
                             letterSpacing = 0.5.sp
                         )
                     )

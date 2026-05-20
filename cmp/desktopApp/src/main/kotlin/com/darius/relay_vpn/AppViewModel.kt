@@ -7,6 +7,8 @@ import kotlinx.coroutines.launch
 
 class AppViewModel : ViewModel() {
 
+    val isVpnRunning = ProcessRunner.isVpnRunning
+
     fun handleEvent(event: Event) {
         when (event) {
             Event.Certificate -> ProcessRunner.installCert()
