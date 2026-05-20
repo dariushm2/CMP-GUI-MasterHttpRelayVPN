@@ -69,9 +69,9 @@ def main() -> int:
     parser.add_argument("--force", action="store_true", help="Force rebuild even if sources haven't changed.")
     args = parser.parse_args()
 
-    # Determine absolute paths relative to cmp/scripts
+    # Determine absolute paths relative to cmp root
     script_dir = Path(__file__).resolve().parent
-    repo_root = script_dir.parent.parent
+    repo_root = script_dir.parent
 
     # Switch working directory to repo root so relative paths work
     os.chdir(repo_root)

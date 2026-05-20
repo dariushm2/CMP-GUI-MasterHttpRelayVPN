@@ -4,6 +4,7 @@
 .gradle
 **/build/
 **/config.json
+**/config.example.json
 /desktopApp/bin
 xcuserdata
 !src/**/build/

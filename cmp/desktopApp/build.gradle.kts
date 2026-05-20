@@ -38,10 +38,26 @@ compose.desktop {
 tasks.register<Exec>("bundlePythonExecutable") {
     group = "build"
     description = "Compiles the Python backend using PyInstaller and places it in resources."
-    workingDir = rootProject.projectDir.parentFile
+    
+    val repoRoot = rootProject.projectDir.parentFile
+    workingDir = repoRoot
 
     val isWindows = System.getProperty("os.name").lowercase().contains("win")
-    val pythonCmd = if (isWindows) "python" else "python3"
+    
+    // Dynamically detect and use the active virtual environment (.venv) to bypass system PEP 668 package blocks
+    val venvPython = if (isWindows) {
+        File(repoRoot, ".venv/Scripts/python.exe")
+    } else {
+        File(repoRoot, ".venv/bin/python")
+    }
+    
+    val pythonCmd = if (venvPython.exists()) {
+        venvPython.absolutePath
+    } else if (isWindows) {
+        "python"
+    } else {
+        "python3"
+    }
 
     commandLine(pythonCmd, "cmp/bundle_for_gui.py")
 }
