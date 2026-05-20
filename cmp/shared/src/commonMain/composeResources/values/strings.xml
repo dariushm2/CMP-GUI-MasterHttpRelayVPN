@@ -1,0 +1,10 @@
+<resources>
+    <string name="connection_lost">Connection Lost!</string>
+    <string name="something_went_wrong">"Oops! Something Went Wrong</string>
+    <string name="retry">Retry</string>
+
+    <string name="debug">Debug</string>
+
+    <!--  Content Description  -->
+    <string name="back_button">Back Button</string>
+</resources>

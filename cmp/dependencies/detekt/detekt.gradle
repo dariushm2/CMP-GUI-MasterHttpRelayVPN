@@ -1,0 +1,39 @@
+buildscript {
+    repositories {
+        gradlePluginPortal()
+    }
+    dependencies {
+        classpath "io.gitlab.arturbosch.detekt:detekt-gradle-plugin:${libs.versions.detekt.get()}"
+    }
+}
+
+apply plugin: "io.gitlab.arturbosch.detekt"
+
+detekt {
+    toolVersion = libs.versions.detekt.get()
+    config = files("$rootDir/dependencies/detekt/detekt.yml")
+    source = files("src/commonMain/java", "src/commonMain/kotlin",
+            "src/androidMain/java", "src/androidMain/kotlin",
+            "src/androidUnitTest/java", "src/androidUnitTest/kotlin",
+            "src/main/java", "src/main/kotlin"
+    )
+    autoCorrect = true
+    parallel = true
+    buildUponDefaultConfig = false
+    reports {
+        xml.enabled = false
+        html.enabled = true
+    }
+}
+
+tasks.register("runAnalysis") {
+    dependsOn("detektWalletDebug", "detektWalletDebugUnitTest")
+}
+
+tasks.register("detektBaselineAll") {
+    dependsOn("detektBaselineWalletDebug", "detektBaselineWalletDebugUnitTest")
+}
+
+dependencies {
+    detektPlugins libs.detekt.formatting
+}
