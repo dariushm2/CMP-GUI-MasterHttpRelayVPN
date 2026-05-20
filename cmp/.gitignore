@@ -3,6 +3,7 @@
 .kotlin
 .gradle
 **/build/
+**/config.json
 /desktopApp/bin
 xcuserdata
 !src/**/build/

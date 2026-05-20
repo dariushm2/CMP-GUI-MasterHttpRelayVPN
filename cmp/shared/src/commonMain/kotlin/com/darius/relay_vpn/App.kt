@@ -17,6 +17,7 @@ import com.darius.relay_vpn.connectivity.ConnectivityHandler
 import com.darius.relay_vpn.ui.components.DebugButton
 import com.darius.relay_vpn.ui.debug.DebugScreen
 import com.darius.relay_vpn.ui.errostate.NetworkLoss
+import com.darius.relay_vpn.ui.home.Event
 import com.darius.relay_vpn.ui.home.HomeScreen
 import com.darius.relay_vpn.ui.navigation.Route
 import com.darius.relay_vpn.ui.theme.WalletTheme
@@ -24,7 +25,10 @@ import com.darius.relay_vpn.ui.theme.WalletTheme
 @Composable
 fun App(
     connectivityHandler: ConnectivityHandler,
-    onClick: () -> Unit = {},
+    initialScriptId: String = "",
+    initialAuthKey: String = "",
+    onSaveConfig: (String, String) -> Unit = { _, _ -> },
+    onClick: (Event) -> Unit = {},
 ) {
     val navController = rememberNavController()
     val isConnected by connectivityHandler.isConnected.collectAsState(true)
@@ -52,7 +56,13 @@ fun App(
                     .padding(top = innerPadding.calculateTopPadding())
             ) {
                 if (!isConnected) NetworkLoss()
-                else NavGraph(navController, onClick)
+                else NavGraph(
+                    navController = navController,
+                    initialScriptId = initialScriptId,
+                    initialAuthKey = initialAuthKey,
+                    onSaveConfig = onSaveConfig,
+                    onClick = onClick
+                )
                 if (isDebugBuild()) DebugButton(navController = navController)
             }
         }
@@ -62,13 +72,25 @@ fun App(
 @Composable
 private fun NavGraph(
     navController: NavHostController,
-    onClick: () -> Unit,
+    initialScriptId: String,
+    initialAuthKey: String,
+    onSaveConfig: (String, String) -> Unit,
+    onClick: (Event) -> Unit,
 ) {
     NavHost(
         navController = navController,
         startDestination = Route.Home.route,
     ) {
-        composable(route = Route.Home.route) { HomeScreen(navController, onClick) }
+        composable(route = Route.Home.route) { 
+            HomeScreen(
+                navController = navController,
+                initialScriptId = initialScriptId,
+                initialAuthKey = initialAuthKey,
+                onSaveConfig = onSaveConfig,
+                onClick = onClick
+            ) 
+        }
         composable(route = Route.Debug.route) { DebugScreen(navController) }
     }
 }
+
