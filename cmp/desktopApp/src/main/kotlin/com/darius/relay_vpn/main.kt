@@ -90,10 +90,20 @@ fun saveConfigLocally(deploymentId: String, authKey: String): Boolean {
 fun main() = application {
     initKoin()
 
+    // Bulletproof fail-safe JVM Shutdown Hook to clean up spawned background processes
+    Runtime.getRuntime().addShutdownHook(Thread {
+        println("[Shutdown Hook] Force stopping active VPN daemon...")
+        ProcessRunner.stop()
+    })
+
     val (initialScriptId, initialAuthKey) = loadSavedConfig()
 
     Window(
-        onCloseRequest = ::exitApplication,
+        onCloseRequest = {
+            println("[Window] Closing application, stopping active VPN daemon...")
+            ProcessRunner.stop()
+            exitApplication()
+        },
         title = "HTTP Master Relay VPN",
     ) {
         currentWindowHolder.window = this.window
