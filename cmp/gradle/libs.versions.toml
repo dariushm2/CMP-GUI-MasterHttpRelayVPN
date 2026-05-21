@@ -23,13 +23,6 @@ koin-compose = "4.1.1"
 
 timber = "5.0.1"
 
-googleservices = "4.4.2"
-appdistribution = "4.0.0"
-firebase-bom = "33.9.0"
-crashlytics = "3.0.6"
-
-auth0 = "2.9.2"
-
 [libraries]
 kotlin-test = { group = "org.jetbrains.kotlin", name = "kotlin-test-junit", version.ref = "kotlin" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }

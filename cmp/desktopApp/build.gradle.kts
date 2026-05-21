@@ -24,7 +24,7 @@ dependencies {
 
 compose.desktop {
     application {
-        mainClass = "com.darius.relay_vpn.MainKt"
+        mainClass = "com.darius.lionvpn.MainKt"
 
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)

@@ -53,7 +53,7 @@
 		<dict>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>darius-wallet</string>
+				<string>lionvpn</string>
 			</array>
 		</dict>
 	</array>

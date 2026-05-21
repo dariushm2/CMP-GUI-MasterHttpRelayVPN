@@ -19,11 +19,11 @@ kotlin {
 apply(from = file("${rootProject.rootDir}/dependencies/detekt/detekt.gradle"))
 
 android {
-    namespace = "com.darius.relay_vpn"
+    namespace = "com.darius.lionvpn"
     compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {
-        applicationId = "com.darius.relay_vpn"
+        applicationId = "com.darius.lionvpn"
         minSdk = libs.versions.minSdk.get().toInt()
         targetSdk = libs.versions.targetSdk.get().toInt()
         versionCode = rootProject.extra["versionCode"] as Int
@@ -110,5 +110,5 @@ dependencies {
 
 fun getApkName(versionName: String, buildType: String): String {
     val date = SimpleDateFormat("yyyy-MM-dd").format(Date())
-    return "darius-wallet-$versionName-$buildType-$date.apk"
+    return "lion-vpn-$versionName-$buildType-$date.apk"
 }

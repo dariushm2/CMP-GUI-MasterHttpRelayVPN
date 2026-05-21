@@ -1,9 +1,5 @@
 <resources>
-    <string name="app_name">Darius Wallet</string>
-
-    <string name="com_auth0_client_id">hsqd9J2XYFEQSdku3cbQI7q1vV26ad2a</string>
-    <string name="com_auth0_domain">dev-06fcmmmj8bilw2l3.us.auth0.com</string>
-    <string name="com_auth0_scheme">darius-wallet</string>
+    <string name="app_name">Lion VPN</string>
 
     <string name="announcements_name">Announcements</string>
 </resources>

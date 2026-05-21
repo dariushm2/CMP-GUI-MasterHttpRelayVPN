@@ -12,7 +12,7 @@ plugins {
 
 kotlin {
     android {
-        namespace = "com.darius.relay_vpn.shared"
+        namespace = "com.darius.lionvpn.shared"
         compileSdk = libs.versions.compileSdk.get().toInt()
         minSdk = libs.versions.minSdk.get().toInt()
         compilerOptions {

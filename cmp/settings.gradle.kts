@@ -1,4 +1,4 @@
-rootProject.name = "relay-vpn"
+rootProject.name = "lion-vpn"
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 pluginManagement {
