@@ -8,6 +8,7 @@ plugins {
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.detekt)
+    id("com.chaquo.python") version "17.0.0"
 }
 
 kotlin {
@@ -28,11 +29,14 @@ android {
         targetSdk = libs.versions.targetSdk.get().toInt()
         versionCode = rootProject.extra["versionCode"] as Int
         versionName = rootProject.extra["versionName"] as String
+        ndk {
+            abiFilters += listOf("armeabi-v7a", "arm64-v8a", "x86", "x86_64")
+        }
     }
 
     signingConfigs {
         named("debug") {
-            storeFile = file("debug.jks")
+            //storeFile = file("debug.jks")
         }
         create("release") {
             storeFile = file("release.jks")
@@ -86,6 +90,8 @@ android {
 dependencies {
     implementation(projects.shared)
     implementation(compose.foundation)
+    implementation(compose.material3)
+    implementation(compose.ui)
 
     implementation(libs.timber)
 
@@ -111,4 +117,32 @@ dependencies {
 fun getApkName(versionName: String, buildType: String): String {
     val date = SimpleDateFormat("yyyy-MM-dd").format(Date())
     return "lion-vpn-$versionName-$buildType-$date.apk"
+}
+
+chaquopy {
+    defaultConfig {
+        version = "3.10"
+        pip {
+            install("cryptography>=41.0.0")
+            install("h2>=4.1.0")
+            install("certifi>=2024.1.0")
+            install("brotli>=1.0.7")
+            install("zstandard>=0.15.2")
+        }
+    }
+}
+
+val copyPythonSources = tasks.register<Copy>("copyPythonSources") {
+    from(file("../../src"))
+    into(file("src/main/python/src"))
+}
+
+tasks.named("preBuild") {
+    dependsOn(copyPythonSources)
+}
+
+tasks.configureEach {
+    if (name.startsWith("merge") && name.endsWith("PythonSources")) {
+        dependsOn(copyPythonSources)
+    }
 }
