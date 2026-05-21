@@ -2,9 +2,12 @@ package com.darius.lionvpn
 
 import java.io.File
 
+private const val DIR_LEVEL = 4
 fun findRepoRoot(): File {
     var dir = File(System.getProperty("user.dir")).absoluteFile
-    for (i in 0..4) {
+    var dirLevel = DIR_LEVEL
+    while (dirLevel > 0) {
+        dirLevel--
         if (File(dir, "config.example.json").exists()) {
             return dir
         }
@@ -20,10 +23,8 @@ fun findResourcesDir(): File {
     }
     val repoRoot = findRepoRoot()
     val devResources = File(repoRoot, "cmp/desktopApp/src/main/resources")
-    if (devResources.exists()) {
-        return devResources
-    }
-    return File(System.getProperty("user.dir"), "src/main/resources")
+    return if (devResources.exists()) devResources
+    else File(System.getProperty("user.dir"), "src/main/resources")
 }
 
 fun getPythonExecutablePath(): String {

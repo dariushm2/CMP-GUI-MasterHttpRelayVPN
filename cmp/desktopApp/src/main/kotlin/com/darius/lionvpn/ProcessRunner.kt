@@ -3,10 +3,10 @@ package com.darius.lionvpn
 import java.lang.ProcessBuilder
 import kotlin.concurrent.thread
 import java.io.File
-
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import okio.IOException
 
 object ProcessRunner {
 
@@ -88,13 +88,13 @@ object ProcessRunner {
                             println("[VPN Process] $line")
                         }
                     }
-                } catch (e: Exception) {
+                } catch (e: IOException) {
                     _vpnLogs.value += "Logger thread error: ${e.message}"
                     println("[VPN Process] Logger thread error: ${e.message}")
                 }
             }
             process
-        } catch (e: Exception) {
+        } catch (e: IOException) {
             _vpnLogs.value += "Failed to start process: ${e.message}"
             println("[VPN Process] Failed to start process: ${e.message}")
             _isVpnRunning.value = false
