@@ -10,6 +10,13 @@ src_dir = os.path.join(current_dir, "src")
 if src_dir not in sys.path:
     sys.path.insert(0, src_dir)
 
+# Override proxy.mitm paths dynamically for Android environment to avoid modifying upstream code
+import tempfile
+import proxy.mitm
+proxy.mitm.CA_DIR = os.path.join(tempfile.gettempdir(), "ca")
+proxy.mitm.CA_KEY_FILE = os.path.join(proxy.mitm.CA_DIR, "ca.key")
+proxy.mitm.CA_CERT_FILE = os.path.join(proxy.mitm.CA_DIR, "ca.crt")
+
 from proxy.proxy_server import ProxyServer
 
 # Logcat logging handler
@@ -32,16 +39,36 @@ class LogcatHandler(logging.Handler):
             # Fallback for local unit testing
             print(f"[{record.levelname}] {record.name}: {message}")
             
-        # Push logs to KMP UI log stream via Kotlin ProxyService
-        try:
-            from com.darius.lionvpn import ProxyService
-            ProxyService.addLogLine(message)
-        except ImportError:
-            pass
+        # Pushing logs to KMP UI is a heavy JNI call.
+        # Only stream critical lifecycle and warning/error records to avoid blocking the event loop.
+        is_important = (
+            record.name == "AndroidEntry" or
+            record.levelno >= logging.WARNING or
+            "listening on" in message or
+            "Relay warmup" in message
+        )
+        if is_important:
+            try:
+                from com.darius.lionvpn import ProxyService
+                ProxyService.addLogLine(message)
+            except ImportError:
+                pass
 
 _current_server = None
 _current_loop = None
 _server_task = None
+
+async def _shutdown(server, loop):
+    log = logging.getLogger("AndroidEntry")
+    log.info("Executing async shutdown sequence...")
+    try:
+        await server.stop()
+        log.info("Server stopped successfully.")
+    except Exception as e:
+        log.error(f"Error stopping server: {e}")
+    finally:
+        log.info("Stopping event loop...")
+        loop.stop()
 
 def start_proxy(config_json_str):
     global _current_server, _current_loop, _server_task
@@ -56,6 +83,7 @@ def start_proxy(config_json_str):
     log = logging.getLogger("AndroidEntry")
     log.info("Starting Python VPN proxy backend from Kotlin...")
     
+    loop = None
     try:
         config = json.loads(config_json_str)
         log.info(f"Loaded config: http_port={config.get('http_port')}, socks5_port={config.get('socks5_port')}")
@@ -82,11 +110,26 @@ def start_proxy(config_json_str):
         _current_loop = loop
         
         log.info("Starting proxy server listeners...")
-        loop.run_until_complete(server.start())
+        _server_task = loop.create_task(server.start())
+        log.info("Running event loop forever...")
+        loop.run_forever()
         
     except Exception as e:
         log.exception(f"Fatal error running proxy server: {e}")
     finally:
+        try:
+            if loop and not loop.is_closed():
+                log.info("Closing asyncio event loop...")
+                # Gather outstanding tasks and cancel them
+                pending = asyncio.all_tasks(loop)
+                for task in pending:
+                    task.cancel()
+                if pending:
+                    # Let pending tasks cancel
+                    loop.run_until_complete(asyncio.gather(*pending, return_exceptions=True))
+                loop.close()
+        except Exception as loop_err:
+            log.error(f"Error while closing event loop: {loop_err}")
         log.info("Proxy server has stopped.")
 
 def stop_proxy():
@@ -96,9 +139,10 @@ def stop_proxy():
     
     if _current_server and _current_loop:
         try:
-            # Safely schedule stop on the running asyncio loop
-            _current_loop.call_soon_threadsafe(
-                lambda: asyncio.create_task(_current_server.stop())
+            # Use run_coroutine_threadsafe to immediately capture variables and schedule coro
+            asyncio.run_coroutine_threadsafe(
+                _shutdown(_current_server, _current_loop),
+                _current_loop
             )
             log.info("Stop scheduled successfully.")
         except Exception as e:

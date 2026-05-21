@@ -125,33 +125,37 @@ class ProxyService : VpnService() {
         Timber.i("Stopping ProxyService...")
         stopVpn()
         
-        // 1. Call stop_proxy synchronously in Python to schedule asyncio server shutdown
-        try {
-            if (Python.isStarted()) {
-                val py = Python.getInstance()
-                val entry = py.getModule("android_entry")
-                entry.callAttr("stop_proxy")
-            }
-        } catch (e: Exception) {
-            Timber.e(e, "Error stopping Python proxy server")
-        }
-
-        // 2. Wait for pythonThread to exit cleanly instead of interrupting it immediately
-        val thread = pythonThread
-        if (thread != null && thread.isAlive) {
-            try {
-                Timber.i("Waiting for Python proxy thread to join...")
-                thread.join(2000) // Wait up to 2 seconds for clean unbind/shutdown
-                if (thread.isAlive) {
-                    Timber.w("Python proxy thread did not exit within 2 seconds. Interrupting...")
-                    thread.interrupt()
-                }
-            } catch (e: InterruptedException) {
-                Timber.e(e, "Interrupted while waiting for Python proxy thread to join")
-            }
-        }
+        val threadToStop = pythonThread
         pythonThread = null
         _isVpnRunning.value = false
+
+        // Run the shutdown sequence in a separate background thread to keep the main UI thread responsive
+        Thread {
+            try {
+                if (Python.isStarted()) {
+                    val py = Python.getInstance()
+                    val entry = py.getModule("android_entry")
+                    Timber.i("Triggering Python stop_proxy...")
+                    entry.callAttr("stop_proxy")
+                }
+            } catch (e: Exception) {
+                Timber.e(e, "Error stopping Python proxy server")
+            }
+
+            if (threadToStop != null && threadToStop.isAlive) {
+                try {
+                    Timber.i("Waiting for Python proxy thread to join in background...")
+                    threadToStop.join(2000) // Wait up to 2 seconds for clean unbind/shutdown
+                    if (threadToStop.isAlive) {
+                        Timber.w("Python proxy thread did not exit within 2 seconds. Interrupting...")
+                        threadToStop.interrupt()
+                    }
+                } catch (e: InterruptedException) {
+                    Timber.e(e, "Interrupted while waiting for Python proxy thread to join")
+                }
+            }
+            Timber.i("Proxy Service background shutdown complete.")
+        }.start()
     }
 
     override fun onDestroy() {
@@ -165,6 +169,14 @@ class ProxyService : VpnService() {
         } else {
             null
         }
+    }
+
+    override fun onRevoke() {
+        Timber.i("VPN Revoked by system/user.")
+        addLogLine("VPN connection revoked by system.")
+        stopProxy()
+        stopSelf()
+        super.onRevoke()
     }
 
     private fun createNotificationChannel() {

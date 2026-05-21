@@ -29,12 +29,6 @@ _THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 _SRC_DIR = os.path.dirname(_THIS_DIR)
 _PROJECT_ROOT = os.path.dirname(_SRC_DIR)
 CA_DIR = os.path.join(_PROJECT_ROOT, "ca")
-
-# Fallback on Android or if the project root is read-only (such as inside a packaged APK)
-if "ANDROID_ARGUMENT" in os.environ or os.environ.get("ANDROID_ROOT") or not os.access(_PROJECT_ROOT, os.W_OK):
-    import tempfile
-    CA_DIR = os.path.join(tempfile.gettempdir(), "ca")
-
 CA_KEY_FILE = os.path.join(CA_DIR, "ca.key")
 CA_CERT_FILE = os.path.join(CA_DIR, "ca.crt")
 
