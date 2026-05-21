@@ -24,16 +24,47 @@ dependencies {
 
 compose.desktop {
     application {
-        mainClass = "com.darius.relay_vpn.MainKt"
+        mainClass = "com.darius.lionvpn.MainKt"
 
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "com.darius.relay_vpn"
+            packageName = "lion-vpn"
             packageVersion = rootProject.extra["versionName"] as String
             appResourcesRootDir.set(project.layout.projectDirectory.dir("src/main/resources"))
-            // Change "python-3.x.x-embed-amd64" to match your exact folder name on disk
-            Paths.get("src/main/resources", "python-embed", "python.exe").toString()
-
         }
+    }
+}
+
+tasks.register<Exec>("bundlePythonExecutable") {
+    group = "build"
+    description = "Compiles the Python backend using PyInstaller and places it in resources."
+    
+    val repoRoot = rootProject.projectDir.parentFile
+    workingDir = repoRoot
+
+    val isWindows = System.getProperty("os.name").lowercase().contains("win")
+    
+    // Dynamically detect and use the active virtual environment (.venv) to bypass system PEP 668 package blocks
+    val venvPython = if (isWindows) {
+        File(repoRoot, ".venv/Scripts/python.exe")
+    } else {
+        File(repoRoot, ".venv/bin/python")
+    }
+    
+    val pythonCmd = if (venvPython.exists()) {
+        venvPython.absolutePath
+    } else if (isWindows) {
+        "python"
+    } else {
+        "python3"
+    }
+
+    commandLine(pythonCmd, "cmp/bundle_for_gui.py")
+}
+
+// Hook the bundle task into standard execution and packaging tasks
+tasks.configureEach {
+    if (name == "run" || name.startsWith("package") || name.startsWith("createDistributable")) {
+        dependsOn("bundlePythonExecutable")
     }
 }
