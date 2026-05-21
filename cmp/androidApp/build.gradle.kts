@@ -36,10 +36,10 @@ android {
 
     signingConfigs {
         named("debug") {
-            //storeFile = file("debug.jks")
+            storeFile = file("debug.keystore")
         }
         create("release") {
-            storeFile = file("release.jks")
+            storeFile = file("release.keystore")
             storePassword = System.getenv("KEYSTORE_PASSWORD") ?: "defaultPassword"
             keyAlias = "releaseKeyAlias"
             keyPassword = System.getenv("KEY_PASSWORD") ?: "defaultKeyPassword"
