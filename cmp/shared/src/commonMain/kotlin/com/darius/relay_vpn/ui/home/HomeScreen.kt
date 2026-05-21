@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Settings
@@ -22,7 +21,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.darius.relay_vpn.getPlatform
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -34,6 +32,7 @@ fun HomeScreen(
     onSaveConfig: (String, String) -> Unit,
     onClick: (Event) -> Unit,
     modifier: Modifier = Modifier,
+    log: List<String>? = null,
 ) {
     var scriptId by remember { mutableStateOf(initialScriptId) }
     var authKey by remember { mutableStateOf(initialAuthKey) }
@@ -71,39 +70,15 @@ fun HomeScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Top
             ) {
-                // Header Banner Section
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 16.dp),
-                    shape = RoundedCornerShape(20.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.9f)
-                    ),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-                ) {
-                    Column(
+                log?.let {
+                    Text(
+                        text = it.takeLast(3).joinToString("\n"),
+                        maxLines = 5,
+                        minLines = 5,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(16.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text(
-                            text = "Master HTTP Relay VPN",
-                            style = MaterialTheme.typography.headlineMedium.copy(
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.onPrimaryContainer,
-                                letterSpacing = 0.5.sp
-                            )
-                        )
-                        Spacer(modifier = Modifier.height(4.dp))
-                        Text(
-                            text = "Platform: ${getPlatform().name}",
-                            style = MaterialTheme.typography.bodyMedium.copy(
-                                color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f)
-                            )
-                        )
-                    }
+                            .background(Color.Black)
+                    )
                 }
 
                 // Dynamic Status & Control Section

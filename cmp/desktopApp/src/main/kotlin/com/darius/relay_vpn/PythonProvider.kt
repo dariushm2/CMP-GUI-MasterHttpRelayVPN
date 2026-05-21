@@ -34,6 +34,7 @@ fun getPythonExecutablePath(): String {
         os.contains("win") -> {
             val fileInRoot = File(resourcesDir, "MasterHttpRelayVPN.exe")
             if (fileInRoot.exists()) {
+                if (!fileInRoot.canExecute()) fileInRoot.setExecutable(true)
                 fileInRoot.absolutePath
             } else {
                 File(resourcesDir, "windows/MasterHttpRelayVPN.exe").absolutePath
@@ -42,6 +43,7 @@ fun getPythonExecutablePath(): String {
         os.contains("mac") -> {
             val fileInRoot = File(resourcesDir, "MasterHttpRelayVPN")
             if (fileInRoot.exists()) {
+                if (!fileInRoot.canExecute()) fileInRoot.setExecutable(true)
                 fileInRoot.absolutePath
             } else {
                 File(resourcesDir, "macos/MasterHttpRelayVPN").absolutePath
@@ -50,6 +52,7 @@ fun getPythonExecutablePath(): String {
         else -> { // Linux / Unix
             val fileInRoot = File(resourcesDir, "MasterHttpRelayVPN")
             if (fileInRoot.exists()) {
+                if (!fileInRoot.canExecute()) fileInRoot.setExecutable(true)
                 fileInRoot.absolutePath
             } else {
                 File(resourcesDir, "linux/MasterHttpRelayVPN").absolutePath

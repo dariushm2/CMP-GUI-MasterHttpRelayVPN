@@ -28,7 +28,7 @@ compose.desktop {
 
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "com.darius.relay_vpn"
+            packageName = "lion-vpn"
             packageVersion = rootProject.extra["versionName"] as String
             appResourcesRootDir.set(project.layout.projectDirectory.dir("src/main/resources"))
         }

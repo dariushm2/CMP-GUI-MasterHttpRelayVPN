@@ -8,6 +8,7 @@ import kotlinx.coroutines.launch
 class AppViewModel : ViewModel() {
 
     val isVpnRunning = ProcessRunner.isVpnRunning
+    val vpnLogs = ProcessRunner.vpnLogs
 
     fun handleEvent(event: Event) {
         when (event) {

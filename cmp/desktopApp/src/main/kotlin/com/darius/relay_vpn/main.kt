@@ -1,5 +1,6 @@
 package com.darius.relay_vpn
 
+import androidx.compose.material.Text
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import org.koin.compose.koinInject
@@ -104,12 +105,12 @@ fun main() = application {
             ProcessRunner.stop()
             exitApplication()
         },
-        title = "HTTP Master Relay VPN",
+        title = "Lion VPN",
     ) {
         currentWindowHolder.window = this.window
         val viewModel: AppViewModel = koinViewModel<AppViewModel>()
         val isVpnRunning by viewModel.isVpnRunning.collectAsState()
-
+        val vpnLogs by viewModel.vpnLogs.collectAsState()
         App(
             connectivityHandler = koinInject(),
             initialScriptId = initialScriptId,
@@ -120,7 +121,8 @@ fun main() = application {
             },
             onClick = { event ->
                 viewModel.handleEvent(event)
-            }
+            },
+            log = if (isDebugBuild()) vpnLogs else null,
         )
     }
 }

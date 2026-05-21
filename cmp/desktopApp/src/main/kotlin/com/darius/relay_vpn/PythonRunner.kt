@@ -17,6 +17,8 @@ object ProcessRunner {
 
     private val _isVpnRunning = MutableStateFlow(false)
     val isVpnRunning: StateFlow<Boolean> = _isVpnRunning.asStateFlow()
+    private val _vpnLogs = MutableStateFlow(listOf("Lion VPN"))
+    val vpnLogs: StateFlow<List<String>> = _vpnLogs.asStateFlow()
 
     fun installCert() {
         println("Installing Certificate for: $binaryPath")
@@ -82,15 +84,18 @@ object ProcessRunner {
                 try {
                     process.inputStream.bufferedReader().useLines { lines ->
                         lines.forEach { line ->
+                            _vpnLogs.value += line
                             println("[VPN Process] $line")
                         }
                     }
                 } catch (e: Exception) {
+                    _vpnLogs.value += "Logger thread error: ${e.message}"
                     println("[VPN Process] Logger thread error: ${e.message}")
                 }
             }
             process
         } catch (e: Exception) {
+            _vpnLogs.value += "Failed to start process: ${e.message}"
             println("[VPN Process] Failed to start process: ${e.message}")
             _isVpnRunning.value = false
             null

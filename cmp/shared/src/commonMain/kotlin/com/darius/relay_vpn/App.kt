@@ -30,6 +30,7 @@ fun App(
     isVpnRunning: Boolean = false,
     onSaveConfig: (String, String) -> Unit = { _, _ -> },
     onClick: (Event) -> Unit = {},
+    log: List<String>?,
 ) {
     val navController = rememberNavController()
     val isConnected by connectivityHandler.isConnected.collectAsState(true)
@@ -63,9 +64,10 @@ fun App(
                     initialAuthKey = initialAuthKey,
                     isVpnRunning = isVpnRunning,
                     onSaveConfig = onSaveConfig,
-                    onClick = onClick
+                    onClick = onClick,
+                    log = log,
                 )
-                if (isDebugBuild()) DebugButton(navController = navController)
+                // if (isDebugBuild()) DebugButton(navController = navController)
             }
         }
     }
@@ -79,6 +81,7 @@ private fun NavGraph(
     isVpnRunning: Boolean,
     onSaveConfig: (String, String) -> Unit,
     onClick: (Event) -> Unit,
+    log: List<String>?,
 ) {
     NavHost(
         navController = navController,
@@ -91,8 +94,9 @@ private fun NavGraph(
                 initialAuthKey = initialAuthKey,
                 isVpnRunning = isVpnRunning,
                 onSaveConfig = onSaveConfig,
-                onClick = onClick
-            ) 
+                onClick = onClick,
+                log = log,
+            )
         }
         composable(route = Route.Debug.route) { DebugScreen(navController) }
     }
