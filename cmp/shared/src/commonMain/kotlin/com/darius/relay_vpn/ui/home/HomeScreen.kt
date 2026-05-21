@@ -72,9 +72,10 @@ fun HomeScreen(
             ) {
                 log?.let {
                     Text(
-                        text = it.takeLast(3).joinToString("\n"),
+                        text = it.takeLast(5).joinToString("\n"),
                         maxLines = 5,
                         minLines = 5,
+                        color = Color.White,
                         modifier = Modifier
                             .fillMaxWidth()
                             .background(Color.Black)
