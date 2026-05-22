@@ -72,7 +72,7 @@ jobs:
         working-directory: cmp
         run: |
           chmod +x gradlew
-          ./gradlew :desktopApp:createDistributableForCurrentOS --no-daemon
+          ./gradlew :desktopApp:createDistributable --no-daemon
 
       - name: Compress Distributable
         shell: bash
