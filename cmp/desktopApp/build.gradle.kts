@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.kotlinJvm)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
+    alias(libs.plugins.jetbrainsKotlinSerialization)
     alias(libs.plugins.detekt)
 }
 
@@ -13,6 +14,7 @@ dependencies {
     implementation(compose.foundation)
     implementation(compose.desktop.currentOs)
     implementation(libs.kotlinx.coroutinesSwing)
+    implementation(libs.kotlinx.serialization)
 
     implementation(libs.ktor.okhttp)
 

@@ -2,6 +2,8 @@ package com.darius.lionvpn
 
 import kotlinx.io.IOException
 import java.io.File
+import kotlinx.serialization.json.Json
+import com.darius.lionvpn.ui.model.SavedConfig
 
 fun loadSavedConfig(): Pair<String, String> {
     return try {
@@ -78,5 +80,77 @@ fun saveConfigLocally(deploymentId: String, authKey: String): Boolean {
     } catch (e: IOException) {
         println("[Config JVM] Error saving config: ${e.message}")
         false
+    }
+}
+
+fun loadSavedScripts(): List<SavedConfig> {
+    return try {
+        val file = File(getSavedScriptsFilePath())
+        if (file.exists()) {
+            val content = file.readText(Charsets.UTF_8)
+            Json.decodeFromString<List<SavedConfig>>(content)
+        } else {
+            emptyList()
+        }
+    } catch (e: Exception) {
+        println("[Config JVM] Error loading saved scripts: ${e.message}")
+        emptyList()
+    }
+}
+
+fun saveSavedScripts(scripts: List<SavedConfig>): Boolean {
+    return try {
+        val file = File(getSavedScriptsFilePath())
+        file.parentFile?.mkdirs()
+        val content = Json.encodeToString(scripts)
+        file.writeText(content, Charsets.UTF_8)
+        true
+    } catch (e: Exception) {
+        println("[Config JVM] Error saving scripts: ${e.message}")
+        false
+    }
+}
+
+fun loadActiveScriptIndex(): Int {
+    return try {
+        val file = File(getActiveScriptIndexFilePath())
+        if (file.exists()) {
+            file.readText(Charsets.UTF_8).trim().toIntOrNull() ?: -1
+        } else {
+            -1
+        }
+    } catch (e: Exception) {
+        -1
+    }
+}
+
+fun saveActiveScriptIndex(index: Int): Boolean {
+    return try {
+        val file = File(getActiveScriptIndexFilePath())
+        file.parentFile?.mkdirs()
+        file.writeText(index.toString(), Charsets.UTF_8)
+        true
+    } catch (e: Exception) {
+        false
+    }
+}
+
+private fun getSavedScriptsFilePath(): String {
+    val binaryPath = getPythonExecutablePath()
+    val binaryFile = File(binaryPath)
+    return if (binaryFile.parentFile != null) {
+        File(binaryFile.parentFile, "saved_scripts.json").absolutePath
+    } else {
+        File(findResourcesDir(), "saved_scripts.json").absolutePath
+    }
+}
+
+private fun getActiveScriptIndexFilePath(): String {
+    val binaryPath = getPythonExecutablePath()
+    val binaryFile = File(binaryPath)
+    return if (binaryFile.parentFile != null) {
+        File(binaryFile.parentFile, "active_script_index.txt").absolutePath
+    } else {
+        File(findResourcesDir(), "active_script_index.txt").absolutePath
     }
 }
