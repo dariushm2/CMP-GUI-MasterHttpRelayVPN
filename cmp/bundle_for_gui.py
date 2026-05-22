@@ -165,9 +165,13 @@ def main() -> int:
     ]
 
     try:
-        subprocess.run(cmd, check=True)
+        subprocess.run(cmd, check=True, capture_output=True, text=True)
     except subprocess.CalledProcessError as e:
         error(f"PyInstaller execution failed: {e}")
+        print("--- PYINSTALLER STDOUT ---", file=sys.stderr)
+        print(e.stdout, file=sys.stderr)
+        print("--- PYINSTALLER STDERR ---", file=sys.stderr)
+        print(e.stderr, file=sys.stderr)
         return 1
 
     # 5. Move executable to resources
