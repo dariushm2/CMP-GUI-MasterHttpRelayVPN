@@ -1,155 +1,147 @@
-# MasterHttpRelayVPN
+# 🦁 Lion VPN — Compose Multiplatform GUI Client
 
-[![GitHub](https://img.shields.io/badge/GitHub-MasterHttpRelayVPN-blue?logo=github)](https://github.com/masterking32/MasterHttpRelayVPN) [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/masterking32/MasterHttpRelayVPN) [![oosmetrics](https://api.oosmetrics.com/api/v1/badge/achievement/85a1f608-5c6d-4fcd-9b7f-b1ff8b680852.svg)](https://oosmetrics.com/repo/masterking32/MasterHttpRelayVPN) [![oosmetrics](https://api.oosmetrics.com/api/v1/badge/achievement/de9bee73-bc68-4f98-ba83-6957007046b1.svg)](https://oosmetrics.com/repo/masterking32/MasterHttpRelayVPN)
+[![GitHub](https://img.shields.io/badge/GitHub-LionVPN--Client-orange?logo=github)](https://github.com/dariushm2/CMP-GUI-MasterHttpRelayVPN)
+[![Kotlin](https://img.shields.io/badge/Kotlin-2.0.0-purple.svg?logo=kotlin)](https://kotlinlang.org/)
+[![Compose Multiplatform](https://img.shields.io/badge/Compose_Multiplatform-v1.6.10-blue.svg?logo=jetpackcompose)](https://jetbrains.com/lp/compose-multiplatform/)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
->**Youtube safe search** and **live streaming** are now **Bypassed & Working** by default. so you don't need `youtube_via_relay` or Cloudflare / VPS `exit_node` for it.
+🦁 **Lion VPN** is a modern, beautiful, and high-performance **Compose Multiplatform GUI client** designed for the domain-fronted proxy relay system. 
 
+It provides an intuitive, one-click graphical interface that bundles, launches, and manages the local Python proxy server on multiple platforms.
 
 **Language:** English | [Persian / فارسی](README_FA.md)
 
-> نسخه فارسی با AI ایجاد شده. ترجیحا از نسخه انگلیسی استفاده کنید.
+> [!NOTE]
+> This repository is a fork of the incredible [masterking32/MasterHttpRelayVPN](https://github.com/masterking32/MasterHttpRelayVPN). 
+> The core proxy relay engine runs the upstream Python implementation. All graphical multiplatform user interface code, native platform integrations (Android VPN services, Desktop packaging, reactive state-flow bridges, and JNI performance optimizations) reside in the **`/cmp`** folder and are developed as a custom multiplatform GUI wrapper.
 
-**Telegram Channel 📣:** [https://t.me/MasterDnsVPN](https://t.me/MasterDnsVPN) | @MasterDnsVPN
+---
 
-**Telegram Group 📣:** [https://t.me/MasterDnsVPNGroup](https://t.me/MasterDnsVPNGroup) | @MasterDnsVPNGroup
+## 🧭 Project Architecture
 
+```mermaid
+graph TD
+    subgraph "Lion VPN GUI Client (Compose Multiplatform)"
+        UI[Compose Multiplatform UI]
+        AndroidApp[Android Client /com.darius.lionvpn]
+        DesktopApp[Desktop Client /desktopApp]
+        IosApp[iOS Client UI Preview]
+    end
+    
+    subgraph "Local Python Proxy (Upstream Engine)"
+        ProxyServer[Proxy Server /src/proxy]
+        MITM[MITM Cert Manager /src/proxy/mitm]
+        Fronter[Domain Fronter /src/relay]
+    end
+    
+    subgraph "Google Apps Script Relay (Cloud)"
+        GAS[Apps Script Web App]
+        Target[Destination Site]
+    end
 
-**❤️ Special Thanks to** [Abolix](https://github.com/abolix) for making this project possible and maintaining it.
-
-MasterHttpRelayVPN is a local proxy that routes browser traffic through a Google Apps Script relay using domain fronting. The simple path needs only this project and a free Google account. For sites that block Google egress, you can optionally add an exit node later.
-
-We mainly use MITM (Man in the Middle) and Domain Fronting techniques.
-
-```text
-Browser -> Local proxy -> Google front -> Your Apps Script relay -> Target site
-                         network filter sees a Google-facing connection
+    UI --> AndroidApp
+    UI --> DesktopApp
+    UI --> IosApp
+    
+    AndroidApp -->|Chaquopy JNI Bridge| ProxyServer
+    DesktopApp -->|Embedded Executable| ProxyServer
+    
+    ProxyServer -->|Domain Fronted HTTPS| GAS
+    GAS -->|Fetch Request| Target
 ```
 
-## Quick Menu 🧭
+---
 
-Click the links below for guides on common topics.
+## ⚡ Key Features
 
-[Getting Started](docs/GETTING_STARTED.md) : How to set up the proxy and deploy the Google relay.
+*   **🎨 Premium UI/UX:** Built using state-of-the-art Compose Multiplatform styling, supporting dark mode, smooth micro-animations, and dynamic HSL color accents.
+*   **🔌 One-Click Connection:** Simple, beautiful connect button with pulsating status indicator that boots and terminates the proxy server automatically in the background.
+*   **📱 Native Android Integration (`VpnService`):** Custom Android system VPN wrapper that captures device traffic and routes it directly to the local SOCKS5/HTTP proxy, removing the need for manual browser proxy configuration.
+*   **💻 One-Click Desktop Executable:** Optimized desktop build system that compiles and packages the Python proxy into a single standalone binary using PyInstaller.
+*   **🔒 HTTPS MITM Certificate Generator:** Seamlessly generate, export, and trigger device installation prompts for the local CA intercept certificate natively from the interface.
+*   **⚡ Zero UI Blocking & High Performance:** Highly optimized JNI Logging mechanism that isolates logging paths to prevent bridge bottlenecks, accompanied by async background thread execution for seamless state changes.
 
-[Exit Node](docs/exit-node/EXIT_NODE_DEPLOYMENT.md) : Connect to Cloudflare Workers or a VPS for destinations to fix ChatGPT, Turnstile, and similar sites blocking Google IPs.
+---
 
-[LAN Sharing](docs/LAN_SHARING.md) : Share the proxy with other devices on your local network. (Android, iOS, other computers)
+## 🚀 Getting Started
 
-[Configuration](docs/CONFIGURATION.md) : Reference for all config options, plus diagnostic commands.
+To get started, first deploy your Google Apps Script relay. This is identical to the upstream process:
 
-[Security](docs/SECURITY.md) : Important notes on safely using and sharing the proxy.
-
-[Troubleshooting](docs/TROUBLESHOOTING.md) : Common issues and how to resolve them.
-
-[Docker](docs/DOCKER.md) : Instructions for running the proxy in a Docker container.
-
-[Architecture](docs/ARCHITECTURE.md) : Overview of the system design and components.
-
-## Fast Start ⚡
-
-Before running the local proxy, deploy the Google relay once. You only need a Google account and about two minutes.
-
-## Deploy The Google Relay ☁️
+### 1. Deploy The Google Relay ☁️
 
 1. Open [Google Apps Script](https://script.google.com/) and sign in.
 2. Click **New project**.
 3. Delete the default editor content.
 4. Open [apps_script/Code.gs](apps_script/Code.gs), copy everything, and paste it into Apps Script.
-5. Find this line and replace it with your own long secret:
-
+5. Replace this line with your own long secret:
     ```javascript
     const AUTH_KEY = "your-secret-password-here";
     ```
-
 6. Click **Deploy** -> **New deployment** -> **Web app**.
-7. Set **Execute as** to **Me**.
-8. Set **Who has access** to **Anyone**.
-9. Click **Deploy**, approve the permission screen, and copy the **Deployment ID**.
+7. Set **Execute as** to **Me** and **Who has access** to **Anyone**, then click **Deploy**.
+8. Copy the **Deployment ID** and keep your `AUTH_KEY` ready.
 
-Keep these two values ready for the setup wizard:
+---
 
-- `Deployment ID` from Google Apps Script
-- `AUTH_KEY`, a long secret that must match `auth_key` in your local config
+### 2. Running the GUI Apps 📱💻
 
-If you want more detail, use [Getting Started](docs/GETTING_STARTED.md#2-deploy-the-google-relay).
+All GUI application source code and build tasks reside in the `/cmp` directory. 
 
-Download the project with either Git or ZIP, then run the one-click launcher.
-
-
-**Option A: ZIP**
-
-[Click to Download](https://github.com/masterking32/MasterHttpRelayVPN/archive/refs/heads/python_testing.zip)
-
-
-**Option B: Git**
-
+Before building, navigate to the `/cmp` folder in your terminal:
 ```bash
-git clone https://github.com/masterking32/MasterHttpRelayVPN.git
-cd MasterHttpRelayVPN
+cd cmp
 ```
 
+#### 💻 Desktop App (macOS, Windows, Linux)
+The desktop build automatically compiles and packages the Python proxy engine into your app resources folder.
 
-Then start the app:
+*   **Run Developer Dev Server:**
+    ```bash
+    ./gradlew :desktopApp:run
+    ```
+*   **Build Standalone Distribution Package:**
+    ```bash
+    ./gradlew :desktopApp:packageDistributionForCurrentOS
+    ```
+    This generates native installers (e.g., `.dmg` on macOS, `.msi` on Windows, `.deb` on Linux) inside the `cmp/desktopApp/build/compose/binaries` directory.
 
-**Windows**
+#### 📱 Android App
+*   **Run / Install Debug APK on Device:**
+    Make sure you have an Android device or emulator running and connected via ADB:
+    ```bash
+    ./gradlew :androidApp:installDebug
+    ```
+*   **Compile Release APK:**
+    ```bash
+    ./gradlew :androidApp:assembleRelease
+    ```
+    The compiled APKs will be saved in `cmp/androidApp/build/outputs/apk/`.
 
-```cmd
-start.bat
-```
+#### 🍏 iOS App (UI Preview)
+*   Open the `/cmp/iosApp/iosApp.xcodeproj` project in Xcode to build, compile, and run on the iOS Simulator or devices. Note that system VPN features on iOS are currently under simulation.
 
-**Linux / macOS**
+---
 
-```bash
-chmod +x start.sh
-./start.sh
-```
+## 🛠️ Project Technical Stack
 
-The launcher creates a virtual environment, installs dependencies, opens the setup wizard if `config.json` is missing, and starts the proxy.
+*   **UI Framework:** [Compose Multiplatform](https://github.com/JetBrains/compose-multiplatform) (by JetBrains)
+*   **Dependency Injection:** [Koin](https://insert-koin.io/) (for multiplatform DI registration)
+*   **HTTP Client:** [Ktor Client](https://ktor.io/) (Ktor-Darwin for iOS, Ktor-OkHttp for Android)
+*   **Logging Engine:** [Timber](https://github.com/JakeWharton/timber) (Android) & custom console pipes
+*   **Embedded Python Runtimes:**
+    *   **Android:** [Chaquopy](https://chaquo.com/chaquopy/) (embeds CPython into Gradle build flows)
+    *   **Desktop:** [PyInstaller](https://pyinstaller.org/) & native environment launchers
+*   **Navigation:** Jetpack Navigation Compose Multiplatform
 
-After it starts, configure your browser to use:
+---
 
-| Field | Value |
-|-------|-------|
-| Proxy type | HTTP |
-| Address | `127.0.0.1` |
-| Port | `8085` |
-| SOCKS5 port | `1080` |
+## 📣 Support and Contributions
 
-After starting, CA will be installed automatically.
+*   For the original upstream server issues and command-line support, visit the upstream repository: [masterking32/MasterHttpRelayVPN](https://github.com/masterking32/MasterHttpRelayVPN).
+*   For GUI interface bugs, performance optimization requests, and mobile client improvements, feel free to open an issue or pull request under this fork!
 
-You can use telegram as : https://t.me/socks?server=127.0.0.1&port=1080 or if you are using PC client, you can add HTTP proxy with manually.
+---
 
-## Common Next Steps 🛠️
+## 🛡️ License
 
-- If the browser shows certificate warnings, open [Troubleshooting](docs/TROUBLESHOOTING.md#certificate-errors).
-- If you see `unauthorized`, make sure `AUTH_KEY` in [apps_script/Code.gs](apps_script/Code.gs) exactly matches `auth_key` in `config.json`.
-- If ChatGPT, Turnstile, or similar sites block the Google exit IP, use [Exit Node Guide](docs/exit-node/EXIT_NODE_DEPLOYMENT.md).
-
-## Support And Updates 📣
-
-- Telegram channel: [https://t.me/MasterDnsVPN](https://t.me/MasterDnsVPN)
-- Telegram group: [https://t.me/MasterDnsVPNGroup](https://t.me/MasterDnsVPNGroup)
-- Ad blocker filter source: [PersianBlocker](https://github.com/MasterKia/PersianBlocker/)
-
-## Donate 🍩
-
-If you find this project helpful, you can support it with a donation:
-
-- **TON network:** `masterking32.ton`
-- **EVM-compatible networks (ETH and compatible chains):** `0x517f07305D6ED781A089322B6cD93d1461bF8652`
-- **TRC20 network (TRON):** `TLApdY8APWkFHHoxebxGY8JhMeChiETqFH`
-
-## Safety 🔒
-
-This project is provided for educational, testing, and research use. You are responsible for following applicable laws and service terms. Never share `config.json`, `auth_key`, `ca/`, or an exit-node URL together with a valid PSK. Read [Security Notes](docs/SECURITY.md) before sharing the proxy with other devices.
-
-## Legal Disclaimer ⚠️
-
-- **Limitation of liability:** Developers and contributors are not responsible for direct, indirect, incidental, consequential, or other damages resulting from use of this project or inability to use it.
-- **User responsibility:** Running this project outside controlled environments may affect networks, accounts, proxies, certificates, or connected systems. You are solely responsible for installation, configuration, and usage.
-- **Legal compliance:** You are responsible for complying with all applicable local, national, and international laws and regulations before using this software.
-- **Google services compliance:** If you use Google Apps Script or other Google services, you are responsible for complying with Google's Terms of Service, acceptable use rules, quotas, and platform policies. Misuse can lead to suspension or termination of accounts or deployments.
-
-## License
-
-MIT
+This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file for details.
