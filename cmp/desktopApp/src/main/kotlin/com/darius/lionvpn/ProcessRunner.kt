@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import okio.IOException
+import kotlin.collections.plus
 
 object ProcessRunner {
 
@@ -46,8 +47,7 @@ object ProcessRunner {
 
         process = processBuilder.runProcess {
             println("[VPN Process] Process stopped!")
-            _isVpnRunning.value = false
-            process = null
+            _vpnLogs.value += "VPN Process stopped!"
         }
         
         if (process != null) {
@@ -76,7 +76,6 @@ object ProcessRunner {
         return try {
             val process = this.start()
             process.onExit().thenAccept { finishedProcess ->
-                _isVpnRunning.value = false
                 onExit(finishedProcess.exitValue() == 0)
             }
             // Read output asynchronously to prevent blocking Compose UI thread
