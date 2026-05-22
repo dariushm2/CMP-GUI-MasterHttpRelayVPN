@@ -8,6 +8,7 @@ plugins {
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.detekt)
+    alias(libs.plugins.jetbrainsKotlinSerialization)
     id("com.chaquo.python") version "17.0.0"
 }
 
@@ -100,6 +101,7 @@ dependencies {
 
     implementation(libs.ktor.okhttp) // OkHttp for Android
     implementation(libs.koin.android)
+    implementation(libs.kotlinx.serialization)
 
     implementation(libs.koin.core)
     implementation(libs.koin.compose)

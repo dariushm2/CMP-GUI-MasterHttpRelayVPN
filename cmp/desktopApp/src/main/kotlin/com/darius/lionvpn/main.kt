@@ -1,12 +1,13 @@
 package com.darius.lionvpn
 
+import androidx.compose.runtime.remember
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-
+import com.darius.lionvpn.ui.home.HomeState
 
 fun main() = application {
     initKoin()
@@ -16,8 +17,6 @@ fun main() = application {
         println("[Shutdown Hook] Force stopping active VPN daemon...")
         ProcessRunner.stop()
     })
-
-    val (initialScriptId, initialAuthKey) = loadSavedConfig()
 
     Window(
         onCloseRequest = {
@@ -29,20 +28,27 @@ fun main() = application {
     ) {
         currentWindowHolder.window = this.window
         val viewModel: AppViewModel = koinViewModel<AppViewModel>()
+        
         val isVpnRunning by viewModel.isVpnRunning.collectAsState()
         val vpnLogs by viewModel.vpnLogs.collectAsState()
+        val savedConfigs by viewModel.savedConfigs.collectAsState()
+        val selectedConfigIndex by viewModel.selectedConfigIndex.collectAsState()
+
+        val homeState = remember(isVpnRunning, vpnLogs, savedConfigs, selectedConfigIndex) {
+            HomeState(
+                isVpnRunning = isVpnRunning,
+                log = if (isDebugBuild()) vpnLogs else null,
+                savedConfigs = savedConfigs,
+                selectedConfigIndex = selectedConfigIndex
+            )
+        }
+
         App(
             connectivityHandler = koinInject(),
-            initialScriptId = initialScriptId,
-            initialAuthKey = initialAuthKey,
-            isVpnRunning = isVpnRunning,
-            onSaveConfig = { id, key ->
-                saveConfigLocally(id, key)
-            },
+            state = homeState,
             onClick = { event ->
                 viewModel.handleEvent(event)
-            },
-            log = if (isDebugBuild()) vpnLogs else null,
+            }
         )
     }
 }

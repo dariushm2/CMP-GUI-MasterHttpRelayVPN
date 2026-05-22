@@ -18,18 +18,15 @@ import com.darius.lionvpn.ui.debug.DebugScreen
 import com.darius.lionvpn.ui.errostate.NetworkLoss
 import com.darius.lionvpn.ui.home.Event
 import com.darius.lionvpn.ui.home.HomeScreen
+import com.darius.lionvpn.ui.home.HomeState
 import com.darius.lionvpn.ui.navigation.Route
 import com.darius.lionvpn.ui.theme.WalletTheme
 
 @Composable
 fun App(
     connectivityHandler: ConnectivityHandler,
-    initialScriptId: String = "",
-    initialAuthKey: String = "",
-    isVpnRunning: Boolean = false,
-    onSaveConfig: (String, String) -> Unit = { _, _ -> },
+    state: HomeState,
     onClick: (Event) -> Unit = {},
-    log: List<String>? = null,
 ) {
     val navController = rememberNavController()
     val isConnected by connectivityHandler.isConnected.collectAsState(true)
@@ -59,14 +56,9 @@ fun App(
                 if (!isConnected) NetworkLoss()
                 else NavGraph(
                     navController = navController,
-                    initialScriptId = initialScriptId,
-                    initialAuthKey = initialAuthKey,
-                    isVpnRunning = isVpnRunning,
-                    onSaveConfig = onSaveConfig,
+                    state = state,
                     onClick = onClick,
-                    log = log,
                 )
-                // if (isDebugBuild()) DebugButton(navController = navController)
             }
         }
     }
@@ -75,12 +67,8 @@ fun App(
 @Composable
 private fun NavGraph(
     navController: NavHostController,
-    initialScriptId: String,
-    initialAuthKey: String,
-    isVpnRunning: Boolean,
-    onSaveConfig: (String, String) -> Unit,
+    state: HomeState,
     onClick: (Event) -> Unit,
-    log: List<String>?,
 ) {
     NavHost(
         navController = navController,
@@ -89,15 +77,10 @@ private fun NavGraph(
         composable(route = Route.Home.route) { 
             HomeScreen(
                 navController = navController,
-                initialScriptId = initialScriptId,
-                initialAuthKey = initialAuthKey,
-                isVpnRunning = isVpnRunning,
-                onSaveConfig = onSaveConfig,
+                state = state,
                 onClick = onClick,
-                log = log,
             )
         }
         composable(route = Route.Debug.route) { DebugScreen(navController) }
     }
 }
-
