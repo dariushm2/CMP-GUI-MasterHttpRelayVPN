@@ -85,40 +85,4 @@ tasks.configureEach {
     if (name == "run" || name.startsWith("package") || name.startsWith("createDistributable")) {
         dependsOn("bundlePythonExecutable")
     }
-
-    if (name == "createDistributable" || name == "createReleaseDistributable") {
-        doLast {
-            val composeBinariesDir = project.layout.buildDirectory.dir("compose/binaries").get().asFile
-            if (composeBinariesDir.exists()) {
-                composeBinariesDir.walkTopDown().forEach { dir ->
-                    if (dir.isDirectory) {
-                        val binDir = File(dir, "bin")
-                        val libDir = File(dir, "lib")
-                        if (binDir.exists() && binDir.isDirectory && libDir.exists() && libDir.isDirectory) {
-                            val executables = binDir.listFiles()?.filter { it.isFile && !it.name.startsWith(".") } ?: emptyList()
-                            if (executables.isNotEmpty()) {
-                                executables.forEach { executable ->
-                                    val realBinary = File(libDir, "${executable.name}-real")
-                                    if (executable.exists()) {
-                                        executable.renameTo(realBinary)
-                                        val wrapperScript = File(dir, executable.name)
-                                        wrapperScript.writeText("""
-                                            #!/bin/sh
-                                            # Resolve the directory of this script (the root directory)
-                                            DIR="$(cd "$(dirname "${'$'}0")" && pwd)"
-                                            # Execute the real native binary launcher in the lib folder
-                                            exec "${'$'}DIR/lib/${executable.name}-real" "${'$'}@"
-                                        """.trimIndent())
-                                        wrapperScript.setExecutable(true, false)
-                                        println("[Post-Build] Relocated Linux executable to ${wrapperScript.absolutePath} next to lib/ and removed bin/")
-                                    }
-                                }
-                                binDir.deleteRecursively()
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
 }
