@@ -31,9 +31,9 @@ compose.desktop {
         jvmArgs("-Dsun.awt.wmclass=lion-vpn")
 
         nativeDistributions {
-            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "lion-vpn"
-            packageVersion = rootProject.extra["versionName"] as String
+            val rawVersion = rootProject.extra["versionName"] as String
+            packageVersion = rawVersion.split("-")[0]
             appResourcesRootDir.set(project.layout.projectDirectory.dir("src/main/resources"))
 
             macOS {
