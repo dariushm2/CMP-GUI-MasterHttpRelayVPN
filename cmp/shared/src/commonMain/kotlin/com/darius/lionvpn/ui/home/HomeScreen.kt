@@ -15,7 +15,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.darius.lionvpn.ui.model.SavedConfig
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -90,6 +89,15 @@ private fun TopPart(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
     ) {
+        Text(
+            text = "🦁 LionVPN",
+            style = MaterialTheme.typography.headlineLarge.copy(
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.primary,
+                letterSpacing = 0.5.sp
+            )
+        )
+
         state.log?.let {
             LogTerminal(
                 log = it,

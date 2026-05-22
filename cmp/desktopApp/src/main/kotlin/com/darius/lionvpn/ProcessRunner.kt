@@ -77,7 +77,7 @@ object ProcessRunner {
             val process = this.start()
             process.onExit().thenAccept { finishedProcess ->
                 onExit(finishedProcess.exitValue() == 0)
-            }
+            }w
             // Read output asynchronously to prevent blocking Compose UI thread
             thread(isDaemon = true) {
                 try {

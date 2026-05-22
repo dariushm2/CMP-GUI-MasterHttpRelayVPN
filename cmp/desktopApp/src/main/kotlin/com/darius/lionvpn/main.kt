@@ -4,9 +4,11 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
+import androidx.compose.ui.res.painterResource
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
+@Suppress("DEPRECATION")
 fun main() = application {
     initKoin()
 
@@ -23,6 +25,7 @@ fun main() = application {
             exitApplication()
         },
         title = "Lion VPN",
+        icon = painterResource("logo.png"),
     ) {
         currentWindowHolder.window = this.window
         val viewModel: AppViewModel = koinViewModel<AppViewModel>()
