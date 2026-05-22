@@ -33,6 +33,16 @@ compose.desktop {
             packageName = "lion-vpn"
             packageVersion = rootProject.extra["versionName"] as String
             appResourcesRootDir.set(project.layout.projectDirectory.dir("src/main/resources"))
+
+            macOS {
+                iconFile.set(project.file("src/main/resources/macos/icon.icns"))
+            }
+            windows {
+                iconFile.set(project.file("src/main/resources/windows/icon.ico"))
+            }
+            linux {
+                iconFile.set(project.file("src/main/resources/linux/icon.png"))
+            }
         }
     }
 }
