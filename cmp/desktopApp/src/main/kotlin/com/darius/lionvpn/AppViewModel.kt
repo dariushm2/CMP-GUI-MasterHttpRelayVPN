@@ -3,25 +3,44 @@ package com.darius.lionvpn
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.darius.lionvpn.ui.home.Event
+import com.darius.lionvpn.ui.home.HomeState
 import com.darius.lionvpn.ui.model.SavedConfig
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class AppViewModel : ViewModel() {
 
     private val _savedConfigs = MutableStateFlow<List<SavedConfig>>(emptyList())
-    val savedConfigs: StateFlow<List<SavedConfig>> = _savedConfigs.asStateFlow()
-
     private val _selectedConfigIndex = MutableStateFlow(-1)
-    val selectedConfigIndex: StateFlow<Int> = _selectedConfigIndex.asStateFlow()
 
-    val isVpnRunning = ProcessRunner.isVpnRunning
-    val vpnLogs = ProcessRunner.vpnLogs
+    private val isVpnRunning = ProcessRunner.isVpnRunning
+    private val vpnLogs = ProcessRunner.vpnLogs
+
+    // Reactively compile dynamic HomeState from underlying states using stateIn
+    val homeState: StateFlow<HomeState> = combine(
+        isVpnRunning,
+        vpnLogs,
+        _savedConfigs,
+        _selectedConfigIndex
+    ) { running, logs, configs, index ->
+        HomeState(
+            isVpnRunning = running,
+            log = if (isDebugBuild()) logs else null,
+            savedConfigs = configs,
+            selectedConfigIndex = index
+        )
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = HomeState()
+    )
 
     private val errorHandler = CoroutineExceptionHandler { _, exception ->
         println("[AppViewModel Error] Exception caught in Coroutine: ${exception.localizedMessage}")

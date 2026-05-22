@@ -8,10 +8,12 @@ import com.darius.lionvpn.ui.model.SavedConfig
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 sealed interface AndroidUiEffect {
@@ -33,33 +35,27 @@ class AndroidAppViewModel : ViewModel() {
     private val _showInstructionsDialog = MutableStateFlow(false)
     val showInstructionsDialog: StateFlow<Boolean> = _showInstructionsDialog.asStateFlow()
 
-    // Expose dynamic HomeState compiled from underlying flows
-    private val _homeState = MutableStateFlow(HomeState())
-    val homeState: StateFlow<HomeState> = _homeState.asStateFlow()
+    // Expose dynamic HomeState compiled reactively from underlying flows using stateIn
+    val homeState: StateFlow<HomeState> = combine(
+        isVpnRunning,
+        vpnLogs,
+        _savedConfigs,
+        _selectedConfigIndex
+    ) { running, logs, configs, index ->
+        HomeState(
+            isVpnRunning = running,
+            log = if (isDebugBuild()) logs else null,
+            savedConfigs = configs,
+            selectedConfigIndex = index
+        )
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = HomeState()
+    )
 
     private val _uiEffect = MutableSharedFlow<AndroidUiEffect>()
     val uiEffect: SharedFlow<AndroidUiEffect> = _uiEffect.asSharedFlow()
-
-    init {
-        // Keep _homeState flow updated reactively
-        viewModelScope.launch {
-            combine(
-                isVpnRunning,
-                vpnLogs,
-                _savedConfigs,
-                _selectedConfigIndex
-            ) { running, logs, configs, index ->
-                HomeState(
-                    isVpnRunning = running,
-                    log = if (isDebugBuild()) logs else null,
-                    savedConfigs = configs,
-                    selectedConfigIndex = index
-                )
-            }.collect { state ->
-                _homeState.value = state
-            }
-        }
-    }
 
     fun initializeConfigs(configs: List<SavedConfig>, selectedIndex: Int) {
         _savedConfigs.value = configs
@@ -120,16 +116,6 @@ class AndroidAppViewModel : ViewModel() {
     private fun selectConfig(index: Int) {
         if (index in _savedConfigs.value.indices) {
             _selectedConfigIndex.value = index
-        }
-    }
-
-    private fun isDebugBuild(): Boolean {
-        return try {
-            val clazz = Class.forName("com.darius.lionvpn.BuildConfig")
-            val field = clazz.getField("DEBUG")
-            field.getBoolean(null)
-        } catch (e: Exception) {
-            false
         }
     }
 }
