@@ -1,122 +1,147 @@
-# MasterHttpRelayVPN
+# 🦁 لاین وی‌پی‌ان (Lion VPN) — کلاینت گرافیکی چندسکویی (Compose Multiplatform)
+
+[![GitHub](https://img.shields.io/badge/GitHub-LionVPN--Client-orange?logo=github)](https://github.com/dariushm2/CMP-GUI-MasterHttpRelayVPN)
+[![Kotlin](https://img.shields.io/badge/Kotlin-2.0.0-purple.svg?logo=kotlin)](https://kotlinlang.org/)
+[![Compose Multiplatform](https://img.shields.io/badge/Compose_Multiplatform-v1.6.10-blue.svg?logo=jetpackcompose)](https://jetbrains.com/lp/compose-multiplatform/)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+
+🦁 **لاین وی‌پی‌ان (Lion VPN)** یک کلاینت گرافیکی (GUI) مدرن، زیبا و با کارایی بالا برای سیستم پراکسی رله مبتنی بر دامین فرانتینگ (Domain Fronting) است که با استفاده از **Compose Multiplatform** ساخته شده است.
+
+این کلاینت یک رابط کاربری بصری و تک‌کلیکی فراهم می‌کند که سرور پراکسی پایتون محلی را به‌طور خودکار روی پلتفرم‌های مختلف بسته‌بندی، اجرا و مدیریت می‌کند.
 
 **زبان:** [English](README.md) | فارسی
 
-**کانال تلگرام 📣:** [https://t.me/masterdnsvpn](https://t.me/masterdnsvpn)
+> [!NOTE]
+> این مخزن یک فورک از پروژه فوق‌العاده [masterking32/MasterHttpRelayVPN](https://github.com/masterking32/MasterHttpRelayVPN) است.
+> هسته اصلی موتور رله پراکسی توسط کدهای پایتون بالادستی (Upstream) اجرا می‌شود. تمامی کدهای مربوط به رابط کاربری گرافیکی چندسکویی، ادغام‌های بومی پلتفرم‌ها (سرویس VPN اندروید، بسته‌بندی دسکتاپ، پل‌های واکنشی State-Flow و بهینه‌سازی‌های کارایی JNI) در پوشه **`/cmp`** قرار دارند و به عنوان یک پوسته گرافیکی چندسکویی اختصاصی توسعه داده شده‌اند.
 
-**تشکر ویژه ❤️:** [Abolix](https://github.com/abolix)
+---
 
-MasterHttpRelayVPN یک پراکسی محلی است که ترافیک مرورگر را از مسیر Google Apps Script و Domain Fronting عبور می‌دهد. برای مسیر ساده فقط همین پروژه و یک اکانت رایگان Google کافی است. اگر بعضی سایت‌ها خروجی Google را مسدود کنند، بعدا می‌توانید Exit Node اضافه کنید.
+## 🧭 معماری پروژه
 
-```text
-مرورگر -> پراکسی محلی -> مسیر Google -> رله Apps Script شما -> سایت مقصد
-                         فیلتر فقط اتصال شبیه Google را می‌بیند
+```mermaid
+graph TD
+    subgraph "Lion VPN GUI Client (Compose Multiplatform)"
+        UI[Compose Multiplatform UI]
+        AndroidApp[Android Client /com.darius.lionvpn]
+        DesktopApp[Desktop Client /desktopApp]
+        IosApp[iOS Client UI Preview]
+    end
+    
+    subgraph "Local Python Proxy (Upstream Engine)"
+        ProxyServer[Proxy Server /src/proxy]
+        MITM[MITM Cert Manager /src/proxy/mitm]
+        Fronter[Domain Fronter /src/relay]
+    end
+    
+    subgraph "Google Apps Script Relay (Cloud)"
+        GAS[Apps Script Web App]
+        Target[Destination Site]
+    end
+
+    UI --> AndroidApp
+    UI --> DesktopApp
+    UI --> IosApp
+    
+    AndroidApp -->|Chaquopy JNI Bridge| ProxyServer
+    DesktopApp -->|Embedded Executable| ProxyServer
+    
+    ProxyServer -->|Domain Fronted HTTPS| GAS
+    GAS -->|Fetch Request| Target
 ```
 
-## منوی سریع 🧭
+---
 
-[شروع سریع](docs/fa/GETTING_STARTED.md) | [Docker](docs/fa/DOCKER.md) | [اشتراک گذاری LAN](docs/fa/LAN_SHARING.md) | [راهنمای Exit Node](docs/exit-node/EXIT_NODE_DEPLOYMENT_FA.md)
+## ⚡ ویژگی‌های کلیدی
 
-[مرجع تنظیمات](docs/fa/CONFIGURATION.md) | [رفع مشکل](docs/fa/TROUBLESHOOTING.md) | [نکات امنیتی](docs/fa/SECURITY.md) | [معماری](docs/fa/ARCHITECTURE.md)
+*   **🎨 طراحی و ظاهر پرمیوم (UI/UX):** ساخته شده با آخرین استانداردهای طراحی Compose Multiplatform، پشتیبانی کامل از حالت تاریک (Dark Mode)، میکرواِنیمیشن‌های روان و رنگ‌های گرادیانت هارمونیک.
+*   **🔌 اتصال تک‌کلیکی:** دکمه اتصال ساده و زیبا با نشانگر وضعیت تپنده که سرور پراکسی را به‌صورت خودکار در پس‌زمینه راه‌اندازی و متوقف می‌کند.
+*   **📱 ادغام بومی اندروید (`VpnService`):** پوسته اختصاصی اندروید برای هدایت ترافیک کل سیستم به پراکسی محلی SOCKS5/HTTP بدون نیاز به تنظیم دستی پراکسی در تنظیمات وای‌فای.
+*   **💻 خروجی تک‌کلیکی دسکتاپ:** سیستم ساخت بهینه‌شده برای دسکتاپ که سرور پایتون را با استفاده از PyInstaller به یک فایل اجرایی مستقل بسته‌بندی می‌کند.
+*   **🔒 تولیدکننده خودکار گواهی HTTPS MITM:** تولید، خروجی گرفتن و نصب گواهی محلی CA برای عبور امن از ترافیک رمزنگاری‌شده HTTPS مستقیماً از داخل برنامه.
+*   **⚡ کارایی بالا بدون قفل شدن رابط کاربری:** مکانیزم ورود لاگ بسیار سریع JNI برای جلوگیری از کندی برنامه در حین انتقال داده‌ها به همراه ترد پس‌زمینه آسنکرون برای سرعت حداکثری.
 
-## شروع خیلی سریع ⚡
+---
 
-قبل از اجرای پراکسی، باید یک بار رله Google را deploy کنید. فقط یک اکانت Google لازم دارید و این کار حدود دو دقیقه زمان می‌برد.
+## 🚀 راهنمای راه‌اندازی و استفاده
 
-## ساخت رله Google ☁️
+برای شروع، ابتدا رله Google Apps Script خود را مستقر (Deploy) کنید. این بخش کاملاً مشابه پروژه اصلی است:
 
-- وارد [Google Apps Script](https://script.google.com/) شوید و روی **New project** کلیک کنید.
-- محتوای پیش‌فرض ادیتور را کامل پاک کنید.
-- فایل [apps_script/Code.gs](apps_script/Code.gs) را باز کنید، همه کد آن را کپی کنید، و داخل Apps Script قرار دهید.
-- این خط را پیدا کنید و با یک رمز طولانی و مخصوص خودتان عوض کنید:
+### ۱. ساخت رله Google ☁️
 
+۱. وارد [Google Apps Script](https://script.google.com/) شوید و با اکانت گوگل خود ورود کنید.
+۲. روی **New project** کلیک کنید.
+۳. محتوای پیش‌فرض ادیتور را کاملاً پاک کنید.
+۴. فایل [apps_script/Code.gs](apps_script/Code.gs) را باز کرده، تمامی کدهای آن را کپی کنید و در ادیتور Apps Script قرار دهید.
+۵. مقدار `AUTH_KEY` را با یک رمز طولانی و مخصوص به خود جایگزین کنید:
     ```javascript
     const AUTH_KEY = "your-secret-password-here";
     ```
+۶. روی **Deploy** -> **New deployment** -> **Web app** کلیک کنید.
+۷. گزینه **Execute as** را روی **Me** و **Who has access** را روی **Anyone** تنظیم کرده و دکمه **Deploy** را بزنید.
+۸. شناسه **Deployment ID** و رمز `AUTH_KEY` را یادداشت کنید.
 
-- از مسیر **Deploy** -> **New deployment** -> **Web app** بروید.
-- گزینه **Execute as** را روی **Me** بگذارید.
-- گزینه **Who has access** را روی **Anyone** بگذارید.
-- روی **Deploy** کلیک کنید، دسترسی‌ها را تایید کنید، و **Deployment ID** را کپی کنید.
+---
 
-این دو مقدار را برای setup wizard نگه دارید:
+### ۲. اجرای برنامه‌های گرافیکی 📱💻
 
-- `Deployment ID` از Google Apps Script
-- `AUTH_KEY`، یک رمز طولانی که باید دقیقا با `auth_key` در کانفیگ محلی یکی باشد
+تمام کدهای منبع برنامه‌های رابط کاربری و دستورات ساخت آن‌ها در پوشه `/cmp` قرار دارند.
 
-اگر توضیح کامل‌تر می‌خواهید، [شروع سریع](docs/fa/GETTING_STARTED.md#2-ساخت-رله-google) را ببینید.
-
-پروژه را با Git یا ZIP دریافت کنید، سپس لانچر یک‌کلیکی را اجرا کنید.
-
-**گزینه A: Git**
-
+قبل از شروع، در ترمینال خود به پوشه `/cmp` بروید:
 ```bash
-git clone https://github.com/masterking32/MasterHttpRelayVPN.git
-cd MasterHttpRelayVPN
+cd cmp
 ```
 
-**گزینه B: ZIP**
+#### 💻 نسخه دسکتاپ (macOS, Windows, Linux)
+سیستم ساخت دسکتاپ به‌طور خودکار موتور پراکسی پایتون را کامپایل کرده و در منابع برنامه قرار می‌دهد.
 
-- [صفحه GitHub پروژه](https://github.com/masterking32/MasterHttpRelayVPN) را باز کنید.
-- روی **Code** -> **Download ZIP** کلیک کنید.
-- فایل ZIP را extract کنید.
-- داخل پوشه extract شده `MasterHttpRelayVPN` یک terminal باز کنید.
+*   **اجرا در حالت توسعه (Dev Mode):**
+    ```bash
+    ./gradlew :desktopApp:run
+    ```
+*   **خروجی گرفتن نسخه نصبی نهایی:**
+    ```bash
+    ./gradlew :desktopApp:packageDistributionForCurrentOS
+    ```
+    این دستور فایل نصبی بومی (مانند `.dmg` روی مک، `.msi` روی ویندوز و `.deb` روی لینوکس) را در مسیر `cmp/desktopApp/build/compose/binaries` ایجاد می‌کند.
 
-بعد برنامه را اجرا کنید:
+#### 📱 نسخه اندروید
+*   **نصب مستقیم نسخه دیباگ روی گوشی یا شبیه‌ساز:**
+    مطمئن شوید گوشی اندرویدی یا شبیه‌ساز روشن و متصل به ADB است:
+    ```bash
+    ./gradlew :androidApp:installDebug
+    ```
+*   **کامپایل فایل APK نهایی:**
+    ```bash
+    ./gradlew :androidApp:assembleRelease
+    ```
+    فایل‌های APK خروجی در مسیر `cmp/androidApp/build/outputs/apk/` ذخیره می‌شوند.
 
-**Windows**
+#### 🍏 نسخه iOS (پیش‌نمایش رابط کاربری)
+*   پروژه `/cmp/iosApp/iosApp.xcodeproj` را در Xcode باز کنید تا بتوانید پیش‌نمایش رابط کاربری آن را روی شبیه‌ساز یا دستگاه‌های iOS اجرا کنید. (قابلیت‌های شبکه در حال حاضر به‌صورت شبیه‌سازی‌شده است).
 
-```cmd
-start.bat
-```
+---
 
-**Linux / macOS**
+## 🛠️ تکنولوژی‌های مورد استفاده
 
-```bash
-chmod +x start.sh
-./start.sh
-```
+*   **فریم‌ورک رابط کاربری:** [Compose Multiplatform](https://github.com/JetBrains/compose-multiplatform) (توسط JetBrains)
+*   **تزریق وابستگی:** [Koin](https://insert-koin.io/) (تزریق وابستگی چندسکویی)
+*   **کلاینت شبکه:** [Ktor Client](https://ktor.io/) (Ktor-Darwin برای iOS و Ktor-OkHttp برای اندروید)
+*   **کتابخانه لاگین:** [Timber](https://github.com/JakeWharton/timber)
+*   **محیط‌های پایتون داخلی:**
+    *   **اندروید:** [Chaquopy](https://chaquo.com/chaquopy/) (اجرای پایتون به‌صورت بومی درون اندروید)
+    *   **دسکتاپ:** [PyInstaller](https://pyinstaller.org/) (کامپایلر مستقل پایتون)
+*   **مسیریابی:** Jetpack Navigation Compose Multiplatform
 
-لانچر virtualenv می‌سازد، وابستگی‌ها را نصب می‌کند، اگر `config.json` وجود نداشته باشد setup wizard را باز می‌کند، و سپس پراکسی را اجرا می‌کند.
+---
 
-بعد از اجرا، مرورگر را روی این پراکسی تنظیم کنید:
+## 📣 پشتیبانی و مشارکت
 
-| گزینه | مقدار |
-|-------|-------|
-| نوع پراکسی | HTTP |
-| آدرس | `127.0.0.1` |
-| پورت | `8085` |
-| پورت SOCKS5، اختیاری | `1080` |
+*   برای گزارش مشکلات مربوط به سرور و موتور پراکسی اصلی و کدهای پایتون، به مخزن اصلی مراجعه کنید: [masterking32/MasterHttpRelayVPN](https://github.com/masterking32/MasterHttpRelayVPN).
+*   برای گزارش باگ‌های رابط کاربری، درخواست‌های بهینه‌سازی کارایی و بهبود کلاینت‌های موبایل، خوشحال می‌شویم یک Issue یا Pull Request روی این فورک ثبت کنید!
 
-برای سایت‌های HTTPS، اگر برنامه نتوانست گواهی را خودکار نصب کند، فایل `ca/ca.crt` را نصب کنید. راهنمای کامل در [شروع سریع](docs/fa/GETTING_STARTED.md) است.
+---
 
-## قدم‌های بعدی رایج 🛠️
+## 🛡️ مجوز (License)
 
-- اگر مرورگر خطای certificate نشان می‌دهد، [بخش خطای گواهی](docs/fa/TROUBLESHOOTING.md#خطاهای-certificate) را ببینید.
-- اگر خطای `unauthorized` می‌بینید، مقدار `AUTH_KEY` در [apps_script/Code.gs](apps_script/Code.gs) باید دقیقا با `auth_key` در `config.json` یکی باشد.
-- اگر سرعت پایین است یا timeout می‌گیرید، دستور `python main.py --scan` را اجرا کنید و [مرجع تنظیمات](docs/fa/CONFIGURATION.md#دستورهای-عیب‌یابی) را ببینید.
-- اگر سایت‌هایی مثل ChatGPT یا Turnstile با خروجی Google مشکل دارند، [راهنمای Exit Node](docs/exit-node/EXIT_NODE_DEPLOYMENT_FA.md) را بخوانید.
-
-## پشتیبانی و اطلاع‌رسانی 📣
-
-- کانال Telegram: [https://t.me/masterdnsvpn](https://t.me/masterdnsvpn)
-- منبع فیلتر تبلیغات: [PersianBlocker](https://github.com/MasterKia/PersianBlocker/)
-
-## امنیت 🔒
-
-این پروژه برای آموزش، تست و پژوهش ارائه شده است. مسئولیت رعایت قوانین و شرایط سرویس‌ها با کاربر است. فایل `config.json`، مقدار `auth_key`، پوشه `ca/`، و آدرس Exit Node همراه با PSK معتبر را با کسی به اشتراک نگذارید. قبل از فعال کردن استفاده در شبکه محلی، [نکات امنیتی](docs/fa/SECURITY.md) را بخوانید.
-
-## سلب مسئولیت قانونی ⚠️
-
-MasterHttpRelayVPN فقط برای آموزش، تست و پژوهش ارائه شده است.
-
-- **محدودیت مسئولیت:** توسعه‌دهنده‌ها و مشارکت‌کننده‌ها در قبال هرگونه خسارت مستقیم، غیرمستقیم، اتفاقی، تبعی، یا هر نوع خسارت دیگر ناشی از استفاده یا عدم امکان استفاده از این پروژه مسئول نیستند.
-- **مسئولیت کاربر:** اجرای این پروژه خارج از محیط کنترل‌شده ممکن است روی شبکه، اکانت‌ها، پراکسی‌ها، گواهی‌ها، یا سیستم‌های متصل اثر بگذارد. مسئولیت کامل نصب، پیکربندی، و استفاده با خود کاربر است.
-- **رعایت قوانین:** قبل از استفاده از این نرم‌افزار، رعایت همه قوانین و مقررات محلی، ملی، و بین‌المللی بر عهده کاربر است.
-- **رعایت قوانین Google:** اگر از Google Apps Script یا دیگر سرویس‌های Google استفاده می‌کنید، رعایت Terms of Service، قوانین استفاده، سهمیه‌ها (quota)، و سیاست‌های پلتفرم Google بر عهده شماست. استفاده نادرست ممکن است باعث تعلیق یا مسدود شدن اکانت یا deployment شود.
-- **هشدار TLS/CA:** در حالت Apps Script، ترافیک HTTPS به‌صورت محلی decrypt و دوباره encrypt می‌شود. برای جلوگیری از خطاهای امنیتی مرورگر، باید گواهی CA تولیدشده را نصب کنید.
-- **هشدار LAN:** وقتی LAN sharing فعال است، دستگاه‌های شبکه محلی می‌توانند از پراکسی شما استفاده کنند. این قابلیت را فقط روی شبکه‌های قابل اعتماد فعال کنید و در صورت نیاز لایه‌های امنیتی اضافه بگذارید.
-
-## License
-
-MIT
+این پروژه تحت مجوز **MIT** منتشر شده است — برای اطلاعات بیشتر فایل [LICENSE](LICENSE) را مطالعه کنید.
