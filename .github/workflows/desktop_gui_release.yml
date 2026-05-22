@@ -78,10 +78,10 @@ jobs:
         shell: bash
         run: |
           if [ "${{ matrix.platform }}" = "windows" ]; then
-            cp config.example.json cmp/desktopApp/build/compose/binaries/main/app/app/
+            cp config.example.json cmp/desktopApp/build/compose/binaries/main/app/app/resources/
             powershell -Command "Compress-Archive -Path cmp/desktopApp/build/compose/binaries/main/app -DestinationPath ${{ matrix.archive-name }}"
           elif [ "${{ matrix.platform }}" = "linux" ]; then
-            cp config.example.json cmp/desktopApp/build/compose/binaries/main/app/app/
+            cp config.example.json cmp/desktopApp/build/compose/binaries/main/app/lib/resources/
             tar -czf ${{ matrix.archive-name }} -C cmp/desktopApp/build/compose/binaries/main app
           elif [ "${{ matrix.platform }}" = "macos" ]; then
             cp config.example.json cmp/desktopApp/build/compose/binaries/main/app/lion-vpn.app/Contents/Resources/
