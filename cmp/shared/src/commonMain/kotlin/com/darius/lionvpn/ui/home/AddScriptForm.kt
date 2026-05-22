@@ -2,13 +2,18 @@ package com.darius.lionvpn.ui.home
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
@@ -24,6 +29,8 @@ fun AddScriptForm(
     var key by remember { mutableStateOf("") }
     var formError by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
+    
+    val focusManager = LocalFocusManager.current
 
     Column(
         verticalArrangement = Arrangement.spacedBy(10.dp),
@@ -37,7 +44,11 @@ fun AddScriptForm(
             modifier = Modifier.fillMaxWidth(),
             singleLine = true,
             shape = RoundedCornerShape(12.dp),
-            enabled = !isVpnRunning
+            enabled = !isVpnRunning,
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+            keyboardActions = KeyboardActions(
+                onNext = { focusManager.moveFocus(FocusDirection.Next) }
+            )
         )
 
         OutlinedTextField(
@@ -54,7 +65,11 @@ fun AddScriptForm(
             modifier = Modifier.fillMaxWidth(),
             singleLine = true,
             shape = RoundedCornerShape(12.dp),
-            enabled = !isVpnRunning
+            enabled = !isVpnRunning,
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+            keyboardActions = KeyboardActions(
+                onNext = { focusManager.moveFocus(FocusDirection.Next) }
+            )
         )
 
         OutlinedTextField(
@@ -80,7 +95,11 @@ fun AddScriptForm(
             modifier = Modifier.fillMaxWidth(),
             singleLine = true,
             shape = RoundedCornerShape(12.dp),
-            enabled = !isVpnRunning
+            enabled = !isVpnRunning,
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+            keyboardActions = KeyboardActions(
+                onDone = { focusManager.clearFocus() }
+            )
         )
 
         if (formError.isNotEmpty()) {
