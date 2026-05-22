@@ -6,6 +6,8 @@
 **/config.json
 **/config.example.json
 /desktopApp/bin
+/desktopApp/**/saved_scripts.json
+/desktopApp/**/active_script_index.txt
 xcuserdata
 !src/**/build/
 local.properties
