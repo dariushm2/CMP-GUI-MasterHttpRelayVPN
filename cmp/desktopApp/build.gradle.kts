@@ -13,6 +13,7 @@ dependencies {
     implementation(projects.shared)
     implementation(compose.foundation)
     implementation(compose.desktop.currentOs)
+    implementation(compose.components.resources)
     implementation(libs.kotlinx.coroutinesSwing)
     implementation(libs.kotlinx.serialization)
 
@@ -27,6 +28,7 @@ dependencies {
 compose.desktop {
     application {
         mainClass = "com.darius.lionvpn.MainKt"
+        jvmArgs("-Dsun.awt.wmclass=lion-vpn")
 
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
@@ -42,6 +44,10 @@ compose.desktop {
             }
             linux {
                 iconFile.set(project.file("src/main/resources/linux/icon.png"))
+                shortcut = true
+                appCategory = "Network"
+                menuGroup = "Network"
+                debMaintainer = "support@lionvpn.com"
             }
         }
     }
