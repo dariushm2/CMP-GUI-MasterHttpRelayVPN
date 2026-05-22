@@ -7,8 +7,11 @@ import com.darius.lionvpn.ui.model.SavedConfig
 
 fun saveConfigLocally(deploymentId: String, authKey: String): Boolean {
     return try {
-        val root = findRepoRoot()
-        val exampleFile = File(root, "config.example.json")
+        val root = findResourcesDir()
+        var exampleFile = File(root, "config.example.json")
+        if (!exampleFile.exists()) {
+            exampleFile = File(findRepoRoot(), "config.example.json")
+        }
 
         val binaryPath = getPythonExecutablePath()
         val binaryFile = File(binaryPath)

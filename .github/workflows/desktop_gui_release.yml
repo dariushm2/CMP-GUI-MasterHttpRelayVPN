@@ -62,35 +62,24 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -r requirements.txt pyinstaller
 
-      - name: Bundle Python Executable into Compose Resources
+      - name: Bundle Python Executable
         shell: bash
+        working-directory: cmp
         run: |
-          python cmp/bundle_for_gui.py --force
+          chmod +x gradlew
+          ./gradlew :desktopApp:bundlePythonExecutable --no-daemon
 
       - name: Build Desktop Application Distributable
         shell: bash
         working-directory: cmp
         run: |
-          chmod +x gradlew
           ./gradlew :desktopApp:createDistributable --no-daemon
 
-      - name: Compress Distributable
-        shell: bash
-        run: |
-          if [ "${{ matrix.platform }}" = "windows" ]; then
-            powershell -Command "Compress-Archive -Path cmp/desktopApp/build/compose/binaries/main/app -DestinationPath ${{ matrix.archive-name }}"
-          elif [ "${{ matrix.platform }}" = "linux" ]; then
-            tar -czf ${{ matrix.archive-name }} -C cmp/desktopApp/build/compose/binaries/main app
-          elif [ "${{ matrix.platform }}" = "macos" ]; then
-            cd cmp/desktopApp/build/compose/binaries/main/app
-            zip -r -y ../../../../../../../${{ matrix.archive-name }} lion-vpn.app
-          fi
-
-      - name: Upload Compressed Distributable Artifact
+      - name: Upload Raw Distributable Artifact
         uses: actions/upload-artifact@v4
         with:
           name: gui-${{ matrix.platform }}
-          path: ${{ matrix.archive-name }}
+          path: cmp/desktopApp/build/compose/binaries/main/app
           if-no-files-found: error
 
   publish-gui-release:
@@ -123,11 +112,26 @@ jobs:
         with:
           path: final-gui-assets
 
-      - name: Flatten directories
+      - name: Prepare and Compress Assets for Release
         run: |
           mkdir -p release-dist
-          find final-gui-assets -type f -exec cp {} release-dist/ \;
-          echo "Files to publish:"
+          
+          # Compress Windows (gui-windows contains the files of app/ directly)
+          cd final-gui-assets/gui-windows
+          zip -r ../../release-dist/lion-vpn-windows.zip .
+          cd ../..
+          
+          # Compress Linux (gui-linux contains the files of app/ directly)
+          cd final-gui-assets/gui-linux
+          tar -czf ../../release-dist/lion-vpn-linux.tar.gz .
+          cd ../..
+          
+          # Compress macOS (gui-macos contains the lion-vpn.app folder directly)
+          cd final-gui-assets/gui-macos
+          zip -r -y ../../release-dist/lion-vpn-macos.zip lion-vpn.app
+          cd ../..
+          
+          echo "Compressed release files:"
           ls -lah release-dist
 
       - name: Create GitHub Release

@@ -127,6 +127,14 @@ def main() -> int:
     log(f"Platform detected: {platform_name}")
     log(f"Target path: {dest_path}")
 
+    # Copy config.example.json to common resources so it is always packaged
+    dest_dir.mkdir(parents=True, exist_ok=True)
+    example_src = repo_root / "config.example.json"
+    example_dest = dest_dir / "config.example.json"
+    if example_src.exists():
+        log(f"Copying config.example.json to {example_dest}")
+        shutil.copy2(example_src, example_dest)
+
     # 2. Check if we need to compile (Incremental Build)
     if not args.force and dest_path.exists():
         # Check source file modification times
