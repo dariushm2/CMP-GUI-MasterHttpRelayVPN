@@ -32,13 +32,16 @@ jobs:
         include:
           - os: windows-latest
             platform: windows
-            archive-name: lion-vpn-windows.zip
+            artifact-name: lion-vpn-windows
+            upload-path: cmp/desktopApp/build/compose/binaries/main/app/lion-vpn
           - os: ubuntu-latest
             platform: linux
-            archive-name: lion-vpn-linux.tar.gz
+            artifact-name: lion-vpn-linux
+            upload-path: cmp/desktopApp/build/compose/binaries/main/app/lion-vpn
           - os: macos-latest
             platform: macos
-            archive-name: lion-vpn-macos.zip
+            artifact-name: lion-vpn-macos
+            upload-path: cmp/desktopApp/build/compose/binaries/main/app/lion-vpn.app
 
     steps:
       - name: Checkout Repository
@@ -78,8 +81,8 @@ jobs:
       - name: Upload Raw Distributable Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: gui-${{ matrix.platform }}
-          path: cmp/desktopApp/build/compose/binaries/main/app
+          name: ${{ matrix.artifact-name }}
+          path: ${{ matrix.upload-path }}
           if-no-files-found: error
 
   publish-gui-release:
@@ -116,20 +119,29 @@ jobs:
         run: |
           mkdir -p release-dist
           
-          # Compress Windows (gui-windows contains the files of app/ directly)
-          cd final-gui-assets/gui-windows
-          zip -r ../../release-dist/lion-vpn-windows.zip .
-          cd ../..
+          # Compress Windows
+          mkdir -p temp-win
+          mv final-gui-assets/lion-vpn-windows temp-win/lion-vpn
+          cd temp-win
+          zip -r ../release-dist/lion-vpn-windows.zip lion-vpn
+          cd ..
+          rm -rf temp-win
           
-          # Compress Linux (gui-linux contains the files of app/ directly)
-          cd final-gui-assets/gui-linux
-          tar -czf ../../release-dist/lion-vpn-linux.tar.gz .
-          cd ../..
+          # Compress Linux
+          mkdir -p temp-linux
+          mv final-gui-assets/lion-vpn-linux temp-linux/lion-vpn
+          cd temp-linux
+          tar -czf ../release-dist/lion-vpn-linux.tar.gz lion-vpn
+          cd ..
+          rm -rf temp-linux
           
-          # Compress macOS (gui-macos contains the lion-vpn.app folder directly)
-          cd final-gui-assets/gui-macos
-          zip -r -y ../../release-dist/lion-vpn-macos.zip lion-vpn.app
-          cd ../..
+          # Compress macOS
+          mkdir -p temp-mac
+          mv final-gui-assets/lion-vpn-macos temp-mac/lion-vpn.app
+          cd temp-mac
+          zip -r -y ../release-dist/lion-vpn-macos.zip lion-vpn.app
+          cd ..
+          rm -rf temp-mac
           
           echo "Compressed release files:"
           ls -lah release-dist
