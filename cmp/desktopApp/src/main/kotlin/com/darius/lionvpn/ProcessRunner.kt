@@ -36,7 +36,7 @@ object ProcessRunner {
         }
     }
 
-    fun start() {
+    fun start(isSystemProxyEnabled: Boolean = true) {
         if (process != null) {
             stop()
             return
@@ -48,14 +48,26 @@ object ProcessRunner {
         process = processBuilder.runProcess {
             println("[VPN Process] Process stopped!")
             _vpnLogs.value += "VPN Process stopped!"
+            if (isSystemProxyEnabled) {
+                WindowsProxyManager.disableProxy()
+            }
         }
         
         if (process != null) {
             _isVpnRunning.value = true
+            if (isSystemProxyEnabled) {
+                WindowsProxyManager.enableProxy(8085)
+            }
         }
     }
 
     fun stop() {
+        try {
+            WindowsProxyManager.disableProxy()
+        } catch (e: Exception) {
+            println("[VPN Process] Failed to disable proxy: ${e.message}")
+        }
+
         process?.let { p ->
             try {
                 // Kill all descendant processes first. This is crucial on Windows because PyInstaller's
