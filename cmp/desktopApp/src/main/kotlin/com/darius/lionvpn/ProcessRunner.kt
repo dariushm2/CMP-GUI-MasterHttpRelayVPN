@@ -56,7 +56,19 @@ object ProcessRunner {
     }
 
     fun stop() {
-        process?.destroy()
+        process?.let { p ->
+            try {
+                // Kill all descendant processes first. This is crucial on Windows because PyInstaller's
+                // --onefile executable spawns the actual python process as a child, and standard JVM p.destroy()
+                // only terminates the bootloader process, leaving the child process orphaned and running.
+                p.descendants().forEach { descendant ->
+                    descendant.destroyForcibly()
+                }
+            } catch (e: Exception) {
+                println("[VPN Process] Failed to destroy descendants: ${e.message}")
+            }
+            p.destroyForcibly()
+        }
         process = null
         _isVpnRunning.value = false
     }
