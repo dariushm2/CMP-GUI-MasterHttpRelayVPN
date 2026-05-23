@@ -9,10 +9,14 @@ import kotlinx.coroutines.flow.asStateFlow
 import okio.IOException
 import kotlin.collections.plus
 
+import org.koin.mp.KoinPlatform.getKoin
+import com.darius.lionvpn.proxy.ProxyManager
+
 object ProcessRunner {
 
     private val platform = getPlatform()
     private val binaryPath = getPythonExecutablePath()
+    private val proxyManager: ProxyManager by lazy { getKoin().get<ProxyManager>() }
 
     private var process: Process? = null
 
@@ -49,21 +53,21 @@ object ProcessRunner {
             println("[VPN Process] Process stopped!")
             _vpnLogs.value += "VPN Process stopped!"
             if (isSystemProxyEnabled) {
-                WindowsProxyManager.disableProxy()
+                proxyManager.disableProxy()
             }
         }
         
         if (process != null) {
             _isVpnRunning.value = true
             if (isSystemProxyEnabled) {
-                WindowsProxyManager.enableProxy(8085)
+                proxyManager.enableProxy(8085)
             }
         }
     }
 
     fun stop() {
         try {
-            WindowsProxyManager.disableProxy()
+            proxyManager.disableProxy()
         } catch (e: Exception) {
             println("[VPN Process] Failed to disable proxy: ${e.message}")
         }

@@ -1,8 +1,9 @@
-package com.darius.lionvpn
+package com.darius.lionvpn.proxy
 
+import com.darius.lionvpn.getPlatform
 import java.lang.ProcessBuilder
 
-object WindowsProxyManager {
+object WindowsProxyManager : ProxyManager {
 
     private fun runCommand(vararg command: String) {
         try {
@@ -13,12 +14,11 @@ object WindowsProxyManager {
     }
 
     private fun refreshSystemSettings() {
-        // Run a concise PowerShell command that loads the wininet.dll API and forces settings refresh instantly
         val refreshCmd = "[void](Add-Type -MemberDefinition '[DllImport(\"wininet.dll\")] public static extern bool InternetSetOption(IntPtr hInternet, int dwOption, IntPtr lpBuffer, int dwBufferLength);' -Name WinInet -Namespace Win32 -PassThru)::InternetSetOption([IntPtr]::Zero, 39, [IntPtr]::Zero, 0); [void]([Win32.WinInet]::InternetSetOption([IntPtr]::Zero, 37, [IntPtr]::Zero, 0))"
         runCommand("powershell", "-NoProfile", "-Command", refreshCmd)
     }
 
-    fun enableProxy(port: Int = 8085) {
+    override fun enableProxy(port: Int) {
         if (!getPlatform().isWin()) return
 
         println("[Proxy Manager] Enabling Windows system proxy to 127.0.0.1:$port")
@@ -28,7 +28,7 @@ object WindowsProxyManager {
         refreshSystemSettings()
     }
 
-    fun disableProxy() {
+    override fun disableProxy() {
         if (!getPlatform().isWin()) return
 
         println("[Proxy Manager] Disabling Windows system proxy")

@@ -4,17 +4,24 @@ import com.darius.lionvpn.connectivity.NetworkHelper
 
 
 class JvmPlatform : Platform {
-    override val type: Platform.Type = when {
-        System.getProperty("os.name").contains("mac", ignoreCase = true)
-            -> Platform.Type.MAC
-        System.getProperty("os.name").contains("win", ignoreCase = true)
-            -> Platform.Type.WIN
-        else -> Platform.Type.LINUX
+
+    enum class OS {
+        MAC,
+        WIN,
+        LINUX,
     }
+    val os: OS = when {
+        System.getProperty("os.name").contains("mac", ignoreCase = true)
+            -> OS.MAC
+        System.getProperty("os.name").contains("win", ignoreCase = true)
+            -> OS.WIN
+        else -> OS.LINUX
+    }
+    override val type: Platform.Type = Platform.Type.JVM
     override val name: String = type.name
-    override fun isMac(): Boolean = type == Platform.Type.MAC
-    override fun isWin(): Boolean = type == Platform.Type.WIN
-    override fun isLinux(): Boolean = type == Platform.Type.LINUX
+    override fun isMac(): Boolean = os == OS.MAC
+    override fun isWin(): Boolean = os == OS.WIN
+    override fun isLinux(): Boolean = os == OS.LINUX
 }
 
 actual fun getPlatform(): Platform = JvmPlatform()

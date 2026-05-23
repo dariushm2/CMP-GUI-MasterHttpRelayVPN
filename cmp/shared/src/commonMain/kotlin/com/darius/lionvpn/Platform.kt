@@ -13,9 +13,7 @@ interface Platform {
     enum class Type {
         ANDROID,
         IOS,
-        MAC,
-        WIN,
-        LINUX,
+       JVM,
     }
 }
 
