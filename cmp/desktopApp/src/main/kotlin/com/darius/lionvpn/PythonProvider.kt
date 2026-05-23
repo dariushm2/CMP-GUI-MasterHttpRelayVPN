@@ -1,19 +1,12 @@
 package com.darius.lionvpn
 
+import kotlinx.io.files.FileNotFoundException
 import java.io.File
 
-private const val DIR_LEVEL = 4
 fun findRepoRoot(): File {
-    var dir = File(System.getProperty("user.dir")).absoluteFile
-    var dirLevel = DIR_LEVEL
-    while (dirLevel > 0) {
-        dirLevel--
-        if (File(dir, "config.example.json").exists()) {
-            return dir
-        }
-        dir = dir.parentFile ?: break
-    }
-    return File(System.getProperty("user.dir")).absoluteFile
+    val dir = File(System.getProperty("user.dir")).parentFile
+    return if (File(dir, "config.example.json").exists()) dir
+    else throw FileNotFoundException()
 }
 
 fun findResourcesDir(): File {

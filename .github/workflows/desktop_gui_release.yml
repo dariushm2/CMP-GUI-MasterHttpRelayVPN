@@ -16,7 +16,7 @@ on:
       publish:
         description: "Publish GitHub release"
         required: false
-        default: true
+        default: false
         type: boolean
 
 permissions:
@@ -32,13 +32,16 @@ jobs:
         include:
           - os: windows-latest
             platform: windows
-            archive-name: lion-vpn-windows.zip
+            artifact-name: lion-vpn-windows
+            upload-path: cmp/desktopApp/build/compose/binaries/main/app/lion-vpn
           - os: ubuntu-latest
             platform: linux
-            archive-name: lion-vpn-linux.tar.gz
+            artifact-name: lion-vpn-linux
+            upload-path: cmp/desktopApp/build/compose/binaries/main/app/lion-vpn
           - os: macos-latest
             platform: macos
-            archive-name: lion-vpn-macos.zip
+            artifact-name: lion-vpn-macos
+            upload-path: cmp/desktopApp/build/compose/binaries/main/app/lion-vpn.app
 
     steps:
       - name: Checkout Repository
@@ -62,35 +65,24 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -r requirements.txt pyinstaller
 
-      - name: Bundle Python Executable into Compose Resources
+      - name: Bundle Python Executable
         shell: bash
+        working-directory: cmp
         run: |
-          python cmp/bundle_for_gui.py --force
+          chmod +x gradlew
+          ./gradlew :desktopApp:bundlePythonExecutable --no-daemon
 
       - name: Build Desktop Application Distributable
         shell: bash
         working-directory: cmp
         run: |
-          chmod +x gradlew
-          ./gradlew :desktopApp:createDistributableForCurrentOS --no-daemon
+          ./gradlew :desktopApp:createDistributable --no-daemon
 
-      - name: Compress Distributable
-        shell: bash
-        run: |
-          if [ "${{ matrix.platform }}" = "windows" ]; then
-            powershell -Command "Compress-Archive -Path cmp/desktopApp/build/compose/binaries/main/app -DestinationPath ${{ matrix.archive-name }}"
-          elif [ "${{ matrix.platform }}" = "linux" ]; then
-            tar -czf ${{ matrix.archive-name }} -C cmp/desktopApp/build/compose/binaries/main app
-          elif [ "${{ matrix.platform }}" = "macos" ]; then
-            cd cmp/desktopApp/build/compose/binaries/main/app
-            zip -r -y ../../../../../../../${{ matrix.archive-name }} lion-vpn.app
-          fi
-
-      - name: Upload Compressed Distributable Artifact
+      - name: Upload Raw Distributable Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: gui-${{ matrix.platform }}
-          path: ${{ matrix.archive-name }}
+          name: ${{ matrix.artifact-name }}
+          path: ${{ matrix.upload-path }}
           if-no-files-found: error
 
   publish-gui-release:
@@ -123,11 +115,35 @@ jobs:
         with:
           path: final-gui-assets
 
-      - name: Flatten directories
+      - name: Prepare and Compress Assets for Release
         run: |
           mkdir -p release-dist
-          find final-gui-assets -type f -exec cp {} release-dist/ \;
-          echo "Files to publish:"
+          
+          # Compress Windows
+          mkdir -p temp-win
+          mv final-gui-assets/lion-vpn-windows temp-win/lion-vpn
+          cd temp-win
+          zip -r ../release-dist/lion-vpn-windows.zip lion-vpn
+          cd ..
+          rm -rf temp-win
+          
+          # Compress Linux
+          mkdir -p temp-linux
+          mv final-gui-assets/lion-vpn-linux temp-linux/lion-vpn
+          cd temp-linux
+          tar -czf ../release-dist/lion-vpn-linux.tar.gz lion-vpn
+          cd ..
+          rm -rf temp-linux
+          
+          # Compress macOS
+          mkdir -p temp-mac
+          mv final-gui-assets/lion-vpn-macos temp-mac/lion-vpn.app
+          cd temp-mac
+          zip -r -y ../release-dist/lion-vpn-macos.zip lion-vpn.app
+          cd ..
+          rm -rf temp-mac
+          
+          echo "Compressed release files:"
           ls -lah release-dist
 
       - name: Create GitHub Release

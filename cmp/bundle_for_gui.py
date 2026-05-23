@@ -128,10 +128,9 @@ def main() -> int:
     log(f"Target path: {dest_path}")
 
     # Copy config.example.json to common resources so it is always packaged
-    common_resources_dir = repo_root / "cmp" / "desktopApp" / "src" / "main" / "resources"
-    common_resources_dir.mkdir(parents=True, exist_ok=True)
+    dest_dir.mkdir(parents=True, exist_ok=True)
     example_src = repo_root / "config.example.json"
-    example_dest = common_resources_dir / "config.example.json"
+    example_dest = dest_dir / "config.example.json"
     if example_src.exists():
         log(f"Copying config.example.json to {example_dest}")
         shutil.copy2(example_src, example_dest)
@@ -174,9 +173,13 @@ def main() -> int:
     ]
 
     try:
-        subprocess.run(cmd, check=True)
+        subprocess.run(cmd, check=True, capture_output=True, text=True)
     except subprocess.CalledProcessError as e:
         error(f"PyInstaller execution failed: {e}")
+        print("--- PYINSTALLER STDOUT ---", file=sys.stderr)
+        print(e.stdout, file=sys.stderr)
+        print("--- PYINSTALLER STDERR ---", file=sys.stderr)
+        print(e.stderr, file=sys.stderr)
         return 1
 
     # 5. Move executable to resources
