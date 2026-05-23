@@ -1,5 +1,3 @@
-import org.jetbrains.compose.desktop.application.dsl.TargetFormat
-import java.nio.file.Paths
 
 plugins {
     alias(libs.plugins.kotlinJvm)
@@ -31,7 +29,7 @@ sourceSets {
             val os = System.getProperty("os.name").lowercase()
             if (!os.contains("mac")) exclude("macos/**")
             if (!os.contains("win")) exclude("windows/**")
-            if (!os.contains("nix") && !os.contains("nux") && !os.contains("aix")) exclude("linux/**")
+            if (!os.contains("linux")) exclude("linux/**")
         }
     }
 }
@@ -44,7 +42,7 @@ val prepareAppResourcesForPackaging = tasks.register<Copy>("prepareAppResourcesF
     
     if (!os.contains("mac")) exclude("macos/**")
     if (!os.contains("win")) exclude("windows/**")
-    if (!os.contains("nix") && !os.contains("nux") && !os.contains("aix")) exclude("linux/**")
+    if (!os.contains("linux")) exclude("linux/**")
 }
 
 compose.desktop {
@@ -113,10 +111,22 @@ tasks.register<Exec>("bundlePythonExecutable") {
 
 // Hook the bundle task into standard execution and packaging tasks
 tasks.configureEach {
-    if (name == "run" || name.startsWith("package") || name.startsWith("createDistributable")) {
+    val isPackagingOrRunning = name.contains("package", ignoreCase = true) || 
+                               name.contains("Distributable", ignoreCase = true) || 
+                               name == "run"
+                               
+    if (isPackagingOrRunning) {
         dependsOn("bundlePythonExecutable")
     }
-    if (name.startsWith("package") || name.startsWith("createDistributable")) {
+    
+    val isPackagingOnly = name.contains("package", ignoreCase = true) || 
+                          name.contains("Distributable", ignoreCase = true)
+                          
+    if (isPackagingOnly) {
+        dependsOn("prepareAppResourcesForPackaging")
+    }
+    
+    if (name == "prepareAppResources") {
         dependsOn("prepareAppResourcesForPackaging")
     }
 }
