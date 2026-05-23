@@ -33,15 +33,15 @@ jobs:
           - os: windows-latest
             platform: windows
             artifact-name: lion-vpn-windows
-            upload-path: cmp/desktopApp/build/compose/binaries/main/app/lion-vpn
+            upload-path: cmp/desktopApp/build/compose/binaries/main-release/app/lion-vpn
           - os: ubuntu-latest
             platform: linux
             artifact-name: lion-vpn-linux
-            upload-path: cmp/desktopApp/build/compose/binaries/main/app/lion-vpn
+            upload-path: cmp/desktopApp/build/compose/binaries/main-release/app/lion-vpn
           - os: macos-latest
             platform: macos
             artifact-name: lion-vpn-macos
-            upload-path: cmp/desktopApp/build/compose/binaries/main/app/lion-vpn.app
+            upload-path: cmp/desktopApp/build/compose/binaries/main-release/app
 
     steps:
       - name: Checkout Repository
@@ -76,7 +76,7 @@ jobs:
         shell: bash
         working-directory: cmp
         run: |
-          ./gradlew :desktopApp:createDistributable --no-daemon
+          ./gradlew :desktopApp:createReleaseDistributable --no-daemon
 
       - name: Upload Raw Distributable Artifact
         uses: actions/upload-artifact@v4
@@ -136,12 +136,9 @@ jobs:
           rm -rf temp-linux
           
           # Compress macOS
-          mkdir -p temp-mac
-          mv final-gui-assets/lion-vpn-macos temp-mac/lion-vpn.app
-          cd temp-mac
-          zip -r -y ../release-dist/lion-vpn-macos.zip lion-vpn.app
-          cd ..
-          rm -rf temp-mac
+          cd final-gui-assets/lion-vpn-macos
+          zip -r -y ../../release-dist/lion-vpn-macos.zip lion-vpn.app
+          cd ../..
           
           echo "Compressed release files:"
           ls -lah release-dist
