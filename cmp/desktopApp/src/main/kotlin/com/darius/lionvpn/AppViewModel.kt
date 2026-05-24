@@ -149,6 +149,7 @@ class AppViewModel : ViewModel() {
                         ProcessRunner.start()
                     }
                 }
+                Event.ClearLogs -> ProcessRunner.clearLogs()
                 is Event.AddConfig -> addConfig(event.config)
                 is Event.DeleteConfig -> deleteConfig(event.config)
                 is Event.SelectConfig -> selectConfig(event.index)

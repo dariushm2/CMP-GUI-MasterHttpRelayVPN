@@ -18,6 +18,7 @@
     <string name="no_config">بدون اسکریپت</string>
     <string name="logs_terminal_desc">ترمینال گزارش‌ها</string>
     <string name="system_logs">گزارش‌های سیستم</string>
+    <string name="clear_logs_desc">گزارش‌ها را پاک کنید</string>
 
     <!-- Certificates Tab -->
     <string name="certificates_title">مدیریت گواهی HTTPS</string>

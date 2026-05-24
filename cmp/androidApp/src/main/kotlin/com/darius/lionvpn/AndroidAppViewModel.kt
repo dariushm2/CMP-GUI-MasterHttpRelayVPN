@@ -68,6 +68,7 @@ class AndroidAppViewModel : ViewModel() {
                 is Event.Connect -> connectVpn()
                 is Event.InstallCertificate -> generateAndInstallCert()
                 is Event.UninstallCertificate -> { /* TODO */ }
+                is Event.ClearLogs -> ProxyService.clearLogs()
                 is Event.AddConfig -> addConfig(event.config)
                 is Event.DeleteConfig -> deleteConfig(event.config)
                 is Event.SelectConfig -> selectConfig(event.index)

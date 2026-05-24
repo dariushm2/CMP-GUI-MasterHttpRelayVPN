@@ -30,9 +30,11 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PowerSettingsNew
 import androidx.compose.material.icons.filled.Terminal
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -89,6 +91,7 @@ fun DashboardTab(
         // Terminal Log Console Card
         TerminalLogConsole(
             logs = state.log,
+            onClick = onClick,
             modifier = Modifier.weight(1f)
         )
     }
@@ -286,6 +289,7 @@ private fun ConnectionHeroCard(
 @Composable
 private fun TerminalLogConsole(
     logs: List<String>,
+    onClick: (Event) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val lazyListState = rememberLazyListState()
@@ -307,7 +311,7 @@ private fun TerminalLogConsole(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(surfaceContainerLow)
-                    .padding(horizontal = gutter, vertical = 10.dp),
+                    .padding(horizontal = gutter, vertical = 4.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -324,6 +328,18 @@ private fun TerminalLogConsole(
                     Text(
                         text = stringResource(Res.string.system_logs),
                         style = labelCaps.copy(color = onSurfaceVariant)
+                    )
+                }
+
+                IconButton(
+                    onClick = { onClick(Event.ClearLogs) },
+                    modifier = Modifier.size(32.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Delete,
+                        contentDescription = stringResource(Res.string.clear_logs_desc),
+                        tint = onSurfaceVariant.copy(alpha = 0.8f),
+                        modifier = Modifier.size(18.dp)
                     )
                 }
             }

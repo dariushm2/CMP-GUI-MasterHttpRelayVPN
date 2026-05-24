@@ -6,6 +6,7 @@ sealed interface Event {
     object Connect : Event
     object InstallCertificate : Event
     object UninstallCertificate : Event
+    object ClearLogs : Event
     data class AddConfig(val config: SavedConfig) : Event
     data class DeleteConfig(val config: SavedConfig) : Event
     data class SelectConfig(val index: Int) : Event

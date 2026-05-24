@@ -247,5 +247,10 @@ class ProxyService : VpnService() {
             currentList.add(line)
             _vpnLogs.value = currentList
         }
+
+        @JvmStatic
+        fun clearLogs() {
+            _vpnLogs.value = emptyList()
+        }
     }
 }

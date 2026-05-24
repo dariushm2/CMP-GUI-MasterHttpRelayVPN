@@ -25,6 +25,10 @@ object ProcessRunner {
     private val _vpnLogs = MutableStateFlow(emptyList<String>())
     val vpnLogs: StateFlow<List<String>> = _vpnLogs.asStateFlow()
 
+    fun clearLogs() {
+        _vpnLogs.value = emptyList()
+    }
+
     fun installCert() {
         println("Installing Certificate for: $binaryPath")
 
