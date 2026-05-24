@@ -60,5 +60,12 @@
     <string name="setup_instructions_title">راهنمای راه‌اندازی اسکریپت</string>
     <string name="setup_instructions_click_to_view">برای مشاهده راهنمای گام‌به‌گام راه‌اندازی کلیک کنید</string>
     <string name="setup_instructions_close">بستن راهنما</string>
-    <string name="setup_instructions_body">برای تهیه Deployment ID و Auth Key، مراحل زیر را دنبال کنید:\n\n۱. کد موجود در آدرس زیر را کپی کنید:\nhttps://github.com/masterking32/MasterHttpRelayVPN/blob/python_testing/apps_script/Code.gs\n\n۲. در حساب کاربری گوگل خود وارد https://script.google.com شده، یک پروژه جدید بسازید و کد کپی شده را جایگزین محتوای فعلی کنید.\n\n۳. در ویرایشگر، عبارت AUTH_KEY = \"CHANGE_ME_TO_A_STRONG_SECRET\" را با کلمه عبور انتخابی خود جایگزین کنید.\n\n۴. روی دکمه Deploy کلیک کرده و New deployment -> Web app را انتخاب کنید.\n\n۵. گزینه Execute as را روی Me تنظیم کنید.\n\n۶. گزینه Who has access را روی Anyone تنظیم کنید.\n\n۷. روی Deploy کلیک کرده، دسترسی‌های لازم را تایید کنید و در نهایت شناسه استقرار (Deployment ID) و کلمه عبور خود را کپی کرده و در فرم برنامه ثبت کنید.</string>
+    <string name="setup_instructions_intro">برای راه‌اندازی پروفایل اسکریپت، مراحل زیر را دنبال کنید:</string>
+    <string name="setup_instructions_step1">۱. کد موجود در لینک زیر را از گیت‌هاب کپی کنید:</string>
+    <string name="setup_instructions_step2">۲. وارد حساب کاربری گوگل خود در سایت زیر شده، یک پروژه جدید بسازید و کد کپی شده را جایگزین محتوای فعلی کنید:</string>
+    <string name="setup_instructions_step3">۳. در ویرایشگر، عبارت CHANGE_ME_TO_A_STRONG_SECRET را پیدا کرده و با کلمه عبور قوی انتخابی خود جایگزین کنید.</string>
+    <string name="setup_instructions_step4">۴. روی دکمه Deploy کلیک کرده و New deployment -> Web app را انتخاب کنید.</string>
+    <string name="setup_instructions_step5">۵. گزینه Execute as را روی Me تنظیم کنید.</string>
+    <string name="setup_instructions_step6">۶. گزینه Who has access را روی Anyone تنظیم کنید.</string>
+    <string name="setup_instructions_step7">۷. روی Deploy کلیک کرده، دسترسی‌های لازم را تایید کنید و در نهایت شناسه استقرار (Deployment ID) و کلمه عبور خود را کپی کرده و در فرم برنامه ثبت کنید.</string>
 </resources>
