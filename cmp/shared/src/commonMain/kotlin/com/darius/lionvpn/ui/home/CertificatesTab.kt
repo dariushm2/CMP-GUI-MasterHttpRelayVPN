@@ -20,7 +20,6 @@ import lion_vpn.shared.generated.resources.*
 
 @Composable
 fun CertificatesTab(
-    state: HomeState,
     onClick: (Event) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -88,7 +87,7 @@ fun CertificatesTab(
 
                     // Install button
                     Button(
-                        onClick = { onClick(Event.Certificate) },
+                        onClick = { onClick(Event.InstallCertificate) },
                         colors = ButtonDefaults.buttonColors(
                             containerColor = secondary,
                             contentColor = onSecondary
@@ -122,7 +121,7 @@ fun CertificatesTab(
 
                     // Uninstall button
                     OutlinedButton(
-                        onClick = { /* uninstall action mock */ },
+                        onClick = { onClick(Event.UninstallCertificate) },
                         shape = roundedDefault,
                         colors = ButtonDefaults.outlinedButtonColors(
                             contentColor = error

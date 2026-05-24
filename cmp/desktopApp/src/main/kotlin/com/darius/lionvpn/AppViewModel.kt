@@ -134,9 +134,14 @@ class AppViewModel : ViewModel() {
     fun handleEvent(event: Event) {
         viewModelScope.launch(errorHandler) {
             when (event) {
-                Event.Certificate -> {
+                Event.InstallCertificate -> {
                     withContext(Dispatchers.IO) {
                         ProcessRunner.installCert()
+                    }
+                }
+                Event.UninstallCertificate -> {
+                    withContext(Dispatchers.IO) {
+                        ProcessRunner.uninstallCert()
                     }
                 }
                 Event.Connect -> {

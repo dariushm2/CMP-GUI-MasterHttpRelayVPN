@@ -90,10 +90,7 @@ fun HomeScreen(
                                 state = state,
                                 onClick = onClick
                             )
-                            HomeTab.Certificates -> CertificatesTab(
-                                state = state,
-                                onClick = onClick
-                            )
+                            HomeTab.Certificates -> CertificatesTab(onClick = onClick)
                         }
                     }
                 }

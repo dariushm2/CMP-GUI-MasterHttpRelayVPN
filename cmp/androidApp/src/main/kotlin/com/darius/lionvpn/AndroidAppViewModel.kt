@@ -44,7 +44,7 @@ class AndroidAppViewModel : ViewModel() {
     ) { running, logs, configs, index ->
         HomeState(
             isVpnRunning = running,
-            log = if (isDebugBuild()) logs else null,
+            log = logs,
             savedConfigs = configs,
             selectedConfigIndex = index
         )
@@ -66,7 +66,8 @@ class AndroidAppViewModel : ViewModel() {
         viewModelScope.launch {
             when (event) {
                 is Event.Connect -> connectVpn()
-                is Event.Certificate -> generateAndInstallCert()
+                is Event.InstallCertificate -> generateAndInstallCert()
+                is Event.UninstallCertificate -> { /* TODO */ }
                 is Event.AddConfig -> addConfig(event.config)
                 is Event.DeleteConfig -> deleteConfig(event.config)
                 is Event.SelectConfig -> selectConfig(event.index)
