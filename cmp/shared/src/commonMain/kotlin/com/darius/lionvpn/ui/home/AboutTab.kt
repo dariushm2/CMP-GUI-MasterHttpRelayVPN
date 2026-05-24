@@ -93,7 +93,7 @@ fun AboutTab(
                         verticalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
                         Text(
-                            text = "نحوه انتقال و عبور ترافیک (Traffic Flow Architecture)",
+                            text = stringResource(Res.string.about_diagram_title),
                             style = titleSm.copy(fontWeight = FontWeight.Bold, color = primary),
                             modifier = Modifier.align(Alignment.Start)
                         )
@@ -121,17 +121,17 @@ fun AboutTab(
                                     ) {
                                         Icon(
                                             imageVector = Icons.Default.Lock,
-                                            contentDescription = "Device",
+                                            contentDescription = stringResource(Res.string.about_desc_device_icon),
                                             tint = primary,
                                             modifier = Modifier.size(24.dp)
                                         )
                                     }
                                     Text(
-                                        text = "دستگاه شما",
+                                        text = stringResource(Res.string.about_step_device),
                                         style = bodySm.copy(fontWeight = FontWeight.Bold, color = onSurface)
                                     )
                                     Text(
-                                        text = "بسته‌بندی ترافیک\n(Repackage)",
+                                        text = stringResource(Res.string.about_step_device_desc),
                                         style = bodySm.copy(fontSize = 10.sp, color = onSurfaceVariant)
                                     )
                                 }
@@ -142,13 +142,13 @@ fun AboutTab(
                                 ) {
                                     Icon(
                                         imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-                                        contentDescription = "Flow direction",
+                                        contentDescription = stringResource(Res.string.about_desc_flow_icon),
                                         tint = secondary.copy(alpha = 0.6f),
                                         modifier = Modifier.size(24.dp)
                                     )
                                     Icon(
                                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                        contentDescription = "Flow direction",
+                                        contentDescription = stringResource(Res.string.about_desc_flow_icon),
                                         tint = secondary.copy(alpha = 0.6f),
                                         modifier = Modifier.size(24.dp)
                                     )
@@ -168,17 +168,17 @@ fun AboutTab(
                                     ) {
                                         Icon(
                                             imageVector = Icons.Default.CloudQueue,
-                                            contentDescription = "Google Apps Script",
+                                            contentDescription = stringResource(Res.string.about_desc_relay_icon),
                                             tint = secondary,
                                             modifier = Modifier.size(24.dp)
                                         )
                                     }
                                     Text(
-                                        text = "رله گوگل",
+                                        text = stringResource(Res.string.about_step_relay),
                                         style = bodySm.copy(fontWeight = FontWeight.Bold, color = onSurface)
                                     )
                                     Text(
-                                        text = "بازگشایی و دریافت\n(Depackage)",
+                                        text = stringResource(Res.string.about_step_relay_desc),
                                         style = bodySm.copy(fontSize = 10.sp, color = onSurfaceVariant)
                                     )
                                 }
@@ -189,13 +189,13 @@ fun AboutTab(
                                 ) {
                                     Icon(
                                         imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-                                        contentDescription = "Flow direction",
+                                        contentDescription = stringResource(Res.string.about_desc_flow_icon),
                                         tint = secondary.copy(alpha = 0.6f),
                                         modifier = Modifier.size(24.dp)
                                     )
                                     Icon(
                                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                        contentDescription = "Flow direction",
+                                        contentDescription = stringResource(Res.string.about_desc_flow_icon),
                                         tint = secondary.copy(alpha = 0.6f),
                                         modifier = Modifier.size(24.dp)
                                     )
@@ -215,17 +215,17 @@ fun AboutTab(
                                     ) {
                                         Icon(
                                             imageVector = Icons.Default.Language,
-                                            contentDescription = "Destination Site",
+                                            contentDescription = stringResource(Res.string.about_desc_destination_icon),
                                             tint = tertiary,
                                             modifier = Modifier.size(24.dp)
                                         )
                                     }
                                     Text(
-                                        text = "سایت مقصد",
+                                        text = stringResource(Res.string.about_step_destination),
                                         style = bodySm.copy(fontWeight = FontWeight.Bold, color = onSurface)
                                     )
                                     Text(
-                                        text = "دریافت پاسخ\n(Destination)",
+                                        text = stringResource(Res.string.about_step_destination_desc),
                                         style = bodySm.copy(fontSize = 10.sp, color = onSurfaceVariant)
                                     )
                                 }
@@ -255,7 +255,7 @@ fun AboutTab(
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Info,
-                                contentDescription = "About App",
+                                contentDescription = stringResource(Res.string.about_desc_info_icon),
                                 tint = primary,
                                 modifier = Modifier.size(22.dp)
                             )
@@ -293,7 +293,7 @@ fun AboutTab(
                         ) {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.HelpOutline,
-                                contentDescription = "App Benefits",
+                                contentDescription = stringResource(Res.string.about_desc_benefits_icon),
                                 tint = secondary,
                                 modifier = Modifier.size(22.dp)
                             )
@@ -343,7 +343,7 @@ fun AboutTab(
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Warning,
-                                contentDescription = "Rate Limits",
+                                contentDescription = stringResource(Res.string.about_desc_warning_icon),
                                 tint = tertiary,
                                 modifier = Modifier.size(22.dp)
                             )

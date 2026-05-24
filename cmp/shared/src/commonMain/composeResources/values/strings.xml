@@ -88,4 +88,22 @@
     <string name="about_limits_description">گوگل برای استفاده از سرویس رایگان Apps Script محدودیت‌های مصرف روزانه (Rate Limits) اعمال می‌کند. اگر حجم ترافیک مصرفی شما از این سقف مشخص عبور کند، سرور گوگل موقتاً پاسخ‌دهی را متوقف خواهد کرد.
 
 برای حل کامل این مشکل، شما می‌توانید چندین استقرار (Deployment) مختلف روی یک یا چند حساب گوگل مختلف ایجاد کنید. در صورتی که با این محدودیت مواجه شدید، کافیست در بخش «اسکریپت‌ها» شناسه استقرار (Deployment ID) فعال خود را به شناسه دیگری تغییر دهید تا بدون وقفه و مشکل به اتصال آزاد ادامه دهید.</string>
+
+    <!-- About Tab Diagram Labels -->
+    <string name="about_diagram_title">نحوه انتقال و عبور ترافیک (Traffic Flow Architecture)</string>
+    <string name="about_step_device">دستگاه شما</string>
+    <string name="about_step_device_desc">بسته‌بندی ترافیک\n(Repackage)</string>
+    <string name="about_step_relay">رله گوگل</string>
+    <string name="about_step_relay_desc">بازگشایی و دریافت\n(Depackage)</string>
+    <string name="about_step_destination">سایت مقصد</string>
+    <string name="about_step_destination_desc">دریافت پاسخ\n(Destination)</string>
+    
+    <!-- About Tab Image/Icon Descriptions -->
+    <string name="about_desc_device_icon">دستگاه کلاینت</string>
+    <string name="about_desc_flow_icon">جهت انتقال ترافیک</string>
+    <string name="about_desc_relay_icon">رله پردازش ابری گوگل</string>
+    <string name="about_desc_destination_icon">وب‌سایت مقصد اینترنت</string>
+    <string name="about_desc_info_icon">آیکون درباره برنامه</string>
+    <string name="about_desc_benefits_icon">آیکون مزایای برنامه</string>
+    <string name="about_desc_warning_icon">آیکون محدودیت مصرف</string>
 </resources>
