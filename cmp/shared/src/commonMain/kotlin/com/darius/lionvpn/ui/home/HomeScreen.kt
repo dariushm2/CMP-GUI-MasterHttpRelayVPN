@@ -26,7 +26,8 @@ import lion_vpn.shared.generated.resources.*
 enum class HomeTab {
     Dashboard,
     Scripts,
-    Certificates
+    Certificates,
+    About
 }
 
 @OptIn(ExperimentalAnimationApi::class)
@@ -93,6 +94,7 @@ fun HomeScreen(
                                 onClick = onClick
                             )
                             HomeTab.Certificates -> CertificatesTab(onClick = onClick)
+                            HomeTab.About -> AboutTab()
                         }
                     }
                 }
@@ -181,6 +183,12 @@ private fun Sidebar(
                     icon = Icons.Default.VerifiedUser,
                     isActive = activeTab == HomeTab.Certificates,
                     onClick = { onTabSelect(HomeTab.Certificates) }
+                )
+                SidebarNavItem(
+                    label = stringResource(Res.string.tab_about),
+                    icon = Icons.Default.Info,
+                    isActive = activeTab == HomeTab.About,
+                    onClick = { onTabSelect(HomeTab.About) }
                 )
             }
         }
