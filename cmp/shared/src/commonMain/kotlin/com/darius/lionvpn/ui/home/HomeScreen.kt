@@ -134,12 +134,7 @@ private fun Sidebar(
                         .border(1.dp, primary.copy(alpha = 0.3f), roundedDefault),
                     contentAlignment = Alignment.Center
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.Shield,
-                        contentDescription = stringResource(Res.string.shield_logo_desc),
-                        tint = primary,
-                        modifier = Modifier.size(22.dp)
-                    )
+                    Text("🦁", style = displayLg)
                 }
                 Spacer(modifier = Modifier.width(12.dp))
                 Column {
