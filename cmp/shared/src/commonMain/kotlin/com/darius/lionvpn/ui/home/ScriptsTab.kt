@@ -9,6 +9,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -603,84 +604,92 @@ private fun SetupInstructionsDialog(
                         .fillMaxWidth()
                         .heightIn(max = 360.dp)
                 ) {
-                    val scrollState = rememberScrollState()
-                    val uriHandler = LocalUriHandler.current
-
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .verticalScroll(scrollState),
-                        verticalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-                        Text(
-                            text = stringResource(Res.string.setup_instructions_intro),
-                            style = bodySm.copy(color = onSurface, fontWeight = FontWeight.Bold, lineHeight = 20.sp)
-                        )
-
-                        // Step 1
-                        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                            Text(
-                                text = stringResource(Res.string.setup_instructions_step1),
-                                style = bodySm.copy(color = onSurface, lineHeight = 20.sp)
-                            )
-                            Text(
-                                text = "https://github.com/masterking32/MasterHttpRelayVPN/blob/python_testing/apps_script/Code.gs",
-                                color = primary,
-                                style = bodySm.copy(textDecoration = TextDecoration.Underline, fontWeight = FontWeight.Medium),
-                                modifier = Modifier
-                                    .clickable { uriHandler.openUri("https://github.com/masterking32/MasterHttpRelayVPN/blob/python_testing/apps_script/Code.gs") }
-                                    .padding(vertical = 2.dp)
-                            )
-                        }
-
-                        // Step 2
-                        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                            Text(
-                                text = stringResource(Res.string.setup_instructions_step2),
-                                style = bodySm.copy(color = onSurface, lineHeight = 20.sp)
-                            )
-                            Text(
-                                text = "https://script.google.com/",
-                                color = primary,
-                                style = bodySm.copy(textDecoration = TextDecoration.Underline, fontWeight = FontWeight.Medium),
-                                modifier = Modifier
-                                    .clickable { uriHandler.openUri("https://script.google.com") }
-                                    .padding(vertical = 2.dp)
-                            )
-                        }
-
-                        // Step 3
-                        Text(
-                            text = stringResource(Res.string.setup_instructions_step3),
-                            style = bodySm.copy(color = onSurface, lineHeight = 20.sp)
-                        )
-
-                        // Step 4
-                        Text(
-                            text = stringResource(Res.string.setup_instructions_step4),
-                            style = bodySm.copy(color = onSurface, lineHeight = 20.sp)
-                        )
-
-                        // Step 5
-                        Text(
-                            text = stringResource(Res.string.setup_instructions_step5),
-                            style = bodySm.copy(color = onSurface, lineHeight = 20.sp)
-                        )
-
-                        // Step 6
-                        Text(
-                            text = stringResource(Res.string.setup_instructions_step6),
-                            style = bodySm.copy(color = onSurface, lineHeight = 20.sp)
-                        )
-
-                        // Step 7
-                        Text(
-                            text = stringResource(Res.string.setup_instructions_step7),
-                            style = bodySm.copy(color = onSurface, lineHeight = 20.sp)
-                        )
+                    SelectionContainer {
+                        Steps()
                     }
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun Steps() {
+    val scrollState = rememberScrollState()
+    val uriHandler = LocalUriHandler.current
+    Column(
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .verticalScroll(scrollState)
+    ) {
+        Text(
+            text = stringResource(Res.string.setup_instructions_intro),
+            style = bodySm.copy(color = onSurface, fontWeight = FontWeight.Bold, lineHeight = 20.sp)
+        )
+
+        // Step 1
+        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+            Text(
+                text = stringResource(Res.string.setup_instructions_step1),
+                style = bodySm.copy(color = onSurface, lineHeight = 20.sp)
+            )
+            val script = "https://github.com/masterking32/MasterHttpRelayVPN/blob/python_testing/apps_script/Code.gs"
+            Text(
+                text = script,
+                color = primary,
+                style = bodySm.copy(textDecoration = TextDecoration.Underline, fontWeight = FontWeight.Medium),
+                modifier = Modifier
+                    .clickable { uriHandler.openUri(script) }
+                    .padding(vertical = 2.dp)
+            )
+        }
+
+        // Step 2
+        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+            Text(
+                text = stringResource(Res.string.setup_instructions_step2),
+                style = bodySm.copy(color = onSurface, lineHeight = 20.sp)
+            )
+            val googleScript = "https://script.google.com"
+            Text(
+                text = googleScript,
+                color = primary,
+                style = bodySm.copy(textDecoration = TextDecoration.Underline, fontWeight = FontWeight.Medium),
+                modifier = Modifier
+                    .clickable { uriHandler.openUri(googleScript) }
+                    .padding(vertical = 2.dp)
+            )
+        }
+
+        // Step 3
+        Text(
+            text = stringResource(Res.string.setup_instructions_step3),
+            style = bodySm.copy(color = onSurface, lineHeight = 20.sp)
+        )
+
+        // Step 4
+        Text(
+            text = stringResource(Res.string.setup_instructions_step4),
+            style = bodySm.copy(color = onSurface, lineHeight = 20.sp)
+        )
+
+        // Step 5
+        Text(
+            text = stringResource(Res.string.setup_instructions_step5),
+            style = bodySm.copy(color = onSurface, lineHeight = 20.sp)
+        )
+
+        // Step 6
+        Text(
+            text = stringResource(Res.string.setup_instructions_step6),
+            style = bodySm.copy(color = onSurface, lineHeight = 20.sp)
+        )
+
+        // Step 7
+        Text(
+            text = stringResource(Res.string.setup_instructions_step7),
+            style = bodySm.copy(color = onSurface, lineHeight = 20.sp)
+        )
     }
 }

@@ -27,6 +27,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PowerSettingsNew
 import androidx.compose.material.icons.filled.Terminal
@@ -347,18 +348,20 @@ private fun TerminalLogConsole(
             // Scrollable terminal content
 
             CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
-                LazyColumn(
-                    state = lazyListState,
-                    verticalArrangement = Arrangement.spacedBy(6.dp),
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(Color.Black.copy(alpha = 0.4f))
-                        .padding(16.dp)
-                ) {
-                    // If logs are empty/null, display the mock startup logs from the design
-                    items(logs) { log ->
-                        val (formattedText, type) = parseLogType(log)
-                        LogEntry(formattedText, type = type)
+                SelectionContainer {
+                    LazyColumn(
+                        state = lazyListState,
+                        verticalArrangement = Arrangement.spacedBy(6.dp),
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(Color.Black.copy(alpha = 0.4f))
+                            .padding(16.dp)
+                    ) {
+                        // If logs are empty/null, display the mock startup logs from the design
+                        items(logs) { log ->
+                            val (formattedText, type) = parseLogType(log)
+                            LogEntry(formattedText, type = type)
+                        }
                     }
                 }
             }
