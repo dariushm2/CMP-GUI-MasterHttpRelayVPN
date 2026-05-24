@@ -42,12 +42,12 @@
     <string name="new_script_profile">پروفایل اسکریپت جدید</string>
     <string name="close_add_profile_icon_desc">آیکون بستن افزودن پروفایل</string>
     <string name="profile_label">نام پروفایل</string>
-    <string name="profile_label_placeholder">مانند: شماره ۱، حساب خودم یا هر چی</string>
+    <string name="profile_label_placeholder">نام اختیاری مانند شماره ۱، حساب خودم یا هر چی</string>
     <string name="deployment_id_label">شناسه استقرار Deployment ID</string>
-    <string name="deployment_id_placeholder">شناسه استقرار Google Apps Script را وارد کنید</string>
+    <string name="deployment_id_placeholder">Deployment ID</string>
     <string name="deployment_id_icon_desc">آیکون شناسه استقرار</string>
     <string name="relay_auth_key_label">کلید احراز هویت Auth Key</string>
-    <string name="relay_auth_key_placeholder">کلید احراز هویت را وارد کنید</string>
+    <string name="relay_auth_key_placeholder">Auth Key</string>
     <string name="auth_key_icon_desc">آیکون کلید احراز هویت</string>
     <string name="hide">پنهان</string>
     <string name="show">پیدا</string>
@@ -55,4 +55,10 @@
     <string name="error_deployment_id_blank">شناسه استقرار نمی‌تواند خالی باشد.</string>
     <string name="error_auth_key_blank">کلید احراز هویت نمی‌تواند خالی باشد.</string>
     <string name="save_profile">ذخیره پروفایل</string>
+
+    <!-- Setup Instructions -->
+    <string name="setup_instructions_title">راهنمای راه‌اندازی اسکریپت</string>
+    <string name="setup_instructions_click_to_view">برای مشاهده راهنمای گام‌به‌گام راه‌اندازی کلیک کنید</string>
+    <string name="setup_instructions_close">بستن راهنما</string>
+    <string name="setup_instructions_body">برای تهیه Deployment ID و Auth Key، مراحل زیر را دنبال کنید:\n\n۱. کد موجود در آدرس زیر را کپی کنید:\nhttps://github.com/masterking32/MasterHttpRelayVPN/blob/python_testing/apps_script/Code.gs\n\n۲. در حساب کاربری گوگل خود وارد https://script.google.com شده، یک پروژه جدید بسازید و کد کپی شده را جایگزین محتوای فعلی کنید.\n\n۳. در ویرایشگر، عبارت AUTH_KEY = \"CHANGE_ME_TO_A_STRONG_SECRET\" را با کلمه عبور انتخابی خود جایگزین کنید.\n\n۴. روی دکمه Deploy کلیک کرده و New deployment -> Web app را انتخاب کنید.\n\n۵. گزینه Execute as را روی Me تنظیم کنید.\n\n۶. گزینه Who has access را روی Anyone تنظیم کنید.\n\n۷. روی Deploy کلیک کرده، دسترسی‌های لازم را تایید کنید و در نهایت شناسه استقرار (Deployment ID) و کلمه عبور خود را کپی کرده و در فرم برنامه ثبت کنید.</string>
 </resources>

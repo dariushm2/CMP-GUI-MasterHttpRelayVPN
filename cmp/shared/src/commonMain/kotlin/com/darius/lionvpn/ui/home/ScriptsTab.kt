@@ -40,6 +40,7 @@ fun ScriptsTab(
 ) {
     val scrollState = rememberScrollState()
     var isAddDialogVisible by remember { mutableStateOf(false) }
+    var isInstructionsDialogVisible by remember { mutableStateOf(false) }
 
     Column(
         modifier = modifier
@@ -87,6 +88,53 @@ fun ScriptsTab(
             }
         }
 
+        // Setup Instructions Banner Card (Clickable to open dialog)
+        Card(
+            shape = roundedDefault,
+            colors = CardDefaults.cardColors(
+                containerColor = surfaceContainerLow.copy(alpha = 0.6f)
+            ),
+            border = borderStrokeGlass(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { isInstructionsDialogVisible = true }
+        ) {
+            Row(
+                modifier = Modifier.padding(16.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Info,
+                        contentDescription = "Instructions Icon",
+                        tint = secondary,
+                        modifier = Modifier.size(24.dp)
+                    )
+                    Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                        Text(
+                            text = stringResource(Res.string.setup_instructions_title),
+                            style = titleSm.copy(fontWeight = FontWeight.Bold, color = secondary)
+                        )
+                        Text(
+                            text = stringResource(Res.string.setup_instructions_click_to_view),
+                            style = bodySm.copy(color = onSurfaceVariant, fontSize = 12.sp)
+                        )
+                    }
+                }
+                Icon(
+                    imageVector = Icons.Default.ChevronLeft,
+                    contentDescription = "Chevron Right",
+                    tint = onSurfaceVariant.copy(alpha = 0.6f),
+                    modifier = Modifier.size(20.dp)
+                )
+            }
+        }
+
         // Scripts List Card
         Column(
             modifier = Modifier.fillMaxWidth(),
@@ -125,6 +173,13 @@ fun ScriptsTab(
                     onClick(Event.AddConfig(SavedConfig(id = id, key = key, name = name)))
                     isAddDialogVisible = false
                 }
+            )
+        }
+
+        // Integrated Setup Instructions Dialog
+        if (isInstructionsDialogVisible) {
+            SetupInstructionsDialog(
+                onDismiss = { isInstructionsDialogVisible = false }
             )
         }
     }
@@ -481,3 +536,84 @@ fun customTextFieldColors() = OutlinedTextFieldDefaults.colors(
     focusedLabelColor = primary,
     unfocusedLabelColor = onSurfaceVariant
 )
+
+@Composable
+private fun SetupInstructionsDialog(
+    onDismiss: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Dialog(onDismissRequest = onDismiss) {
+        Card(
+            modifier = modifier
+                .width(520.dp)
+                .padding(16.dp),
+            shape = roundedLg,
+            colors = CardDefaults.cardColors(
+                containerColor = surfaceContainerHigh
+            ),
+            border = borderStrokeGlass()
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(24.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                // Header
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Info,
+                            contentDescription = "Instructions Icon",
+                            tint = secondary,
+                            modifier = Modifier.size(20.dp)
+                        )
+                        Text(
+                            text = stringResource(Res.string.setup_instructions_title),
+                            style = titleSm.copy(
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = secondary
+                            )
+                        )
+                    }
+                    IconButton(onClick = onDismiss) {
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = "Close Dialog",
+                            tint = onSurfaceVariant
+                        )
+                    }
+                }
+
+                Divider(color = outlineVariant)
+
+                // Scrollable Body Text
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .heightIn(max = 360.dp)
+                ) {
+                    val scrollState = rememberScrollState()
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .verticalScroll(scrollState)
+                    ) {
+                        Text(
+                            text = stringResource(Res.string.setup_instructions_body),
+                            style = bodySm.copy(color = onSurface, lineHeight = 20.sp)
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
