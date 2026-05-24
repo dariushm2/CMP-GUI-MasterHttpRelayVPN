@@ -32,7 +32,7 @@ class AppViewModel : ViewModel() {
     ) { running, logs, configs, index ->
         HomeState(
             isVpnRunning = running,
-            log = if (isDebugBuild()) logs else null,
+            log = logs,
             savedConfigs = configs,
             selectedConfigIndex = index
         )

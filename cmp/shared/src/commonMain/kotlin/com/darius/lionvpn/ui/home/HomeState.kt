@@ -4,7 +4,7 @@ import com.darius.lionvpn.ui.model.SavedConfig
 
 data class HomeState(
     val isVpnRunning: Boolean = false,
-    val log: List<String>? = null,
+    val log: List<String> = emptyList(),
     val savedConfigs: List<SavedConfig> = emptyList(),
     val selectedConfigIndex: Int = -1
 )

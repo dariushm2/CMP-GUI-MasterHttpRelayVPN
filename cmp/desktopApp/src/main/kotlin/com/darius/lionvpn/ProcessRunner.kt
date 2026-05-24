@@ -22,7 +22,7 @@ object ProcessRunner {
 
     private val _isVpnRunning = MutableStateFlow(false)
     val isVpnRunning: StateFlow<Boolean> = _isVpnRunning.asStateFlow()
-    private val _vpnLogs = MutableStateFlow(listOf("Lion VPN"))
+    private val _vpnLogs = MutableStateFlow(emptyList<String>())
     val vpnLogs: StateFlow<List<String>> = _vpnLogs.asStateFlow()
 
     fun installCert() {

@@ -76,7 +76,6 @@ private fun NavGraph(
     ) {
         composable(route = Route.Home.route) { 
             HomeScreen(
-                navController = navController,
                 state = state,
                 onClick = onClick,
             )
