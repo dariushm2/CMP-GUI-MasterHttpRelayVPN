@@ -10,6 +10,23 @@ plugins {
     alias(libs.plugins.detekt)
 }
 
+val generateBuildConfig = tasks.register("generateBuildConfig") {
+    val buildConfigDir = layout.buildDirectory.dir("generated/source/buildConfig/commonMain/kotlin")
+    outputs.dir(buildConfigDir)
+    doLast {
+        val versionName = rootProject.extra["versionName"] as? String ?: "1.0.0"
+        val outputFile = buildConfigDir.get().file("com/darius/lionvpn/BuildConfig.kt").asFile
+        outputFile.parentFile.mkdirs()
+        outputFile.writeText("""
+            package com.darius.lionvpn
+
+            public object BuildConfig {
+                public const val APP_VERSION: String = "$versionName"
+            }
+        """.trimIndent())
+    }
+}
+
 kotlin {
     android {
         namespace = "com.darius.lionvpn.shared"
@@ -35,6 +52,9 @@ kotlin {
     jvm()
 
     sourceSets {
+        commonMain {
+            kotlin.srcDir(generateBuildConfig)
+        }
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)

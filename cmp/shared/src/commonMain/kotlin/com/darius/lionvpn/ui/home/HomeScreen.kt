@@ -15,8 +15,10 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.darius.lionvpn.BuildConfig
 import com.darius.lionvpn.ui.theme.*
 import org.jetbrains.compose.resources.stringResource
 import lion_vpn.shared.generated.resources.*
@@ -147,11 +149,12 @@ private fun Sidebar(
                         )
                     )
                     Text(
-                        text = stringResource(Res.string.app_version),
+                        text = BuildConfig.APP_VERSION,
                         style = monoCode.copy(
                             fontSize = 10.sp,
-                            color = onSurfaceVariant.copy(alpha = 0.6f)
-                        )
+                            color = onSurfaceVariant.copy(alpha = 0.6f),
+                            textDirection = TextDirection.Ltr,
+                        ),
                     )
                 }
             }

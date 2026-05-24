@@ -8,7 +8,6 @@
 
     <!-- Home / Sidebar Navigation -->
     <string name="app_name">Lion VPN</string>
-    <string name="app_version">۱.۰.۰</string>
     <string name="shield_logo_desc">لوگوی سپر</string>
     <string name="tab_dashboard">داشبورد</string>
     <string name="tab_scripts">اسکریپت‌ها</string>
