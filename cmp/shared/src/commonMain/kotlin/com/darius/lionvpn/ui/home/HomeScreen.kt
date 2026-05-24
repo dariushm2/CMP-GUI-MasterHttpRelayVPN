@@ -18,6 +18,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.darius.lionvpn.ui.theme.*
+import org.jetbrains.compose.resources.stringResource
+import lion_vpn.shared.generated.resources.*
 
 enum class HomeTab {
     Dashboard,
@@ -137,7 +139,7 @@ private fun Sidebar(
                 ) {
                     Icon(
                         imageVector = Icons.Default.Shield,
-                        contentDescription = "Shield Logo",
+                        contentDescription = stringResource(Res.string.shield_logo_desc),
                         tint = primary,
                         modifier = Modifier.size(22.dp)
                     )
@@ -145,7 +147,7 @@ private fun Sidebar(
                 Spacer(modifier = Modifier.width(12.dp))
                 Column {
                     Text(
-                        text = "Lion VPN",
+                        text = stringResource(Res.string.app_name),
                         style = headlineMd.copy(
                             fontSize = 20.sp,
                             fontWeight = FontWeight.Bold,
@@ -153,7 +155,7 @@ private fun Sidebar(
                         )
                     )
                     Text(
-                        text = "1.0.0",
+                        text = stringResource(Res.string.app_version),
                         style = monoCode.copy(
                             fontSize = 10.sp,
                             color = onSurfaceVariant.copy(alpha = 0.6f)
@@ -168,19 +170,19 @@ private fun Sidebar(
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 SidebarNavItem(
-                    label = "Dashboard",
+                    label = stringResource(Res.string.tab_dashboard),
                     icon = Icons.Default.Dashboard,
                     isActive = activeTab == HomeTab.Dashboard,
                     onClick = { onTabSelect(HomeTab.Dashboard) }
                 )
                 SidebarNavItem(
-                    label = "Scripts",
+                    label = stringResource(Res.string.tab_scripts),
                     icon = Icons.Default.Terminal,
                     isActive = activeTab == HomeTab.Scripts,
                     onClick = { onTabSelect(HomeTab.Scripts) }
                 )
                 SidebarNavItem(
-                    label = "Certificates",
+                    label = stringResource(Res.string.tab_certificates),
                     icon = Icons.Default.VerifiedUser,
                     isActive = activeTab == HomeTab.Certificates,
                     onClick = { onTabSelect(HomeTab.Certificates) }

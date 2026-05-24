@@ -15,6 +15,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.darius.lionvpn.ui.theme.*
+import org.jetbrains.compose.resources.stringResource
+import lion_vpn.shared.generated.resources.*
 
 @Composable
 fun CertificatesTab(
@@ -42,7 +44,7 @@ fun CertificatesTab(
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 Text(
-                    text = "HTTPS Certificate Management",
+                    text = stringResource(Res.string.certificates_title),
                     style = headlineMd.copy(
                         fontSize = 24.sp,
                         fontWeight = FontWeight.Bold,
@@ -50,7 +52,7 @@ fun CertificatesTab(
                     )
                 )
                 Text(
-                    text = "In order for the app to be able to work, it needs to install a trusted CA certificate.",
+                    text = stringResource(Res.string.certificates_subtitle),
                     style = bodySm.copy(color = onSurfaceVariant)
                 )
             }
@@ -80,7 +82,7 @@ fun CertificatesTab(
                     verticalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
                     Text(
-                        text = "Manual Controls",
+                        text = stringResource(Res.string.manual_controls),
                         style = titleSm.copy(fontSize = 14.sp, fontWeight = FontWeight.Bold, color = onSurface)
                     )
 
@@ -107,17 +109,17 @@ fun CertificatesTab(
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.DownloadDone,
-                                    contentDescription = "Install Icon",
+                                    contentDescription = stringResource(Res.string.install_icon_desc),
                                     modifier = Modifier.size(18.dp)
                                 )
                                 Text(
-                                    text = "Install HTTPS Cert",
+                                    text = stringResource(Res.string.install_https_cert),
                                     style = bodySm.copy(fontWeight = FontWeight.Bold, color = onSecondary)
                                 )
                             }
                             Icon(
                                 imageVector = Icons.Default.ChevronRight,
-                                contentDescription = "Arrow Right",
+                                contentDescription = stringResource(Res.string.arrow_right_desc),
                                 modifier = Modifier.size(16.dp)
                             )
                         }
@@ -146,24 +148,24 @@ fun CertificatesTab(
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.DeleteForever,
-                                    contentDescription = "Uninstall Icon",
+                                    contentDescription = stringResource(Res.string.uninstall_icon_desc),
                                     modifier = Modifier.size(18.dp)
                                 )
                                 Text(
-                                    text = "Uninstall Certificate",
+                                    text = stringResource(Res.string.uninstall_certificate),
                                     style = bodySm.copy(fontWeight = FontWeight.Bold)
                                 )
                             }
                             Icon(
                                 imageVector = Icons.Default.Close,
-                                contentDescription = "Close indicator",
+                                contentDescription = stringResource(Res.string.close_indicator_desc),
                                 modifier = Modifier.size(14.dp)
                             )
                         }
                     }
 
                     Text(
-                        text = "Note: Uninstallation will terminate active SSL inspection tunnels immediately.",
+                        text = stringResource(Res.string.uninstallation_note),
                         style = bodySm.copy(
                             fontSize = 11.sp,
                             color = onSurfaceVariant.copy(alpha = 0.7f),

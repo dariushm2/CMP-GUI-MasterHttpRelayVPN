@@ -35,6 +35,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -44,9 +45,13 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.darius.lionvpn.ui.theme.*
+import org.jetbrains.compose.resources.stringResource
+import lion_vpn.shared.generated.resources.*
 
 @Composable
 fun DashboardTab(
@@ -245,7 +250,7 @@ private fun ConnectionHeroCard(
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
                             Icon(
                                 imageVector = Icons.Default.PowerSettingsNew,
-                                contentDescription = "Power VPN Button",
+                                contentDescription = stringResource(Res.string.power_vpn_button_desc),
                                 tint = when {
                                     isVpnRunning -> secondary
                                     isConnectEnabled -> primary
@@ -256,9 +261,9 @@ private fun ConnectionHeroCard(
                             Spacer(modifier = Modifier.height(10.dp))
                             Text(
                                 text = when {
-                                    isVpnRunning -> "CONNECTED"
-                                    isConnectEnabled -> "DISCONNECTED"
-                                    else -> "NO CONFIG"
+                                    isVpnRunning -> stringResource(Res.string.connected)
+                                    isConnectEnabled -> stringResource(Res.string.disconnected)
+                                    else -> stringResource(Res.string.no_config)
                                 },
                                 style = labelCaps.copy(
                                     fontSize = 11.sp,
@@ -312,12 +317,12 @@ private fun TerminalLogConsole(
                 ) {
                     Icon(
                         imageVector = Icons.Default.Terminal,
-                        contentDescription = "Logs Terminal",
+                        contentDescription = stringResource(Res.string.logs_terminal_desc),
                         tint = primary,
                         modifier = Modifier.size(16.dp)
                     )
                     Text(
-                        text = "SYSTEM LOGS",
+                        text = stringResource(Res.string.system_logs),
                         style = labelCaps.copy(color = onSurfaceVariant)
                     )
                 }
@@ -325,18 +330,20 @@ private fun TerminalLogConsole(
 
             // Scrollable terminal content
 
-            LazyColumn(
-                state = lazyListState,
-                verticalArrangement = Arrangement.spacedBy(6.dp),
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color.Black.copy(alpha = 0.4f))
-                    .padding(16.dp)
-            ) {
-                // If logs are empty/null, display the mock startup logs from the design
-                items(logs) { log ->
-                    val (formattedText, type) = parseLogType(log)
-                    LogEntry(formattedText, type = type)
+            CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
+                LazyColumn(
+                    state = lazyListState,
+                    verticalArrangement = Arrangement.spacedBy(6.dp),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.Black.copy(alpha = 0.4f))
+                        .padding(16.dp)
+                ) {
+                    // If logs are empty/null, display the mock startup logs from the design
+                    items(logs) { log ->
+                        val (formattedText, type) = parseLogType(log)
+                        LogEntry(formattedText, type = type)
+                    }
                 }
             }
         }

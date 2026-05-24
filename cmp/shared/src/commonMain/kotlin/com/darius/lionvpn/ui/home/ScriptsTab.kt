@@ -28,6 +28,8 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.darius.lionvpn.ui.model.SavedConfig
 import com.darius.lionvpn.ui.theme.*
+import org.jetbrains.compose.resources.stringResource
+import lion_vpn.shared.generated.resources.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -54,7 +56,7 @@ fun ScriptsTab(
         ) {
             Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                 Text(
-                    text = "Scripts Management",
+                    text = stringResource(Res.string.scripts_management),
                     style = headlineMd.copy(
                         fontSize = 24.sp,
                         fontWeight = FontWeight.Bold,
@@ -74,12 +76,12 @@ fun ScriptsTab(
             ) {
                 Icon(
                     imageVector = Icons.Default.Add,
-                    contentDescription = "Add Script profile Icon",
+                    contentDescription = stringResource(Res.string.add_script_icon_desc),
                     modifier = Modifier.size(18.dp)
                 )
                 Spacer(modifier = Modifier.width(6.dp))
                 Text(
-                    text = "Add Script",
+                    text = stringResource(Res.string.add_script),
                     style = titleSm.copy(fontSize = 14.sp, fontWeight = FontWeight.Bold)
                 )
             }
@@ -189,7 +191,7 @@ private fun ScriptRow(
                     if (isActive) {
                         Icon(
                             imageVector = Icons.Default.Check,
-                            contentDescription = "Selected Check",
+                            contentDescription = stringResource(Res.string.selected_check_desc),
                             tint = onSecondary,
                             modifier = Modifier.size(12.dp)
                         )
@@ -213,7 +215,7 @@ private fun ScriptRow(
                         id
                     }
                     Text(
-                        text = "Deployment ID: $maskedId",
+                        text = stringResource(Res.string.deployment_id, maskedId),
                         style = monoCode.copy(
                             fontSize = 11.sp,
                             color = onSurfaceVariant.copy(alpha = 0.7f)
@@ -236,7 +238,7 @@ private fun ScriptRow(
                         .padding(horizontal = 8.dp, vertical = 4.dp)
                 ) {
                     Text(
-                        text = if (isActive) "ACTIVE" else "STANDBY",
+                        text = if (isActive) stringResource(Res.string.active) else stringResource(Res.string.standby),
                         style = labelCaps.copy(
                             fontSize = 10.sp,
                             color = if (isActive) secondary else onSurfaceVariant
@@ -252,7 +254,7 @@ private fun ScriptRow(
                     ) {
                         Icon(
                             imageVector = Icons.Default.Delete,
-                            contentDescription = "Delete Profile Icon",
+                            contentDescription = stringResource(Res.string.delete_profile_icon_desc),
                             tint = error.copy(alpha = 0.8f),
                             modifier = Modifier.size(16.dp)
                         )
@@ -303,7 +305,7 @@ private fun AddScriptDialog(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "New Script Profile",
+                        text = stringResource(Res.string.new_script_profile),
                         style = titleSm.copy(
                             fontSize = 18.sp,
                             fontWeight = FontWeight.Bold,
@@ -313,7 +315,7 @@ private fun AddScriptDialog(
                     IconButton(onClick = onDismiss) {
                         Icon(
                             imageVector = Icons.Default.Close,
-                            contentDescription = "Close Add Profile Icon",
+                            contentDescription = stringResource(Res.string.close_add_profile_icon_desc),
                             tint = onSurfaceVariant
                         )
                     }
@@ -321,16 +323,20 @@ private fun AddScriptDialog(
 
                 Divider(color = outlineVariant)
 
+                val errorProfileLabelBlank = stringResource(Res.string.error_profile_label_blank)
+                val errorDeploymentIdBlank = stringResource(Res.string.error_deployment_id_blank)
+                val errorAuthKeyBlank = stringResource(Res.string.error_auth_key_blank)
+
                 // Input Name
                 Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                     Text(
-                        text = "PROFILE LABEL",
+                        text = stringResource(Res.string.profile_label),
                         style = labelCaps.copy(color = onSurfaceVariant)
                     )
                     OutlinedTextField(
                         value = name,
                         onValueChange = { name = it; formError = "" },
-                        placeholder = { Text("e.g. NYC Gateway, Backup Tunnel") },
+                        placeholder = { Text(stringResource(Res.string.profile_label_placeholder)) },
                         modifier = Modifier.fillMaxWidth(),
                         singleLine = true,
                         shape = roundedDefault,
@@ -346,17 +352,17 @@ private fun AddScriptDialog(
                 // Input ID
                 Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                     Text(
-                        text = "APPS SCRIPT DEPLOYMENT ID",
+                        text = stringResource(Res.string.deployment_id_label),
                         style = labelCaps.copy(color = onSurfaceVariant)
                     )
                     OutlinedTextField(
                         value = id,
                         onValueChange = { id = it; formError = "" },
-                        placeholder = { Text("Enter Google Apps Script Deployment ID") },
+                        placeholder = { Text(stringResource(Res.string.deployment_id_placeholder)) },
                         leadingIcon = {
                             Icon(
                                 imageVector = Icons.Default.Info,
-                                contentDescription = "Deployment ID Icon",
+                                contentDescription = stringResource(Res.string.deployment_id_icon_desc),
                                 tint = onSurfaceVariant,
                                 modifier = Modifier.size(18.dp)
                             )
@@ -376,17 +382,17 @@ private fun AddScriptDialog(
                 // Input Auth Key
                 Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                     Text(
-                        text = "RELAY AUTH KEY",
+                        text = stringResource(Res.string.relay_auth_key_label),
                         style = labelCaps.copy(color = onSurfaceVariant)
                     )
                     OutlinedTextField(
                         value = key,
                         onValueChange = { key = it; formError = "" },
-                        placeholder = { Text("Enter secure Relay Auth Key") },
+                        placeholder = { Text(stringResource(Res.string.relay_auth_key_placeholder)) },
                         leadingIcon = {
                             Icon(
                                 imageVector = Icons.Default.Lock,
-                                contentDescription = "Auth Key Icon",
+                                contentDescription = stringResource(Res.string.auth_key_icon_desc),
                                 tint = onSurfaceVariant,
                                 modifier = Modifier.size(18.dp)
                             )
@@ -394,7 +400,7 @@ private fun AddScriptDialog(
                         trailingIcon = {
                             TextButton(onClick = { passwordVisible = !passwordVisible }) {
                                 Text(
-                                    text = if (passwordVisible) "Hide" else "Show",
+                                    text = if (passwordVisible) stringResource(Res.string.hide) else stringResource(Res.string.show),
                                     style = bodySm.copy(fontWeight = FontWeight.Bold, color = primary)
                                 )
                             }
@@ -427,11 +433,11 @@ private fun AddScriptDialog(
                 Button(
                     onClick = {
                         if (name.isBlank()) {
-                            formError = "Profile label cannot be blank."
+                            formError = errorProfileLabelBlank
                         } else if (id.isBlank()) {
-                            formError = "Deployment ID cannot be blank."
+                            formError = errorDeploymentIdBlank
                         } else if (key.isBlank()) {
-                            formError = "Auth Key cannot be blank."
+                            formError = errorAuthKeyBlank
                         } else {
                             onSave(name.trim(), id.trim(), key.trim())
                             name = ""
@@ -451,7 +457,7 @@ private fun AddScriptDialog(
                     enabled = !isVpnRunning
                 ) {
                     Text(
-                        text = "Save Profile",
+                        text = stringResource(Res.string.save_profile),
                         style = titleSm.copy(fontSize = 15.sp, fontWeight = FontWeight.Bold)
                     )
                 }

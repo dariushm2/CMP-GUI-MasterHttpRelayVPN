@@ -1,10 +1,62 @@
 <resources>
-    <string name="connection_lost">Connection Lost!</string>
-    <string name="something_went_wrong">"Oops! Something Went Wrong</string>
-    <string name="retry">Retry</string>
+    <!-- Existing Strings -->
+    <string name="connection_lost">اتصال قطع شد!</string>
+    <string name="something_went_wrong">خطایی رخ داده است</string>
+    <string name="retry">تلاش مجدد</string>
+    <string name="debug">دیباگ</string>
+    <string name="back_button">دکمه بازگشت</string>
 
-    <string name="debug">Debug</string>
+    <!-- Home / Sidebar Navigation -->
+    <string name="app_name">Lion VPN</string>
+    <string name="app_version">۱.۰.۰</string>
+    <string name="shield_logo_desc">لوگوی سپر</string>
+    <string name="tab_dashboard">داشبورد</string>
+    <string name="tab_scripts">اسکریپت‌ها</string>
+    <string name="tab_certificates">گواهی‌</string>
 
-    <!--  Content Description  -->
-    <string name="back_button">Back Button</string>
+    <!-- Dashboard Tab -->
+    <string name="power_vpn_button_desc">دکمه روشن/خاموش وی‌پی‌ان</string>
+    <string name="connected">وصل</string>
+    <string name="disconnected">قطع</string>
+    <string name="no_config">بدون پیکربندی</string>
+    <string name="logs_terminal_desc">ترمینال گزارش‌ها</string>
+    <string name="system_logs">گزارش‌های سیستم</string>
+
+    <!-- Certificates Tab -->
+    <string name="certificates_title">مدیریت گواهی HTTPS</string>
+    <string name="certificates_subtitle">برای اینکه برنامه بتواند کار کند، باید یک گواهی CA نصب کند.</string>
+    <string name="manual_controls">کنترل‌های دستی</string>
+    <string name="install_icon_desc">آیکون نصب</string>
+    <string name="install_https_cert">نصب گواهی</string>
+    <string name="arrow_right_desc">فلش راست</string>
+    <string name="uninstall_icon_desc">آیکون لغو نصب</string>
+    <string name="uninstall_certificate">حذف گواهی</string>
+    <string name="close_indicator_desc">نشانگر بستن</string>
+    <string name="uninstallation_note">توجه: لغو نصب باعث توقف ارتباط می شود.</string>
+
+    <!-- Scripts Tab -->
+    <string name="scripts_management">مدیریت اسکریپت‌ها</string>
+    <string name="add_script_icon_desc">آیکون افزودن پروفایل اسکریپت</string>
+    <string name="add_script">افزودن اسکریپت</string>
+    <string name="selected_check_desc">علامت انتخاب شده</string>
+    <string name="deployment_id">شناسه استقرار: %1$s</string>
+    <string name="active">فعال</string>
+    <string name="standby">آماده به کار</string>
+    <string name="delete_profile_icon_desc">آیکون حذف پروفایل</string>
+    <string name="new_script_profile">پروفایل اسکریپت جدید</string>
+    <string name="close_add_profile_icon_desc">آیکون بستن افزودن پروفایل</string>
+    <string name="profile_label">نام پروفایل</string>
+    <string name="profile_label_placeholder">مانند: شماره ۱، حساب خودم یا هر چی</string>
+    <string name="deployment_id_label">شناسه استقرار Deployment ID</string>
+    <string name="deployment_id_placeholder">شناسه استقرار Google Apps Script را وارد کنید</string>
+    <string name="deployment_id_icon_desc">آیکون شناسه استقرار</string>
+    <string name="relay_auth_key_label">کلید احراز هویت Auth Key</string>
+    <string name="relay_auth_key_placeholder">کلید احراز هویت را وارد کنید</string>
+    <string name="auth_key_icon_desc">آیکون کلید احراز هویت</string>
+    <string name="hide">پنهان</string>
+    <string name="show">پیدا</string>
+    <string name="error_profile_label_blank">برچسب پروفایل نمی‌تواند خالی باشد.</string>
+    <string name="error_deployment_id_blank">شناسه استقرار نمی‌تواند خالی باشد.</string>
+    <string name="error_auth_key_blank">کلید احراز هویت نمی‌تواند خالی باشد.</string>
+    <string name="save_profile">ذخیره پروفایل</string>
 </resources>
