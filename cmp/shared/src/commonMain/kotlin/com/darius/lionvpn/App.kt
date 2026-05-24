@@ -5,10 +5,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -43,22 +46,24 @@ fun App(
             }
         }
     }
-    WalletTheme {
-        Scaffold(
-            modifier = Modifier
-                .fillMaxSize()
-        ) { innerPadding ->
-            Box(
+    CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
+        WalletTheme {
+            Scaffold(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(top = innerPadding.calculateTopPadding())
-            ) {
-                if (!isConnected) NetworkLoss()
-                else NavGraph(
-                    navController = navController,
-                    state = state,
-                    onClick = onClick,
-                )
+            ) { innerPadding ->
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(top = innerPadding.calculateTopPadding())
+                ) {
+                    if (!isConnected) NetworkLoss()
+                    else NavGraph(
+                        navController = navController,
+                        state = state,
+                        onClick = onClick,
+                    )
+                }
             }
         }
     }
