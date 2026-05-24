@@ -9,17 +9,22 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.animation.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import kotlinx.coroutines.delay
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -43,146 +48,191 @@ fun ScriptsTab(
     val scrollState = rememberScrollState()
     var isAddDialogVisible by remember { mutableStateOf(false) }
     var isInstructionsDialogVisible by remember { mutableStateOf(false) }
+    var showToast by remember { mutableStateOf(false) }
 
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .verticalScroll(scrollState)
-            .padding(containerPadding),
-        verticalArrangement = Arrangement.spacedBy(gutter)
-    ) {
-        // Tab Header
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                Text(
-                    text = stringResource(Res.string.scripts_management),
-                    style = headlineMd.copy(
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = onSurface
-                    )
-                )
-            }
-
-            Button(
-                onClick = { isAddDialogVisible = true },
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = secondary,
-                    contentColor = onSecondary
-                ),
-                shape = roundedDefault,
-                elevation = ButtonDefaults.buttonElevation(defaultElevation = 6.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = stringResource(Res.string.add_script_icon_desc),
-                    modifier = Modifier.size(18.dp)
-                )
-                Spacer(modifier = Modifier.width(6.dp))
-                Text(
-                    text = stringResource(Res.string.add_script),
-                    style = titleSm.copy(fontSize = 14.sp, fontWeight = FontWeight.Bold)
-                )
-            }
+    LaunchedEffect(showToast) {
+        if (showToast) {
+            delay(1500)
+            showToast = false
         }
+    }
 
-        // Setup Instructions Banner Card (Clickable to open dialog)
-        Card(
-            shape = roundedDefault,
-            colors = CardDefaults.cardColors(
-                containerColor = surfaceContainerLow.copy(alpha = 0.6f)
-            ),
-            border = borderStrokeGlass(),
+    Box(modifier = modifier.fillMaxSize()) {
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .clickable { isInstructionsDialogVisible = true }
+                .fillMaxSize()
+                .verticalScroll(scrollState)
+                .padding(containerPadding),
+            verticalArrangement = Arrangement.spacedBy(gutter)
         ) {
+            // Tab Header
             Row(
-                modifier = Modifier.padding(16.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
-                    modifier = Modifier.weight(1f)
+                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    Text(
+                        text = stringResource(Res.string.scripts_management),
+                        style = headlineMd.copy(
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = onSurface
+                        )
+                    )
+                }
+
+                Button(
+                    onClick = { isAddDialogVisible = true },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = secondary,
+                        contentColor = onSecondary
+                    ),
+                    shape = roundedDefault,
+                    elevation = ButtonDefaults.buttonElevation(defaultElevation = 6.dp)
                 ) {
                     Icon(
-                        imageVector = Icons.Default.Info,
-                        contentDescription = "Instructions Icon",
-                        tint = secondary,
-                        modifier = Modifier.size(24.dp)
+                        imageVector = Icons.Default.Add,
+                        contentDescription = stringResource(Res.string.add_script_icon_desc),
+                        modifier = Modifier.size(18.dp)
                     )
-                    Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                        Text(
-                            text = stringResource(Res.string.setup_instructions_title),
-                            style = titleSm.copy(fontWeight = FontWeight.Bold, color = secondary)
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text(
+                        text = stringResource(Res.string.add_script),
+                        style = titleSm.copy(fontSize = 14.sp, fontWeight = FontWeight.Bold)
+                    )
+                }
+            }
+
+            // Setup Instructions Banner Card (Clickable to open dialog)
+            Card(
+                shape = roundedDefault,
+                colors = CardDefaults.cardColors(
+                    containerColor = surfaceContainerLow.copy(alpha = 0.6f)
+                ),
+                border = borderStrokeGlass(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { isInstructionsDialogVisible = true }
+            ) {
+                Row(
+                    modifier = Modifier.padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(12.dp),
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Info,
+                            contentDescription = "Instructions Icon",
+                            tint = secondary,
+                            modifier = Modifier.size(24.dp)
                         )
-                        Text(
-                            text = stringResource(Res.string.setup_instructions_click_to_view),
-                            style = bodySm.copy(color = onSurfaceVariant, fontSize = 12.sp)
+                        Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                            Text(
+                                text = stringResource(Res.string.setup_instructions_title),
+                                style = titleSm.copy(fontWeight = FontWeight.Bold, color = secondary)
+                            )
+                            Text(
+                                text = stringResource(Res.string.setup_instructions_click_to_view),
+                                style = bodySm.copy(color = onSurfaceVariant, fontSize = 12.sp)
+                            )
+                        }
+                    }
+                    Icon(
+                        imageVector = Icons.Default.ChevronLeft,
+                        contentDescription = "Chevron Right",
+                        tint = onSurfaceVariant.copy(alpha = 0.6f),
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
+            }
+
+            // Scripts List Card
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                // Render actual scripts from HomeState
+                if (state.savedConfigs.isNotEmpty()) {
+                    state.savedConfigs.forEachIndexed { index, config ->
+                        val isActive = index == state.selectedConfigIndex
+                        ScriptRow(
+                            name = config.name,
+                            id = config.id,
+                            isActive = isActive,
+                            isMock = false,
+                            onSelect = {
+                                if (!state.isVpnRunning) {
+                                    onClick(Event.SelectConfig(index))
+                                }
+                            },
+                            onDelete = {
+                                if (!state.isVpnRunning) {
+                                    onClick(Event.DeleteConfig(config))
+                                }
+                            },
+                            onCopied = { showToast = true }
                         )
                     }
                 }
-                Icon(
-                    imageVector = Icons.Default.ChevronLeft,
-                    contentDescription = "Chevron Right",
-                    tint = onSurfaceVariant.copy(alpha = 0.6f),
-                    modifier = Modifier.size(20.dp)
+            }
+
+            // Integrated Add Script Profile Dialog
+            if (isAddDialogVisible) {
+                AddScriptDialog(
+                    isVpnRunning = state.isVpnRunning,
+                    onDismiss = { isAddDialogVisible = false },
+                    onSave = { name, id, key ->
+                        onClick(Event.AddConfig(SavedConfig(id = id, key = key, name = name)))
+                        isAddDialogVisible = false
+                    }
+                )
+            }
+
+            // Integrated Setup Instructions Dialog
+            if (isInstructionsDialogVisible) {
+                SetupInstructionsDialog(
+                    onDismiss = { isInstructionsDialogVisible = false }
                 )
             }
         }
 
-        // Scripts List Card
-        Column(
-            modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+        // Custom Toast overlay
+        AnimatedVisibility(
+            visible = showToast,
+            enter = fadeIn() + slideInVertically(initialOffsetY = { it / 2 }),
+            exit = fadeOut() + slideOutVertically(targetOffsetY = { it / 2 }),
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(bottom = 32.dp)
         ) {
-            // Render actual scripts from HomeState
-            if (state.savedConfigs.isNotEmpty()) {
-                state.savedConfigs.forEachIndexed { index, config ->
-                    val isActive = index == state.selectedConfigIndex
-                    ScriptRow(
-                        name = config.name,
-                        id = config.id,
-                        isActive = isActive,
-                        isMock = false,
-                        onSelect = {
-                            if (!state.isVpnRunning) {
-                                onClick(Event.SelectConfig(index))
-                            }
-                        },
-                        onDelete = {
-                            if (!state.isVpnRunning) {
-                                onClick(Event.DeleteConfig(config))
-                            }
-                        }
+            Card(
+                colors = CardDefaults.cardColors(containerColor = surfaceContainerHighest.copy(alpha = 0.85f)),
+                shape = roundedDefault,
+                border = borderStrokeGlass(),
+                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+            ) {
+                Row(
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.CheckCircle,
+                        contentDescription = "Success",
+                        tint = secondary,
+                        modifier = Modifier.size(18.dp)
+                    )
+                    Text(
+                        text = stringResource(Res.string.copied_toast),
+                        style = bodySm.copy(fontWeight = FontWeight.SemiBold, color = onSurface)
                     )
                 }
             }
-        }
-
-        // Integrated Add Script Profile Dialog
-        if (isAddDialogVisible) {
-            AddScriptDialog(
-                isVpnRunning = state.isVpnRunning,
-                onDismiss = { isAddDialogVisible = false },
-                onSave = { name, id, key ->
-                    onClick(Event.AddConfig(SavedConfig(id = id, key = key, name = name)))
-                    isAddDialogVisible = false
-                }
-            )
-        }
-
-        // Integrated Setup Instructions Dialog
-        if (isInstructionsDialogVisible) {
-            SetupInstructionsDialog(
-                onDismiss = { isInstructionsDialogVisible = false }
-            )
         }
     }
 }
@@ -195,8 +245,10 @@ private fun ScriptRow(
     isMock: Boolean,
     onSelect: () -> Unit,
     onDelete: () -> Unit,
+    onCopied: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val clipboardManager = LocalClipboardManager.current
     val cardBackground = if (isActive) {
         Color(0x1F4EDEA3) // 10% secondary emerald green opacity
     } else {
@@ -271,13 +323,15 @@ private fun ScriptRow(
                     } else {
                         id
                     }
-                    Text(
-                        text = stringResource(Res.string.deployment_id, maskedId),
-                        style = monoCode.copy(
-                            fontSize = 11.sp,
-                            color = onSurfaceVariant.copy(alpha = 0.7f)
+                    SelectionContainer {
+                        Text(
+                            text = stringResource(Res.string.deployment_id, maskedId),
+                            style = monoCode.copy(
+                                fontSize = 11.sp,
+                                color = onSurfaceVariant.copy(alpha = 0.7f)
+                            )
                         )
-                    )
+                    }
                 }
             }
 
@@ -300,6 +354,22 @@ private fun ScriptRow(
                             fontSize = 10.sp,
                             color = if (isActive) secondary else onSurfaceVariant
                         )
+                    )
+                }
+
+                // Copy Deployment ID button
+                IconButton(
+                    onClick = {
+                        clipboardManager.setText(AnnotatedString(id))
+                        onCopied()
+                    },
+                    modifier = Modifier.size(32.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.ContentCopy,
+                        contentDescription = stringResource(Res.string.copy_deployment_id_desc),
+                        tint = onSurfaceVariant.copy(alpha = 0.8f),
+                        modifier = Modifier.size(16.dp)
                     )
                 }
 
@@ -603,84 +673,92 @@ private fun SetupInstructionsDialog(
                         .fillMaxWidth()
                         .heightIn(max = 360.dp)
                 ) {
-                    val scrollState = rememberScrollState()
-                    val uriHandler = LocalUriHandler.current
-
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .verticalScroll(scrollState),
-                        verticalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-                        Text(
-                            text = stringResource(Res.string.setup_instructions_intro),
-                            style = bodySm.copy(color = onSurface, fontWeight = FontWeight.Bold, lineHeight = 20.sp)
-                        )
-
-                        // Step 1
-                        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                            Text(
-                                text = stringResource(Res.string.setup_instructions_step1),
-                                style = bodySm.copy(color = onSurface, lineHeight = 20.sp)
-                            )
-                            Text(
-                                text = "https://github.com/masterking32/MasterHttpRelayVPN/blob/python_testing/apps_script/Code.gs",
-                                color = primary,
-                                style = bodySm.copy(textDecoration = TextDecoration.Underline, fontWeight = FontWeight.Medium),
-                                modifier = Modifier
-                                    .clickable { uriHandler.openUri("https://github.com/masterking32/MasterHttpRelayVPN/blob/python_testing/apps_script/Code.gs") }
-                                    .padding(vertical = 2.dp)
-                            )
-                        }
-
-                        // Step 2
-                        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                            Text(
-                                text = stringResource(Res.string.setup_instructions_step2),
-                                style = bodySm.copy(color = onSurface, lineHeight = 20.sp)
-                            )
-                            Text(
-                                text = "https://script.google.com/",
-                                color = primary,
-                                style = bodySm.copy(textDecoration = TextDecoration.Underline, fontWeight = FontWeight.Medium),
-                                modifier = Modifier
-                                    .clickable { uriHandler.openUri("https://script.google.com") }
-                                    .padding(vertical = 2.dp)
-                            )
-                        }
-
-                        // Step 3
-                        Text(
-                            text = stringResource(Res.string.setup_instructions_step3),
-                            style = bodySm.copy(color = onSurface, lineHeight = 20.sp)
-                        )
-
-                        // Step 4
-                        Text(
-                            text = stringResource(Res.string.setup_instructions_step4),
-                            style = bodySm.copy(color = onSurface, lineHeight = 20.sp)
-                        )
-
-                        // Step 5
-                        Text(
-                            text = stringResource(Res.string.setup_instructions_step5),
-                            style = bodySm.copy(color = onSurface, lineHeight = 20.sp)
-                        )
-
-                        // Step 6
-                        Text(
-                            text = stringResource(Res.string.setup_instructions_step6),
-                            style = bodySm.copy(color = onSurface, lineHeight = 20.sp)
-                        )
-
-                        // Step 7
-                        Text(
-                            text = stringResource(Res.string.setup_instructions_step7),
-                            style = bodySm.copy(color = onSurface, lineHeight = 20.sp)
-                        )
+                    SelectionContainer {
+                        Steps()
                     }
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun Steps() {
+    val scrollState = rememberScrollState()
+    val uriHandler = LocalUriHandler.current
+    Column(
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .verticalScroll(scrollState)
+    ) {
+        Text(
+            text = stringResource(Res.string.setup_instructions_intro),
+            style = bodySm.copy(color = onSurface, fontWeight = FontWeight.Bold, lineHeight = 20.sp)
+        )
+
+        // Step 1
+        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+            Text(
+                text = stringResource(Res.string.setup_instructions_step1),
+                style = bodySm.copy(color = onSurface, lineHeight = 20.sp)
+            )
+            val script = "https://github.com/masterking32/MasterHttpRelayVPN/blob/python_testing/apps_script/Code.gs"
+            Text(
+                text = script,
+                color = primary,
+                style = bodySm.copy(textDecoration = TextDecoration.Underline, fontWeight = FontWeight.Medium),
+                modifier = Modifier
+                    .clickable { uriHandler.openUri(script) }
+                    .padding(vertical = 2.dp)
+            )
+        }
+
+        // Step 2
+        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+            Text(
+                text = stringResource(Res.string.setup_instructions_step2),
+                style = bodySm.copy(color = onSurface, lineHeight = 20.sp)
+            )
+            val googleScript = "https://script.google.com"
+            Text(
+                text = googleScript,
+                color = primary,
+                style = bodySm.copy(textDecoration = TextDecoration.Underline, fontWeight = FontWeight.Medium),
+                modifier = Modifier
+                    .clickable { uriHandler.openUri(googleScript) }
+                    .padding(vertical = 2.dp)
+            )
+        }
+
+        // Step 3
+        Text(
+            text = stringResource(Res.string.setup_instructions_step3),
+            style = bodySm.copy(color = onSurface, lineHeight = 20.sp)
+        )
+
+        // Step 4
+        Text(
+            text = stringResource(Res.string.setup_instructions_step4),
+            style = bodySm.copy(color = onSurface, lineHeight = 20.sp)
+        )
+
+        // Step 5
+        Text(
+            text = stringResource(Res.string.setup_instructions_step5),
+            style = bodySm.copy(color = onSurface, lineHeight = 20.sp)
+        )
+
+        // Step 6
+        Text(
+            text = stringResource(Res.string.setup_instructions_step6),
+            style = bodySm.copy(color = onSurface, lineHeight = 20.sp)
+        )
+
+        // Step 7
+        Text(
+            text = stringResource(Res.string.setup_instructions_step7),
+            style = bodySm.copy(color = onSurface, lineHeight = 20.sp)
+        )
     }
 }
