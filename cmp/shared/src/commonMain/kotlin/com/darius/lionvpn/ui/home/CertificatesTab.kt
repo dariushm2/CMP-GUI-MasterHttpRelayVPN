@@ -14,6 +14,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.darius.lionvpn.ui.theme.*
 
 @Composable
 fun CertificatesTab(
@@ -27,8 +28,8 @@ fun CertificatesTab(
         modifier = modifier
             .fillMaxSize()
             .verticalScroll(scrollState)
-            .padding(Theme2.containerPadding),
-        verticalArrangement = Arrangement.spacedBy(Theme2.gutter)
+            .padding(containerPadding),
+        verticalArrangement = Arrangement.spacedBy(gutter)
     ) {
         // Tab Header
         Row(
@@ -42,31 +43,31 @@ fun CertificatesTab(
             ) {
                 Text(
                     text = "HTTPS Certificate Management",
-                    style = Theme2.headlineMd.copy(
+                    style = headlineMd.copy(
                         fontSize = 24.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Theme2.onSurface
+                        color = onSurface
                     )
                 )
                 Text(
                     text = "In order for the app to be able to work, it needs to install a trusted CA certificate.",
-                    style = Theme2.bodySm.copy(color = Theme2.onSurfaceVariant)
+                    style = bodySm.copy(color = onSurfaceVariant)
                 )
             }
         }
 
-        Divider(color = Theme2.outlineVariant)
+        Divider(color = outlineVariant)
 
         // Status grid: Details Card & Actions Card
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(Theme2.gutter)
+            horizontalArrangement = Arrangement.spacedBy(gutter)
         ) {
             // Manual Actions Card (Right, takes 1/3 of space)
             Card(
-                shape = Theme2.roundedLg,
+                shape = roundedLg,
                 colors = CardDefaults.cardColors(
-                    containerColor = Theme2.surfaceContainerHighest
+                    containerColor = surfaceContainerHighest
                 ),
                 border = borderStrokeGlass(),
                 modifier = Modifier
@@ -75,22 +76,22 @@ fun CertificatesTab(
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(Theme2.gutter),
+                        .padding(gutter),
                     verticalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
                     Text(
                         text = "Manual Controls",
-                        style = Theme2.titleSm.copy(fontSize = 14.sp, fontWeight = FontWeight.Bold, color = Theme2.onSurface)
+                        style = titleSm.copy(fontSize = 14.sp, fontWeight = FontWeight.Bold, color = onSurface)
                     )
 
                     // Install button
                     Button(
                         onClick = { onClick(Event.Certificate) },
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = Theme2.secondary,
-                            contentColor = Theme2.onSecondary
+                            containerColor = secondary,
+                            contentColor = onSecondary
                         ),
-                        shape = Theme2.roundedDefault,
+                        shape = roundedDefault,
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(44.dp)
@@ -111,7 +112,7 @@ fun CertificatesTab(
                                 )
                                 Text(
                                     text = "Install HTTPS Cert",
-                                    style = Theme2.bodySm.copy(fontWeight = FontWeight.Bold, color = Theme2.onSecondary)
+                                    style = bodySm.copy(fontWeight = FontWeight.Bold, color = onSecondary)
                                 )
                             }
                             Icon(
@@ -125,11 +126,11 @@ fun CertificatesTab(
                     // Uninstall button
                     OutlinedButton(
                         onClick = { /* uninstall action mock */ },
-                        shape = Theme2.roundedDefault,
+                        shape = roundedDefault,
                         colors = ButtonDefaults.outlinedButtonColors(
-                            contentColor = Theme2.error
+                            contentColor = error
                         ),
-                        border = BorderStroke(1.dp, Theme2.error.copy(alpha = 0.4f)),
+                        border = BorderStroke(1.dp, error.copy(alpha = 0.4f)),
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(44.dp)
@@ -150,7 +151,7 @@ fun CertificatesTab(
                                 )
                                 Text(
                                     text = "Uninstall Certificate",
-                                    style = Theme2.bodySm.copy(fontWeight = FontWeight.Bold)
+                                    style = bodySm.copy(fontWeight = FontWeight.Bold)
                                 )
                             }
                             Icon(
@@ -163,9 +164,9 @@ fun CertificatesTab(
 
                     Text(
                         text = "Note: Uninstallation will terminate active SSL inspection tunnels immediately.",
-                        style = Theme2.bodySm.copy(
+                        style = bodySm.copy(
                             fontSize = 11.sp,
-                            color = Theme2.onSurfaceVariant.copy(alpha = 0.7f),
+                            color = onSurfaceVariant.copy(alpha = 0.7f),
                             fontWeight = FontWeight.Light
                         ),
                         textAlign = TextAlign.Center,

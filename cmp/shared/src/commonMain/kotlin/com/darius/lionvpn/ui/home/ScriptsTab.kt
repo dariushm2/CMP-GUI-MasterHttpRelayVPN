@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.darius.lionvpn.ui.model.SavedConfig
+import com.darius.lionvpn.ui.theme.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -42,8 +43,8 @@ fun ScriptsTab(
         modifier = modifier
             .fillMaxSize()
             .verticalScroll(scrollState)
-            .padding(Theme2.containerPadding),
-        verticalArrangement = Arrangement.spacedBy(Theme2.gutter)
+            .padding(containerPadding),
+        verticalArrangement = Arrangement.spacedBy(gutter)
     ) {
         // Tab Header
         Row(
@@ -54,10 +55,10 @@ fun ScriptsTab(
             Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                 Text(
                     text = "Scripts Management",
-                    style = Theme2.headlineMd.copy(
+                    style = headlineMd.copy(
                         fontSize = 24.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Theme2.onSurface
+                        color = onSurface
                     )
                 )
             }
@@ -65,10 +66,10 @@ fun ScriptsTab(
             Button(
                 onClick = { isAddDialogVisible = true },
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Theme2.secondary,
-                    contentColor = Theme2.onSecondary
+                    containerColor = secondary,
+                    contentColor = onSecondary
                 ),
-                shape = Theme2.roundedDefault,
+                shape = roundedDefault,
                 elevation = ButtonDefaults.buttonElevation(defaultElevation = 6.dp)
             ) {
                 Icon(
@@ -79,7 +80,7 @@ fun ScriptsTab(
                 Spacer(modifier = Modifier.width(6.dp))
                 Text(
                     text = "Add Script",
-                    style = Theme2.titleSm.copy(fontSize = 14.sp, fontWeight = FontWeight.Bold)
+                    style = titleSm.copy(fontSize = 14.sp, fontWeight = FontWeight.Bold)
                 )
             }
         }
@@ -144,16 +145,16 @@ private fun ScriptRow(
     }
 
     val cardBorder = if (isActive) {
-        BorderStroke(1.dp, Theme2.secondary.copy(alpha = 0.6f))
+        BorderStroke(1.dp, secondary.copy(alpha = 0.6f))
     } else {
-        BorderStroke(1.dp, Theme2.outlineVariant.copy(alpha = 0.4f))
+        BorderStroke(1.dp, outlineVariant.copy(alpha = 0.4f))
     }
 
     Card(
         modifier = modifier
             .fillMaxWidth()
             .clickable { onSelect() },
-        shape = Theme2.roundedDefault,
+        shape = roundedDefault,
         colors = CardDefaults.cardColors(
             containerColor = cardBackground
         ),
@@ -162,7 +163,7 @@ private fun ScriptRow(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = Theme2.gutter, vertical = 14.dp),
+                .padding(horizontal = gutter, vertical = 14.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
@@ -175,12 +176,12 @@ private fun ScriptRow(
                     modifier = Modifier
                         .size(20.dp)
                         .background(
-                            if (isActive) Theme2.secondary else Color.Transparent,
+                            if (isActive) secondary else Color.Transparent,
                             CircleShape
                         )
                         .border(
                             2.dp,
-                            if (isActive) Theme2.secondary else Theme2.outlineVariant,
+                            if (isActive) secondary else outlineVariant,
                             CircleShape
                         ),
                     contentAlignment = Alignment.Center
@@ -189,7 +190,7 @@ private fun ScriptRow(
                         Icon(
                             imageVector = Icons.Default.Check,
                             contentDescription = "Selected Check",
-                            tint = Theme2.onSecondary,
+                            tint = onSecondary,
                             modifier = Modifier.size(12.dp)
                         )
                     }
@@ -200,10 +201,10 @@ private fun ScriptRow(
                 Column {
                     Text(
                         text = name,
-                        style = Theme2.titleSm.copy(
+                        style = titleSm.copy(
                             fontSize = 15.sp,
                             fontWeight = FontWeight.SemiBold,
-                            color = if (isActive) Theme2.secondary else Theme2.onSurface
+                            color = if (isActive) secondary else onSurface
                         )
                     )
                     val maskedId = if (id.length > 24) {
@@ -213,9 +214,9 @@ private fun ScriptRow(
                     }
                     Text(
                         text = "Deployment ID: $maskedId",
-                        style = Theme2.monoCode.copy(
+                        style = monoCode.copy(
                             fontSize = 11.sp,
-                            color = Theme2.onSurfaceVariant.copy(alpha = 0.7f)
+                            color = onSurfaceVariant.copy(alpha = 0.7f)
                         )
                     )
                 }
@@ -229,16 +230,16 @@ private fun ScriptRow(
                 Box(
                     modifier = Modifier
                         .background(
-                            if (isActive) Theme2.secondary.copy(alpha = 0.15f) else Theme2.surfaceContainerHighest.copy(alpha = 0.4f),
-                            Theme2.roundedSm
+                            if (isActive) secondary.copy(alpha = 0.15f) else surfaceContainerHighest.copy(alpha = 0.4f),
+                            roundedSm
                         )
                         .padding(horizontal = 8.dp, vertical = 4.dp)
                 ) {
                     Text(
                         text = if (isActive) "ACTIVE" else "STANDBY",
-                        style = Theme2.labelCaps.copy(
+                        style = labelCaps.copy(
                             fontSize = 10.sp,
-                            color = if (isActive) Theme2.secondary else Theme2.onSurfaceVariant
+                            color = if (isActive) secondary else onSurfaceVariant
                         )
                     )
                 }
@@ -252,7 +253,7 @@ private fun ScriptRow(
                         Icon(
                             imageVector = Icons.Default.Delete,
                             contentDescription = "Delete Profile Icon",
-                            tint = Theme2.error.copy(alpha = 0.8f),
+                            tint = error.copy(alpha = 0.8f),
                             modifier = Modifier.size(16.dp)
                         )
                     }
@@ -283,9 +284,9 @@ private fun AddScriptDialog(
             modifier = modifier
                 .width(480.dp)
                 .padding(16.dp),
-            shape = Theme2.roundedLg,
+            shape = roundedLg,
             colors = CardDefaults.cardColors(
-                containerColor = Theme2.surfaceContainerHigh
+                containerColor = surfaceContainerHigh
             ),
             border = borderStrokeGlass()
         ) {
@@ -303,28 +304,28 @@ private fun AddScriptDialog(
                 ) {
                     Text(
                         text = "New Script Profile",
-                        style = Theme2.titleSm.copy(
+                        style = titleSm.copy(
                             fontSize = 18.sp,
                             fontWeight = FontWeight.Bold,
-                            color = Theme2.secondary
+                            color = secondary
                         )
                     )
                     IconButton(onClick = onDismiss) {
                         Icon(
                             imageVector = Icons.Default.Close,
                             contentDescription = "Close Add Profile Icon",
-                            tint = Theme2.onSurfaceVariant
+                            tint = onSurfaceVariant
                         )
                     }
                 }
 
-                Divider(color = Theme2.outlineVariant)
+                Divider(color = outlineVariant)
 
                 // Input Name
                 Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                     Text(
                         text = "PROFILE LABEL",
-                        style = Theme2.labelCaps.copy(color = Theme2.onSurfaceVariant)
+                        style = labelCaps.copy(color = onSurfaceVariant)
                     )
                     OutlinedTextField(
                         value = name,
@@ -332,7 +333,7 @@ private fun AddScriptDialog(
                         placeholder = { Text("e.g. NYC Gateway, Backup Tunnel") },
                         modifier = Modifier.fillMaxWidth(),
                         singleLine = true,
-                        shape = Theme2.roundedDefault,
+                        shape = roundedDefault,
                         enabled = !isVpnRunning,
                         colors = customTextFieldColors(),
                         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
@@ -346,7 +347,7 @@ private fun AddScriptDialog(
                 Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                     Text(
                         text = "APPS SCRIPT DEPLOYMENT ID",
-                        style = Theme2.labelCaps.copy(color = Theme2.onSurfaceVariant)
+                        style = labelCaps.copy(color = onSurfaceVariant)
                     )
                     OutlinedTextField(
                         value = id,
@@ -356,13 +357,13 @@ private fun AddScriptDialog(
                             Icon(
                                 imageVector = Icons.Default.Info,
                                 contentDescription = "Deployment ID Icon",
-                                tint = Theme2.onSurfaceVariant,
+                                tint = onSurfaceVariant,
                                 modifier = Modifier.size(18.dp)
                             )
                         },
                         modifier = Modifier.fillMaxWidth(),
                         singleLine = true,
-                        shape = Theme2.roundedDefault,
+                        shape = roundedDefault,
                         enabled = !isVpnRunning,
                         colors = customTextFieldColors(),
                         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
@@ -376,7 +377,7 @@ private fun AddScriptDialog(
                 Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                     Text(
                         text = "RELAY AUTH KEY",
-                        style = Theme2.labelCaps.copy(color = Theme2.onSurfaceVariant)
+                        style = labelCaps.copy(color = onSurfaceVariant)
                     )
                     OutlinedTextField(
                         value = key,
@@ -386,7 +387,7 @@ private fun AddScriptDialog(
                             Icon(
                                 imageVector = Icons.Default.Lock,
                                 contentDescription = "Auth Key Icon",
-                                tint = Theme2.onSurfaceVariant,
+                                tint = onSurfaceVariant,
                                 modifier = Modifier.size(18.dp)
                             )
                         },
@@ -394,14 +395,14 @@ private fun AddScriptDialog(
                             TextButton(onClick = { passwordVisible = !passwordVisible }) {
                                 Text(
                                     text = if (passwordVisible) "Hide" else "Show",
-                                    style = Theme2.bodySm.copy(fontWeight = FontWeight.Bold, color = Theme2.primary)
+                                    style = bodySm.copy(fontWeight = FontWeight.Bold, color = primary)
                                 )
                             }
                         },
                         visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                         modifier = Modifier.fillMaxWidth(),
                         singleLine = true,
-                        shape = Theme2.roundedDefault,
+                        shape = roundedDefault,
                         enabled = !isVpnRunning,
                         colors = customTextFieldColors(),
                         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
@@ -414,8 +415,8 @@ private fun AddScriptDialog(
                 if (formError.isNotEmpty()) {
                     Text(
                         text = formError,
-                        color = Theme2.error,
-                        style = Theme2.bodySm,
+                        color = error,
+                        style = bodySm,
                         modifier = Modifier.padding(start = 4.dp)
                     )
                 }
@@ -440,18 +441,18 @@ private fun AddScriptDialog(
                         }
                     },
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Theme2.secondary,
-                        contentColor = Theme2.onSecondary
+                        containerColor = secondary,
+                        contentColor = onSecondary
                     ),
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(46.dp),
-                    shape = Theme2.roundedDefault,
+                    shape = roundedDefault,
                     enabled = !isVpnRunning
                 ) {
                     Text(
                         text = "Save Profile",
-                        style = Theme2.titleSm.copy(fontSize = 15.sp, fontWeight = FontWeight.Bold)
+                        style = titleSm.copy(fontSize = 15.sp, fontWeight = FontWeight.Bold)
                     )
                 }
             }
@@ -462,15 +463,15 @@ private fun AddScriptDialog(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun customTextFieldColors() = OutlinedTextFieldDefaults.colors(
-    focusedTextColor = Theme2.onSurface,
-    unfocusedTextColor = Theme2.onSurface,
-    disabledTextColor = Theme2.onSurfaceVariant.copy(alpha = 0.5f),
-    focusedContainerColor = Theme2.surfaceContainerLowest,
-    unfocusedContainerColor = Theme2.surfaceContainerLowest,
-    focusedBorderColor = Theme2.primary,
-    unfocusedBorderColor = Theme2.outlineVariant.copy(alpha = 0.6f),
-    focusedPlaceholderColor = Theme2.onSurfaceVariant.copy(alpha = 0.5f),
-    unfocusedPlaceholderColor = Theme2.onSurfaceVariant.copy(alpha = 0.5f),
-    focusedLabelColor = Theme2.primary,
-    unfocusedLabelColor = Theme2.onSurfaceVariant
+    focusedTextColor = onSurface,
+    unfocusedTextColor = onSurface,
+    disabledTextColor = onSurfaceVariant.copy(alpha = 0.5f),
+    focusedContainerColor = surfaceContainerLowest,
+    unfocusedContainerColor = surfaceContainerLowest,
+    focusedBorderColor = primary,
+    unfocusedBorderColor = outlineVariant.copy(alpha = 0.6f),
+    focusedPlaceholderColor = onSurfaceVariant.copy(alpha = 0.5f),
+    unfocusedPlaceholderColor = onSurfaceVariant.copy(alpha = 0.5f),
+    focusedLabelColor = primary,
+    unfocusedLabelColor = onSurfaceVariant
 )

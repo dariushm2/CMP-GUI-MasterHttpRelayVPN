@@ -46,6 +46,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.darius.lionvpn.ui.theme.*
 
 @Composable
 fun DashboardTab(
@@ -68,9 +69,9 @@ fun DashboardTab(
         modifier = modifier
             .fillMaxSize()
             .verticalScroll(scrollState)
-            .padding(Theme2.containerPadding),
+            .padding(containerPadding),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(Theme2.gutter)
+        verticalArrangement = Arrangement.spacedBy(gutter)
     ) {
         // Connection Hero Glass Card
         ConnectionHeroCard(
@@ -122,7 +123,7 @@ private fun ConnectionHeroCard(
         modifier = modifier
             .fillMaxWidth()
             .height(240.dp),
-        shape = Theme2.roundedLg,
+        shape = roundedLg,
         colors = CardDefaults.cardColors(
             containerColor = Color(0x1F1E293B) // 70% opacity in slate-800 context
         ),
@@ -138,12 +139,12 @@ private fun ConnectionHeroCard(
 
                 // Draw technical grid lines / circles
                 drawCircle(
-                    color = Theme2.outlineVariant.copy(alpha = 0.15f),
+                    color = outlineVariant.copy(alpha = 0.15f),
                     radius = 180.dp.toPx(),
                     style = Stroke(width = 1.dp.toPx())
                 )
                 drawCircle(
-                    color = Theme2.outlineVariant.copy(alpha = 0.1f),
+                    color = outlineVariant.copy(alpha = 0.1f),
                     radius = 280.dp.toPx(),
                     style = Stroke(width = 1.dp.toPx())
                 )
@@ -161,7 +162,7 @@ private fun ConnectionHeroCard(
                 nodes.forEach { (nodePos, _) ->
                     // Line to central VPN engine
                     drawLine(
-                        color = if (isVpnRunning) Theme2.secondary.copy(alpha = 0.2f) else Theme2.outlineVariant.copy(alpha = 0.15f),
+                        color = if (isVpnRunning) secondary.copy(alpha = 0.2f) else outlineVariant.copy(alpha = 0.15f),
                         start = nodePos,
                         end = Offset(centerX, centerY),
                         strokeWidth = 1.5.dp.toPx()
@@ -174,7 +175,7 @@ private fun ConnectionHeroCard(
                         val currentX = nodePos.x + dx * flowProgress
                         val currentY = nodePos.y + dy * flowProgress
                         drawCircle(
-                            color = Theme2.secondary,
+                            color = secondary,
                             radius = 3.dp.toPx(),
                             center = Offset(currentX, currentY)
                         )
@@ -182,7 +183,7 @@ private fun ConnectionHeroCard(
 
                     // Node dot
                     drawCircle(
-                        color = if (isVpnRunning) Theme2.secondary else Theme2.outlineVariant,
+                        color = if (isVpnRunning) secondary else outlineVariant,
                         radius = 4.dp.toPx(),
                         center = nodePos
                     )
@@ -206,7 +207,7 @@ private fun ConnectionHeroCard(
                         Box(
                             modifier = Modifier
                                 .fillMaxSize(pulseProgress)
-                                .background(Theme2.secondary.copy(alpha = pulseAlpha), CircleShape)
+                                .background(secondary.copy(alpha = pulseAlpha), CircleShape)
                         )
                     }
 
@@ -214,7 +215,7 @@ private fun ConnectionHeroCard(
                     val glowModifier = if (isVpnRunning) {
                         Modifier.drawBehind {
                             drawCircle(
-                                color = Theme2.secondary.copy(alpha = 0.25f),
+                                color = secondary.copy(alpha = 0.25f),
                                 radius = 96.dp.toPx()
                             )
                         }
@@ -227,13 +228,13 @@ private fun ConnectionHeroCard(
                         modifier = Modifier
                             .size(160.dp)
                             .then(glowModifier)
-                            .background(Theme2.surfaceContainerHighest, CircleShape)
+                            .background(surfaceContainerHighest, CircleShape)
                             .border(
                                 width = 4.dp,
                                 color = when {
-                                    isVpnRunning -> Theme2.secondary
-                                    isConnectEnabled -> Theme2.primary
-                                    else -> Theme2.outlineVariant
+                                    isVpnRunning -> secondary
+                                    isConnectEnabled -> primary
+                                    else -> outlineVariant
                                 },
                                 shape = CircleShape
                             )
@@ -246,9 +247,9 @@ private fun ConnectionHeroCard(
                                 imageVector = Icons.Default.PowerSettingsNew,
                                 contentDescription = "Power VPN Button",
                                 tint = when {
-                                    isVpnRunning -> Theme2.secondary
-                                    isConnectEnabled -> Theme2.primary
-                                    else -> Theme2.onSurfaceVariant.copy(alpha = 0.4f)
+                                    isVpnRunning -> secondary
+                                    isConnectEnabled -> primary
+                                    else -> onSurfaceVariant.copy(alpha = 0.4f)
                                 },
                                 modifier = Modifier.size(54.dp)
                             )
@@ -259,12 +260,12 @@ private fun ConnectionHeroCard(
                                     isConnectEnabled -> "DISCONNECTED"
                                     else -> "NO CONFIG"
                                 },
-                                style = Theme2.labelCaps.copy(
+                                style = labelCaps.copy(
                                     fontSize = 11.sp,
                                     color = when {
-                                        isVpnRunning -> Theme2.secondary
-                                        isConnectEnabled -> Theme2.onSurfaceVariant
-                                        else -> Theme2.onSurfaceVariant.copy(alpha = 0.4f)
+                                        isVpnRunning -> secondary
+                                        isConnectEnabled -> onSurfaceVariant
+                                        else -> onSurfaceVariant.copy(alpha = 0.4f)
                                     },
                                     letterSpacing = 2.sp
                                 )
@@ -287,9 +288,9 @@ private fun TerminalLogConsole(
         if (logs.isNotEmpty()) lazyListState.scrollToItem(logs.lastIndex)
     }
     Card(
-        shape = Theme2.roundedLg,
+        shape = roundedLg,
         colors = CardDefaults.cardColors(
-            containerColor = Theme2.surfaceContainerLowest
+            containerColor = surfaceContainerLowest
         ),
         border = borderStrokeGlass(),
         modifier = modifier
@@ -300,8 +301,8 @@ private fun TerminalLogConsole(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(Theme2.surfaceContainerLow)
-                    .padding(horizontal = Theme2.gutter, vertical = 10.dp),
+                    .background(surfaceContainerLow)
+                    .padding(horizontal = gutter, vertical = 10.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -312,12 +313,12 @@ private fun TerminalLogConsole(
                     Icon(
                         imageVector = Icons.Default.Terminal,
                         contentDescription = "Logs Terminal",
-                        tint = Theme2.primary,
+                        tint = primary,
                         modifier = Modifier.size(16.dp)
                     )
                     Text(
                         text = "SYSTEM LOGS",
-                        style = Theme2.labelCaps.copy(color = Theme2.onSurfaceVariant)
+                        style = labelCaps.copy(color = onSurfaceVariant)
                     )
                 }
             }
@@ -349,21 +350,23 @@ private fun LogEntry(
     modifier: Modifier = Modifier
 ) {
     val textColor = when (type) {
-        LogType.Info -> Theme2.onSurfaceVariant.copy(alpha = 0.8f)
-        LogType.Success -> Theme2.secondary
-        LogType.Warn -> Theme2.tertiary
-        LogType.Error -> Theme2.error
+        LogType.Info -> onSurfaceVariant.copy(alpha = 0.8f)
+        LogType.Success -> secondary
+        LogType.Warn -> tertiary
+        LogType.Error -> error
     }
 
     Text(
         text = text,
-        style = Theme2.monoCode.copy(
+        style = monoCode.copy(
             color = textColor,
             fontSize = 12.sp
         ),
         modifier = modifier.fillMaxWidth()
     )
 }
+
+enum class LogType { Info, Success, Warn, Error }
 
 // Simple parsing helper for custom coloring logs
 private fun parseLogType(line: String): Pair<String, LogType> {

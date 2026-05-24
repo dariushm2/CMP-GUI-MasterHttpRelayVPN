@@ -17,7 +17,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavHostController
+import com.darius.lionvpn.ui.theme.*
 
 enum class HomeTab {
     Dashboard,
@@ -35,8 +35,8 @@ fun HomeScreen(
     var activeTab by remember { mutableStateOf(HomeTab.Dashboard) }
 
     Surface(
-        modifier = modifier.fillMaxSize(),
-        color = Theme2.background
+        color = background,
+        modifier = modifier.fillMaxSize()
     ) {
         Row(modifier = Modifier.fillMaxSize()) {
             // Sidebar Navigation (Fixed width 240dp)
@@ -56,7 +56,7 @@ fun HomeScreen(
                     modifier = Modifier
                         .weight(1f)
                         .fillMaxWidth()
-                        .background(Theme2.background)
+                        .background(background)
                 ) {
                     // Soft background glow gradient
                     Box(
@@ -65,7 +65,7 @@ fun HomeScreen(
                             .background(
                                 Brush.radialGradient(
                                     colors = listOf(
-                                        Theme2.primary.copy(alpha = 0.05f),
+                                        primary.copy(alpha = 0.05f),
                                         Color.Transparent
                                     )
                                 )
@@ -110,13 +110,13 @@ private fun Sidebar(
         modifier = modifier
             .width(240.dp)
             .fillMaxHeight()
-            .background(Theme2.surfaceContainerLowest)
+            .background(surfaceContainerLowest)
             .border(
                 width = 1.dp,
-                color = Theme2.outlineVariant,
+                color = outlineVariant,
                 shape = androidx.compose.ui.graphics.RectangleShape
             )
-            .padding(vertical = Theme2.stackLg),
+            .padding(vertical = stackLg),
         verticalArrangement = Arrangement.SpaceBetween
     ) {
         Column(modifier = Modifier.fillMaxWidth()) {
@@ -124,21 +124,21 @@ private fun Sidebar(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = Theme2.gutter)
-                    .padding(bottom = Theme2.stackLg),
+                    .padding(horizontal = gutter)
+                    .padding(bottom = stackLg),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Box(
                     modifier = Modifier
                         .size(40.dp)
-                        .background(Theme2.primary.copy(alpha = 0.15f), Theme2.roundedDefault)
-                        .border(1.dp, Theme2.primary.copy(alpha = 0.3f), Theme2.roundedDefault),
+                        .background(primary.copy(alpha = 0.15f), roundedDefault)
+                        .border(1.dp, primary.copy(alpha = 0.3f), roundedDefault),
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
                         imageVector = Icons.Default.Shield,
                         contentDescription = "Shield Logo",
-                        tint = Theme2.primary,
+                        tint = primary,
                         modifier = Modifier.size(22.dp)
                     )
                 }
@@ -146,17 +146,17 @@ private fun Sidebar(
                 Column {
                     Text(
                         text = "Lion VPN",
-                        style = Theme2.headlineMd.copy(
+                        style = headlineMd.copy(
                             fontSize = 20.sp,
                             fontWeight = FontWeight.Bold,
-                            color = Theme2.primary
+                            color = primary
                         )
                     )
                     Text(
                         text = "1.0.0",
-                        style = Theme2.monoCode.copy(
+                        style = monoCode.copy(
                             fontSize = 10.sp,
-                            color = Theme2.onSurfaceVariant.copy(alpha = 0.6f)
+                            color = onSurfaceVariant.copy(alpha = 0.6f)
                         )
                     )
                 }
@@ -198,8 +198,8 @@ private fun SidebarNavItem(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val backgroundColor = if (isActive) Theme2.secondary.copy(alpha = 0.08f) else Color.Transparent
-    val contentColor = if (isActive) Theme2.secondary else Theme2.onSurfaceVariant
+    val backgroundColor = if (isActive) secondary.copy(alpha = 0.08f) else Color.Transparent
+    val contentColor = if (isActive) secondary else onSurfaceVariant
 
     Box(
         modifier = modifier
@@ -211,7 +211,7 @@ private fun SidebarNavItem(
         Row(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = Theme2.gutter),
+                .padding(horizontal = gutter),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
@@ -223,7 +223,7 @@ private fun SidebarNavItem(
             Spacer(modifier = Modifier.width(12.dp))
             Text(
                 text = label,
-                style = Theme2.bodyMd.copy(
+                style = bodyMd.copy(
                     fontWeight = if (isActive) FontWeight.Bold else FontWeight.Normal,
                     color = contentColor
                 )
@@ -237,7 +237,7 @@ private fun SidebarNavItem(
                     .align(Alignment.CenterEnd)
                     .width(3.dp)
                     .fillMaxHeight()
-                    .background(Theme2.secondary)
+                    .background(secondary)
             )
         }
     }
