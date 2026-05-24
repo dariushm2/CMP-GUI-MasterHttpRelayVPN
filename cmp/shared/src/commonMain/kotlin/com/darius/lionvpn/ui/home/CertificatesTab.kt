@@ -117,11 +117,6 @@ fun CertificatesTab(
                                     style = bodySm.copy(fontWeight = FontWeight.Bold, color = onSecondary)
                                 )
                             }
-                            Icon(
-                                imageVector = Icons.Default.ChevronRight,
-                                contentDescription = stringResource(Res.string.arrow_right_desc),
-                                modifier = Modifier.size(16.dp)
-                            )
                         }
                     }
 
@@ -156,11 +151,6 @@ fun CertificatesTab(
                                     style = bodySm.copy(fontWeight = FontWeight.Bold)
                                 )
                             }
-                            Icon(
-                                imageVector = Icons.Default.Close,
-                                contentDescription = stringResource(Res.string.close_indicator_desc),
-                                modifier = Modifier.size(14.dp)
-                            )
                         }
                     }
 

@@ -16,9 +16,7 @@
 
     <!-- Dashboard Tab -->
     <string name="power_vpn_button_desc">دکمه روشن/خاموش وی‌پی‌ان</string>
-    <string name="connected">وصل</string>
-    <string name="disconnected">قطع</string>
-    <string name="no_config">بدون پیکربندی</string>
+    <string name="no_config">بدون اسکریپت</string>
     <string name="logs_terminal_desc">ترمینال گزارش‌ها</string>
     <string name="system_logs">گزارش‌های سیستم</string>
 
@@ -28,11 +26,9 @@
     <string name="manual_controls">کنترل‌های دستی</string>
     <string name="install_icon_desc">آیکون نصب</string>
     <string name="install_https_cert">نصب گواهی</string>
-    <string name="arrow_right_desc">فلش راست</string>
     <string name="uninstall_icon_desc">آیکون لغو نصب</string>
     <string name="uninstall_certificate">حذف گواهی</string>
-    <string name="close_indicator_desc">نشانگر بستن</string>
-    <string name="uninstallation_note">توجه: لغو نصب باعث توقف ارتباط می شود.</string>
+    <string name="uninstallation_note">توجه: حذف گواهی باعث توقف ارتباط می شود.</string>
 
     <!-- Scripts Tab -->
     <string name="scripts_management">مدیریت اسکریپت‌ها</string>

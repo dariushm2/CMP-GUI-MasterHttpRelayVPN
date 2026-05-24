@@ -261,8 +261,8 @@ private fun ConnectionHeroCard(
                             Spacer(modifier = Modifier.height(10.dp))
                             Text(
                                 text = when {
-                                    isVpnRunning -> stringResource(Res.string.connected)
-                                    isConnectEnabled -> stringResource(Res.string.disconnected)
+                                    isVpnRunning -> "127.0.0.1:8085"
+                                    isConnectEnabled -> ""
                                     else -> stringResource(Res.string.no_config)
                                 },
                                 style = labelCaps.copy(
