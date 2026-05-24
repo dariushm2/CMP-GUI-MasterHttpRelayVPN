@@ -7,26 +7,57 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 
 // Set of Material typography styles to start with
+
+val displayLg = TextStyle(
+    fontFamily = FontFamily.SansSerif,
+    fontSize = 32.sp,
+    fontWeight = FontWeight.Bold,
+    lineHeight = 40.sp,
+    letterSpacing = (-0.02).sp
+)
+val headlineMd = TextStyle(
+    fontFamily = FontFamily.SansSerif,
+    fontSize = 24.sp,
+    fontWeight = FontWeight.SemiBold,
+    lineHeight = 32.sp,
+    letterSpacing = (-0.01).sp
+)
+val titleSm = TextStyle(
+    fontFamily = FontFamily.SansSerif,
+    fontSize = 18.sp,
+    fontWeight = FontWeight.SemiBold,
+    lineHeight = 24.sp
+)
+val bodyMd = TextStyle(
+    fontFamily = FontFamily.SansSerif,
+    fontSize = 15.sp,
+    fontWeight = FontWeight.Normal,
+    lineHeight = 22.sp
+)
+val bodySm = TextStyle(
+    fontFamily = FontFamily.SansSerif,
+    fontSize = 13.sp,
+    fontWeight = FontWeight.Normal,
+    lineHeight = 18.sp
+)
+val monoCode = TextStyle(
+    fontFamily = FontFamily.Monospace,
+    fontSize = 12.sp,
+    fontWeight = FontWeight.Normal,
+    lineHeight = 16.sp
+)
+val labelCaps = TextStyle(
+    fontFamily = FontFamily.SansSerif,
+    fontSize = 11.sp,
+    fontWeight = FontWeight.Bold,
+    lineHeight = 16.sp,
+    letterSpacing = 0.05.sp
+)
+
 val Typography = Typography(
-    bodyLarge = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Normal,
-        fontSize = 16.sp,
-        lineHeight = 24.sp,
-        letterSpacing = 0.5.sp
-    ),
-    titleLarge = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Normal,
-        fontSize = 22.sp,
-        lineHeight = 28.sp,
-        letterSpacing = 0.sp
-    ),
-    labelSmall = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Medium,
-        fontSize = 11.sp,
-        lineHeight = 16.sp,
-        letterSpacing = 0.5.sp
-    )
+    displayLarge = displayLg,
+    headlineMedium = headlineMd,
+    titleSmall = titleSm,
+    bodyMedium = bodyMd,
+    bodySmall = bodySm,
 )

@@ -14,7 +14,7 @@ import com.darius.lionvpn.proxy.ProxyManager
 
 object ProcessRunner {
 
-    private val platform = getPlatform()
+    private val platform = JvmPlatform()
     private val binaryPath = getPythonExecutablePath()
     private val proxyManager: ProxyManager by lazy { getKoin().get<ProxyManager>() }
 
@@ -22,20 +22,39 @@ object ProcessRunner {
 
     private val _isVpnRunning = MutableStateFlow(false)
     val isVpnRunning: StateFlow<Boolean> = _isVpnRunning.asStateFlow()
-    private val _vpnLogs = MutableStateFlow(listOf("Lion VPN"))
+    private val _vpnLogs = MutableStateFlow(emptyList<String>())
     val vpnLogs: StateFlow<List<String>> = _vpnLogs.asStateFlow()
+
+    fun clearLogs() {
+        _vpnLogs.value = emptyList()
+    }
 
     fun installCert() {
         println("Installing Certificate for: $binaryPath")
 
-        val processBuilder = when {
-            platform.isWin() -> ProcessBuilder(binaryPath, "--install-cert")
-            platform.isMac() -> ProcessBuilder(binaryPath, "--install-cert")
+        val processBuilder = when(platform.os) {
+            JvmPlatform.OS.WIN,
+            JvmPlatform.OS.MAC -> ProcessBuilder(binaryPath, "--install-cert")
             else -> ProcessBuilder("pkexec", binaryPath, "--install-cert")
         }
 
         processBuilder.runProcess { isSuccess ->
             if (isSuccess) println("[VPN Process] Certificate was installed successfully!")
+            else println("[VPN Process] Something went wrong!")
+        }
+    }
+
+    fun uninstallCert() {
+        println("Uninstalling Certificate for: $binaryPath")
+
+        val processBuilder = when(platform.os) {
+            JvmPlatform.OS.WIN,
+            JvmPlatform.OS.MAC -> ProcessBuilder(binaryPath, "--uninstall-cert")
+            else -> ProcessBuilder("pkexec", binaryPath, "--uninstall-cert")
+        }
+
+        processBuilder.runProcess { isSuccess ->
+            if (isSuccess) println("[VPN Process] Certificate was uninstalled successfully!")
             else println("[VPN Process] Something went wrong!")
         }
     }

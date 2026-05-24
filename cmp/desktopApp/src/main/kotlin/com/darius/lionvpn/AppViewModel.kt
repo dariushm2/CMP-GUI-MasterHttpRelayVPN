@@ -32,7 +32,7 @@ class AppViewModel : ViewModel() {
     ) { running, logs, configs, index ->
         HomeState(
             isVpnRunning = running,
-            log = if (isDebugBuild()) logs else null,
+            log = logs,
             savedConfigs = configs,
             selectedConfigIndex = index
         )
@@ -134,9 +134,14 @@ class AppViewModel : ViewModel() {
     fun handleEvent(event: Event) {
         viewModelScope.launch(errorHandler) {
             when (event) {
-                Event.Certificate -> {
+                Event.InstallCertificate -> {
                     withContext(Dispatchers.IO) {
                         ProcessRunner.installCert()
+                    }
+                }
+                Event.UninstallCertificate -> {
+                    withContext(Dispatchers.IO) {
+                        ProcessRunner.uninstallCert()
                     }
                 }
                 Event.Connect -> {
@@ -144,6 +149,7 @@ class AppViewModel : ViewModel() {
                         ProcessRunner.start()
                     }
                 }
+                Event.ClearLogs -> ProcessRunner.clearLogs()
                 is Event.AddConfig -> addConfig(event.config)
                 is Event.DeleteConfig -> deleteConfig(event.config)
                 is Event.SelectConfig -> selectConfig(event.index)

@@ -1,183 +1,240 @@
 package com.darius.lionvpn.ui.home
 
+import androidx.compose.animation.*
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavHostController
+import com.darius.lionvpn.BuildConfig
+import com.darius.lionvpn.ui.theme.*
+import org.jetbrains.compose.resources.stringResource
+import lion_vpn.shared.generated.resources.*
 
-@OptIn(ExperimentalMaterial3Api::class)
+enum class HomeTab {
+    Dashboard,
+    Scripts,
+    Certificates
+}
+
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun HomeScreen(
-    navController: NavHostController,
     state: HomeState,
     onClick: (Event) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    // Determine the active configuration
-    val activeConfig = if (state.selectedConfigIndex in state.savedConfigs.indices) {
-        state.savedConfigs[state.selectedConfigIndex]
-    } else {
-        null
-    }
+    var activeTab by remember { mutableStateOf(HomeTab.Dashboard) }
 
-    val scriptId = activeConfig?.id ?: ""
-    val authKey = activeConfig?.key ?: ""
-    val isConnectEnabled = scriptId.isNotEmpty() && authKey.isNotEmpty()
+    Surface(
+        color = background,
+        modifier = modifier.fillMaxSize()
+    ) {
+        Row(modifier = Modifier.fillMaxSize()) {
+            // Sidebar Navigation (Fixed width 240dp)
+            Sidebar(
+                activeTab = activeTab,
+                onTabSelect = { activeTab = it },
+            )
 
-    Scaffold(
-        modifier = Modifier
-            .fillMaxSize()
-            .consumeWindowInsets(WindowInsets.statusBars)
-    ) { innerPadding ->
-        Box(
-            modifier = modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-                .background(
-                    brush = Brush.verticalGradient(
-                        colors = listOf(
-                            MaterialTheme.colorScheme.background,
-                            MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
-                        )
-                    )
-                )
-        ) {
+            // Right Pane: Header + Content + Footer
             Column(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(24.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Top
+                    .weight(1f)
+                    .fillMaxHeight()
             ) {
-                TopPart(
-                    state = state,
-                    onClick = onClick,
-                    modifier = Modifier.weight(1f)
-                )
+                // Main Content Area with elegant fade transitions
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxWidth()
+                        .background(background)
+                ) {
+                    // Soft background glow gradient
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(
+                                Brush.radialGradient(
+                                    colors = listOf(
+                                        primary.copy(alpha = 0.05f),
+                                        Color.Transparent
+                                    )
+                                )
+                            )
+                    )
 
-                Footer(
-                    isVpnRunning = state.isVpnRunning,
-                    isConnectEnabled = isConnectEnabled,
-                    onClick = onClick
-                )
+                    // Tab contents
+                    AnimatedContent(
+                        targetState = activeTab,
+                        transitionSpec = {
+                            fadeIn() with fadeOut()
+                        }
+                    ) { targetTab ->
+                        when (targetTab) {
+                            HomeTab.Dashboard -> DashboardTab(
+                                state = state,
+                                onClick = onClick
+                            )
+                            HomeTab.Scripts -> ScriptsTab(
+                                state = state,
+                                onClick = onClick
+                            )
+                            HomeTab.Certificates -> CertificatesTab(onClick = onClick)
+                        }
+                    }
+                }
             }
         }
     }
 }
 
 @Composable
-private fun TopPart(
-    state: HomeState,
-    onClick: (Event) -> Unit,
+private fun Sidebar(
+    activeTab: HomeTab,
+    onTabSelect: (HomeTab) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
         modifier = modifier
-            .fillMaxWidth()
-            .verticalScroll(rememberScrollState()),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Top
-    ) {
-        Text(
-            text = "🦁 LionVPN",
-            style = MaterialTheme.typography.headlineLarge.copy(
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary,
-                letterSpacing = 0.5.sp
+            .width(240.dp)
+            .fillMaxHeight()
+            .background(surfaceContainerLowest)
+            .border(
+                width = 1.dp,
+                color = outlineVariant,
+                shape = androidx.compose.ui.graphics.RectangleShape
             )
-        )
-
-        state.log?.let {
-            LogTerminal(
-                log = it,
-                modifier = Modifier.padding(bottom = 16.dp)
-            )
-        }
-
-        // Dynamic Status & Control Section
-        VpnStatusCard(
-            isVpnRunning = state.isVpnRunning,
-            modifier = Modifier.padding(bottom = 16.dp)
-        )
-
-        // Premium Multi-config Management Panel (Default)
-        MultiConfigPanel(
-            savedConfigs = state.savedConfigs,
-            selectedConfigIndex = state.selectedConfigIndex,
-            isVpnRunning = state.isVpnRunning,
-            onClick = onClick,
-            modifier = Modifier.padding(bottom = 16.dp)
-        )
-    }
-}
-
-@Composable
-private fun Footer(
-    isVpnRunning: Boolean,
-    isConnectEnabled: Boolean,
-    onClick: (Event) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(top = 16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+            .padding(vertical = stackLg),
+        verticalArrangement = Arrangement.SpaceBetween
     ) {
-        // Certificate Setup Section (Only shown when disconnected)
-        if (!isVpnRunning) {
-            Button(
-                onClick = { onClick(Event.Certificate) },
+        Column(modifier = Modifier.fillMaxWidth()) {
+            // Logo / Branding Header
+            Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(48.dp),
-                shape = RoundedCornerShape(12.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                    contentColor = MaterialTheme.colorScheme.onSecondaryContainer
-                )
+                    .padding(horizontal = gutter)
+                    .padding(bottom = stackLg),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = "Install HTTPS Certificate (Requires privileges)",
-                    style = MaterialTheme.typography.labelLarge.copy(
-                        fontWeight = FontWeight.Bold
+                Box(
+                    modifier = Modifier
+                        .size(40.dp)
+                        .background(primary.copy(alpha = 0.15f), roundedDefault)
+                        .border(1.dp, primary.copy(alpha = 0.3f), roundedDefault),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text("🦁", style = displayLg)
+                }
+                Spacer(modifier = Modifier.width(12.dp))
+                Column {
+                    Text(
+                        text = stringResource(Res.string.app_name),
+                        style = headlineMd.copy(
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = primary
+                        )
                     )
+                    Text(
+                        text = BuildConfig.APP_VERSION,
+                        style = monoCode.copy(
+                            fontSize = 10.sp,
+                            color = onSurfaceVariant.copy(alpha = 0.6f),
+                            textDirection = TextDirection.Ltr,
+                        ),
+                    )
+                }
+            }
+
+            // Navigation Links
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                SidebarNavItem(
+                    label = stringResource(Res.string.tab_dashboard),
+                    icon = Icons.Default.Dashboard,
+                    isActive = activeTab == HomeTab.Dashboard,
+                    onClick = { onTabSelect(HomeTab.Dashboard) }
+                )
+                SidebarNavItem(
+                    label = stringResource(Res.string.tab_scripts),
+                    icon = Icons.Default.Terminal,
+                    isActive = activeTab == HomeTab.Scripts,
+                    onClick = { onTabSelect(HomeTab.Scripts) }
+                )
+                SidebarNavItem(
+                    label = stringResource(Res.string.tab_certificates),
+                    icon = Icons.Default.VerifiedUser,
+                    isActive = activeTab == HomeTab.Certificates,
+                    onClick = { onTabSelect(HomeTab.Certificates) }
                 )
             }
         }
+    }
+}
 
-        // Main Connect / Disconnect button (toggled dynamically based on running state)
-        Button(
-            onClick = { onClick(Event.Connect) },
+@Composable
+private fun SidebarNavItem(
+    label: String,
+    icon: ImageVector,
+    isActive: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val backgroundColor = if (isActive) secondary.copy(alpha = 0.08f) else Color.Transparent
+    val contentColor = if (isActive) secondary else onSurfaceVariant
+
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(48.dp)
+            .background(backgroundColor)
+            .clickable { onClick() }
+    ) {
+        Row(
             modifier = Modifier
-                .fillMaxWidth()
-                .height(56.dp),
-            shape = RoundedCornerShape(14.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = if (isVpnRunning) Color(0xFFC62828) else MaterialTheme.colorScheme.primary
-            ),
-            elevation = ButtonDefaults.buttonElevation(defaultElevation = 4.dp),
-            enabled = isConnectEnabled // Require configuration to connect
+                .fillMaxSize()
+                .padding(horizontal = gutter),
+            verticalAlignment = Alignment.CenterVertically
         ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = "$label Icon",
+                tint = contentColor,
+                modifier = Modifier.size(20.dp)
+            )
+            Spacer(modifier = Modifier.width(12.dp))
             Text(
-                text = if (isVpnRunning) "Disconnect & Stop VPN Server" else "Connect & Start VPN Server",
-                style = MaterialTheme.typography.titleMedium.copy(
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White,
-                    letterSpacing = 0.5.sp
+                text = label,
+                style = bodyMd.copy(
+                    fontWeight = if (isActive) FontWeight.Bold else FontWeight.Normal,
+                    color = contentColor
                 )
+            )
+        }
+
+        // Right indicator line if active
+        if (isActive) {
+            Box(
+                modifier = Modifier
+                    .align(Alignment.CenterEnd)
+                    .width(3.dp)
+                    .fillMaxHeight()
+                    .background(secondary)
             )
         }
     }
