@@ -39,6 +39,8 @@
     <string name="active">فعال</string>
     <string name="standby">آماده به کار</string>
     <string name="delete_profile_icon_desc">آیکون حذف پروفایل</string>
+    <string name="copy_deployment_id_desc">کپی شناسه استقرار</string>
+    <string name="copied_toast">شناسه استقرار با موفقیت کپی شد</string>
     <string name="new_script_profile">پروفایل اسکریپت جدید</string>
     <string name="close_add_profile_icon_desc">آیکون بستن افزودن پروفایل</string>
     <string name="profile_label">نام پروفایل</string>
