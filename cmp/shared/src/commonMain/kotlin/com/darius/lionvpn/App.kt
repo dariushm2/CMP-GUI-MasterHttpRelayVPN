@@ -46,23 +46,26 @@ fun App(
             }
         }
     }
-    CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
-        WalletTheme {
-            Scaffold(
-                modifier = Modifier
-                    .fillMaxSize()
-            ) { innerPadding ->
-                Box(
+    val layoutDirection = if (state.language == "en") LayoutDirection.Ltr else LayoutDirection.Rtl
+    androidx.compose.runtime.key(state.language) {
+        CompositionLocalProvider(LocalLayoutDirection provides layoutDirection) {
+            WalletTheme {
+                Scaffold(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(top = innerPadding.calculateTopPadding())
-                ) {
-                    if (!isConnected) NetworkLoss()
-                    else NavGraph(
-                        navController = navController,
-                        state = state,
-                        onClick = onClick,
-                    )
+                ) { innerPadding ->
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(top = innerPadding.calculateTopPadding())
+                    ) {
+                        if (!isConnected) NetworkLoss()
+                        else NavGraph(
+                            navController = navController,
+                            state = state,
+                            onClick = onClick,
+                        )
+                    }
                 }
             }
         }

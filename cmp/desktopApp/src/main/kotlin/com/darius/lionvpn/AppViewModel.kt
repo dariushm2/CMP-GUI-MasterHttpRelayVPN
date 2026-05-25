@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.darius.lionvpn.ui.home.Event
 import com.darius.lionvpn.ui.home.HomeState
+import com.darius.lionvpn.config.*
 import com.darius.lionvpn.ui.model.SavedConfig
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
@@ -21,6 +22,7 @@ class AppViewModel : ViewModel() {
     private val _selectedConfigIndex = MutableStateFlow(-1)
     private val _rawConfigJson = MutableStateFlow("")
     private val _configResetTrigger = MutableStateFlow(0)
+    private val _language = MutableStateFlow(loadLanguagePreference())
 
     private val isVpnRunning = ProcessRunner.isVpnRunning
     private val vpnLogs = ProcessRunner.vpnLogs
@@ -32,7 +34,8 @@ class AppViewModel : ViewModel() {
         _savedConfigs,
         _selectedConfigIndex,
         _rawConfigJson,
-        _configResetTrigger
+        _configResetTrigger,
+        _language
     ) { array ->
         val running = array[0] as Boolean
         val logs = array[1] as List<String>
@@ -40,6 +43,7 @@ class AppViewModel : ViewModel() {
         val index = array[3] as Int
         val configJson = array[4] as String
         val resetTrigger = array[5] as Int
+        val lang = array[6] as String
         
         HomeState(
             isVpnRunning = running,
@@ -47,12 +51,13 @@ class AppViewModel : ViewModel() {
             savedConfigs = configs,
             selectedConfigIndex = index,
             rawConfigJson = configJson,
-            configResetTrigger = resetTrigger
+            configResetTrigger = resetTrigger,
+            language = lang
         )
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
-        initialValue = HomeState()
+        initialValue = HomeState(language = loadLanguagePreference())
     )
 
     private val errorHandler = CoroutineExceptionHandler { _, exception ->
@@ -60,6 +65,11 @@ class AppViewModel : ViewModel() {
     }
 
     init {
+        // Synchronously load and set default JVM locale on startup
+        val savedLang = loadLanguagePreference()
+        _language.value = savedLang
+        java.util.Locale.setDefault(java.util.Locale(savedLang))
+
         viewModelScope.launch(errorHandler) {
             loadConfigs()
         }
@@ -191,6 +201,14 @@ class AppViewModel : ViewModel() {
                         _rawConfigJson.value = loadRawConfig()
                         _configResetTrigger.value++
                     }
+                }
+                is Event.ChangeLanguage -> {
+                    val lang = event.language
+                    java.util.Locale.setDefault(java.util.Locale(lang))
+                    withContext(Dispatchers.IO) {
+                        saveLanguagePreference(lang)
+                    }
+                    _language.value = lang
                 }
             }
         }

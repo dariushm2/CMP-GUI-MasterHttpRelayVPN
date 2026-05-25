@@ -11,6 +11,7 @@ import kotlin.collections.plus
 
 import org.koin.mp.KoinPlatform.getKoin
 import com.darius.lionvpn.proxy.ProxyManager
+import com.darius.lionvpn.config.*
 import kotlinx.serialization.json.*
 
 object ProcessRunner {

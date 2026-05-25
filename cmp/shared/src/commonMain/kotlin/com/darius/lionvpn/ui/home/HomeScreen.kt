@@ -52,6 +52,8 @@ fun HomeScreen(
             Sidebar(
                 activeTab = activeTab,
                 onTabSelect = { activeTab = it },
+                language = state.language,
+                onLanguageChange = { onClick(Event.ChangeLanguage(it)) }
             )
 
             // Right Pane: Header + Content + Footer
@@ -115,6 +117,8 @@ fun HomeScreen(
 private fun Sidebar(
     activeTab: HomeTab,
     onTabSelect: (HomeTab) -> Unit,
+    language: String,
+    onLanguageChange: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -204,6 +208,88 @@ private fun Sidebar(
                     isActive = activeTab == HomeTab.About,
                     onClick = { onTabSelect(HomeTab.About) }
                 )
+            }
+        }
+
+        // Language Toggle Switch at the bottom of the sidebar
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = gutter),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Text(
+                text = if (language == "en") "Language" else "زبان برنامه",
+                style = bodySm.copy(
+                    fontSize = 11.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = onSurfaceVariant.copy(alpha = 0.6f)
+                ),
+                modifier = Modifier.padding(horizontal = 4.dp)
+            )
+            
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(38.dp)
+                    .background(surfaceContainerLow, roundedDefault)
+                    .border(1.dp, outlineVariant.copy(alpha = 0.5f), roundedDefault)
+                    .padding(2.dp),
+                horizontalArrangement = Arrangement.spacedBy(2.dp)
+            ) {
+                // Persian Option
+                val isFa = language == "fa"
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight()
+                        .background(
+                            color = if (isFa) secondary.copy(alpha = 0.15f) else Color.Transparent,
+                            shape = roundedDefault
+                        )
+                        .border(
+                            width = if (isFa) 1.dp else 0.dp,
+                            color = if (isFa) secondary.copy(alpha = 0.4f) else Color.Transparent,
+                            shape = roundedDefault
+                        )
+                        .clickable { onLanguageChange("fa") },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "فارسی",
+                        style = bodySm.copy(
+                            fontWeight = if (isFa) FontWeight.Bold else FontWeight.Normal,
+                            color = if (isFa) secondary else onSurfaceVariant
+                        )
+                    )
+                }
+
+                // English Option
+                val isEn = language == "en"
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight()
+                        .background(
+                            color = if (isEn) secondary.copy(alpha = 0.15f) else Color.Transparent,
+                            shape = roundedDefault
+                        )
+                        .border(
+                            width = if (isEn) 1.dp else 0.dp,
+                            color = if (isEn) secondary.copy(alpha = 0.4f) else Color.Transparent,
+                            shape = roundedDefault
+                        )
+                        .clickable { onLanguageChange("en") },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "English",
+                        style = bodySm.copy(
+                            fontWeight = if (isEn) FontWeight.Bold else FontWeight.Normal,
+                            color = if (isEn) secondary else onSurfaceVariant
+                        )
+                    )
+                }
             }
         }
     }

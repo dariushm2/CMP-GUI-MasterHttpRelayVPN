@@ -12,4 +12,5 @@ sealed interface Event {
     data class SelectConfig(val index: Int) : Event
     data class SaveRawConfig(val json: String) : Event
     object LoadDefaultConfig : Event
+    data class ChangeLanguage(val language: String) : Event
 }
