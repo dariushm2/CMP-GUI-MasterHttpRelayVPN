@@ -22,6 +22,7 @@ import com.darius.lionvpn.ui.errostate.NetworkLoss
 import com.darius.lionvpn.ui.home.Event
 import com.darius.lionvpn.ui.home.HomeScreen
 import com.darius.lionvpn.ui.home.HomeState
+import com.darius.lionvpn.ui.model.Lang
 import com.darius.lionvpn.ui.navigation.Route
 import com.darius.lionvpn.ui.theme.WalletTheme
 
@@ -46,7 +47,7 @@ fun App(
             }
         }
     }
-    val layoutDirection = if (state.language == "en") LayoutDirection.Ltr else LayoutDirection.Rtl
+    val layoutDirection = if (state.language == Lang.EN) LayoutDirection.Ltr else LayoutDirection.Rtl
     androidx.compose.runtime.key(state.language) {
         CompositionLocalProvider(LocalLayoutDirection provides layoutDirection) {
             WalletTheme {

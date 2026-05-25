@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.darius.lionvpn.ui.home.Event
 import com.darius.lionvpn.ui.home.HomeState
 import com.darius.lionvpn.config.*
+import com.darius.lionvpn.ui.model.Lang
 import com.darius.lionvpn.ui.model.SavedConfig
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
@@ -43,7 +44,7 @@ class AppViewModel : ViewModel() {
         val index = array[3] as Int
         val configJson = array[4] as String
         val resetTrigger = array[5] as Int
-        val lang = array[6] as String
+        val lang = array[6] as Lang
         
         HomeState(
             isVpnRunning = running,
@@ -68,7 +69,7 @@ class AppViewModel : ViewModel() {
         // Synchronously load and set default JVM locale on startup
         val savedLang = loadLanguagePreference()
         _language.value = savedLang
-        java.util.Locale.setDefault(java.util.Locale(savedLang))
+        java.util.Locale.setDefault(java.util.Locale(savedLang.name.lowercase()))
 
         viewModelScope.launch(errorHandler) {
             loadConfigs()
@@ -204,7 +205,7 @@ class AppViewModel : ViewModel() {
                 }
                 is Event.ChangeLanguage -> {
                     val lang = event.language
-                    java.util.Locale.setDefault(java.util.Locale(lang))
+                    java.util.Locale.setDefault(java.util.Locale(lang.name))
                     withContext(Dispatchers.IO) {
                         saveLanguagePreference(lang)
                     }

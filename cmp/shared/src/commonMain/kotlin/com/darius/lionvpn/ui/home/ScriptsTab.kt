@@ -33,6 +33,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import com.darius.lionvpn.ui.model.Lang
 import com.darius.lionvpn.ui.model.SavedConfig
 import com.darius.lionvpn.ui.theme.*
 import org.jetbrains.compose.resources.stringResource
@@ -143,7 +144,7 @@ fun ScriptsTab(
                         }
                     }
                     Icon(
-                        imageVector = Icons.Default.ChevronLeft,
+                        imageVector = if (state.language == Lang.FA) Icons.Default.ChevronLeft else Icons.Default.ChevronRight,
                         contentDescription = "Chevron Right",
                         tint = onSurfaceVariant.copy(alpha = 0.6f),
                         modifier = Modifier.size(20.dp)

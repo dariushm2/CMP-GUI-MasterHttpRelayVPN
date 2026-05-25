@@ -3,6 +3,7 @@ package com.darius.lionvpn.config
 import java.io.File
 import kotlinx.serialization.json.Json
 import com.darius.lionvpn.JvmPlatform
+import com.darius.lionvpn.ui.model.Lang
 import com.darius.lionvpn.ui.model.SavedConfig
 
 fun loadConf(): LionVpnConf {
@@ -52,13 +53,13 @@ fun saveActiveScriptIndex(index: Int): Boolean {
     return saveConf(current.copy(selectedConfigIndex = index))
 }
 
-fun loadLanguagePreference(): String {
-    return loadConf().language
+fun loadLanguagePreference(): Lang {
+    return Lang.valueOf(loadConf().language.uppercase())
 }
 
-fun saveLanguagePreference(language: String): Boolean {
+fun saveLanguagePreference(language: Lang): Boolean {
     val current = loadConf()
-    return saveConf(current.copy(language = language))
+    return saveConf(current.copy(language = language.label))
 }
 
 fun getUserDataDirectory(): File {

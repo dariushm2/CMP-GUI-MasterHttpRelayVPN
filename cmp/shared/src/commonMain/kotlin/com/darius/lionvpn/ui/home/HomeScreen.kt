@@ -22,6 +22,7 @@ import androidx.compose.ui.text.style.TextDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.darius.lionvpn.BuildConfig
+import com.darius.lionvpn.ui.model.Lang
 import com.darius.lionvpn.ui.theme.*
 import org.jetbrains.compose.resources.stringResource
 import lion_vpn.shared.generated.resources.*
@@ -117,8 +118,8 @@ fun HomeScreen(
 private fun Sidebar(
     activeTab: HomeTab,
     onTabSelect: (HomeTab) -> Unit,
-    language: String,
-    onLanguageChange: (String) -> Unit,
+    language: Lang,
+    onLanguageChange: (Lang) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -219,7 +220,7 @@ private fun Sidebar(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Text(
-                text = if (language == "en") "Language" else "زبان برنامه",
+                text = if (language == Lang.EN) "Language" else "زبان برنامه",
                 style = bodySm.copy(
                     fontSize = 11.sp,
                     fontWeight = FontWeight.Bold,
@@ -238,7 +239,7 @@ private fun Sidebar(
                 horizontalArrangement = Arrangement.spacedBy(2.dp)
             ) {
                 // Persian Option
-                val isFa = language == "fa"
+                val isFa = language == Lang.FA
                 Box(
                     modifier = Modifier
                         .weight(1f)
@@ -252,7 +253,7 @@ private fun Sidebar(
                             color = if (isFa) secondary.copy(alpha = 0.4f) else Color.Transparent,
                             shape = roundedDefault
                         )
-                        .clickable { onLanguageChange("fa") },
+                        .clickable { onLanguageChange(Lang.FA) },
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
@@ -265,7 +266,7 @@ private fun Sidebar(
                 }
 
                 // English Option
-                val isEn = language == "en"
+                val isEn = language == Lang.EN
                 Box(
                     modifier = Modifier
                         .weight(1f)
@@ -279,7 +280,7 @@ private fun Sidebar(
                             color = if (isEn) secondary.copy(alpha = 0.4f) else Color.Transparent,
                             shape = roundedDefault
                         )
-                        .clickable { onLanguageChange("en") },
+                        .clickable { onLanguageChange(Lang.EN) },
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
