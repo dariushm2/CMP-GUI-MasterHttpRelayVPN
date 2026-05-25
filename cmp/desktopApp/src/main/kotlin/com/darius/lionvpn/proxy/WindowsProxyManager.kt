@@ -18,12 +18,12 @@ object WindowsProxyManager : ProxyManager {
         runCommand("powershell", "-NoProfile", "-Command", refreshCmd)
     }
 
-    override fun enableProxy(port: Int) {
+    override fun enableProxy(host: String, port: Int) {
         if (!getPlatform().isWin()) return
 
-        println("[Proxy Manager] Enabling Windows system proxy to 127.0.0.1:$port")
+        println("[Proxy Manager] Enabling Windows system proxy to $host:$port")
         runCommand("reg", "add", "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings", "/v", "ProxyEnable", "/t", "REG_DWORD", "/d", "1", "/f")
-        runCommand("reg", "add", "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings", "/v", "ProxyServer", "/t", "REG_SZ", "/d", "127.0.0.1:$port", "/f")
+        runCommand("reg", "add", "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings", "/v", "ProxyServer", "/t", "REG_SZ", "/d", "$host:$port", "/f")
         runCommand("reg", "add", "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings", "/v", "ProxyOverride", "/t", "REG_SZ", "/d", "<local>;localhost;127.0.0.1", "/f")
         refreshSystemSettings()
     }

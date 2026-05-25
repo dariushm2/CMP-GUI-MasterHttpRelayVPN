@@ -37,10 +37,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -55,6 +52,7 @@ import androidx.compose.ui.unit.sp
 import com.darius.lionvpn.ui.theme.*
 import org.jetbrains.compose.resources.stringResource
 import lion_vpn.shared.generated.resources.*
+import kotlinx.serialization.json.*
 
 @Composable
 fun DashboardTab(
@@ -73,6 +71,18 @@ fun DashboardTab(
     
     val isConnectEnabled = activeConfig != null && activeConfig.id.isNotEmpty() && activeConfig.key.isNotEmpty()
     
+    // Parse raw configuration json reactively to get listen_host and http_port in a single safe block
+    val address = remember(state.rawConfigJson) {
+        try {
+            val obj = Json.parseToJsonElement(state.rawConfigJson).jsonObject
+            val host = obj["listen_host"]?.jsonPrimitive?.content ?: "127.0.0.1"
+            val port = obj["http_port"]?.jsonPrimitive?.intOrNull ?: 8085
+            "$host:$port"
+        } catch (e: Exception) {
+            "127.0.0.1:8085"
+        }
+    }
+
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -86,6 +96,7 @@ fun DashboardTab(
             isVpnRunning = state.isVpnRunning,
             isConnectEnabled = isConnectEnabled,
             activeConfigName = activeConfig?.name,
+            address = address,
             onConnectToggle = { if (isConnectEnabled) onClick(Event.Connect) }
         )
 
@@ -103,6 +114,7 @@ private fun ConnectionHeroCard(
     isVpnRunning: Boolean,
     isConnectEnabled: Boolean,
     activeConfigName: String?,
+    address: String,
     onConnectToggle: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -265,7 +277,7 @@ private fun ConnectionHeroCard(
                             Spacer(modifier = Modifier.height(10.dp))
                             Text(
                                 text = when {
-                                    isVpnRunning -> "127.0.0.1:8085"
+                                    isVpnRunning -> address
                                     isConnectEnabled -> ""
                                     else -> stringResource(Res.string.no_config)
                                 },

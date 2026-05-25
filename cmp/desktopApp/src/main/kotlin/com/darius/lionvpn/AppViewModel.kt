@@ -19,6 +19,8 @@ class AppViewModel : ViewModel() {
 
     private val _savedConfigs = MutableStateFlow<List<SavedConfig>>(emptyList())
     private val _selectedConfigIndex = MutableStateFlow(-1)
+    private val _rawConfigJson = MutableStateFlow("")
+    private val _configResetTrigger = MutableStateFlow(0)
 
     private val isVpnRunning = ProcessRunner.isVpnRunning
     private val vpnLogs = ProcessRunner.vpnLogs
@@ -28,13 +30,24 @@ class AppViewModel : ViewModel() {
         isVpnRunning,
         vpnLogs,
         _savedConfigs,
-        _selectedConfigIndex
-    ) { running, logs, configs, index ->
+        _selectedConfigIndex,
+        _rawConfigJson,
+        _configResetTrigger
+    ) { array ->
+        val running = array[0] as Boolean
+        val logs = array[1] as List<String>
+        val configs = array[2] as List<SavedConfig>
+        val index = array[3] as Int
+        val configJson = array[4] as String
+        val resetTrigger = array[5] as Int
+        
         HomeState(
             isVpnRunning = running,
             log = logs,
             savedConfigs = configs,
-            selectedConfigIndex = index
+            selectedConfigIndex = index,
+            rawConfigJson = configJson,
+            configResetTrigger = resetTrigger
         )
     }.stateIn(
         scope = viewModelScope,
@@ -56,6 +69,8 @@ class AppViewModel : ViewModel() {
         val configs = loadSavedScripts()
         val index = loadActiveScriptIndex()
         _savedConfigs.value = configs
+        _rawConfigJson.value = loadRawConfig()
+        _configResetTrigger.value++
         
         // Ensure index is valid, otherwise default to first configuration if list is not empty
         if (configs.isNotEmpty()) {
@@ -64,10 +79,14 @@ class AppViewModel : ViewModel() {
                 saveActiveScriptIndex(0)
                 val active = configs[0]
                 saveConfigLocally(active.id, active.key)
+                _rawConfigJson.value = loadRawConfig()
+                _configResetTrigger.value++
             } else {
                 _selectedConfigIndex.value = index
                 val active = configs[index]
                 saveConfigLocally(active.id, active.key)
+                _rawConfigJson.value = loadRawConfig()
+                _configResetTrigger.value++
             }
         } else {
             _selectedConfigIndex.value = -1
@@ -115,9 +134,13 @@ class AppViewModel : ViewModel() {
         if (newIndex in currentList.indices) {
             val active = currentList[newIndex]
             saveConfigLocally(active.id, active.key)
+            _rawConfigJson.value = loadRawConfig()
+            _configResetTrigger.value++
         } else {
             // Write clean blank values to config.json
             saveConfigLocally("", "")
+            _rawConfigJson.value = loadRawConfig()
+            _configResetTrigger.value++
         }
     }
 
@@ -128,6 +151,8 @@ class AppViewModel : ViewModel() {
             _selectedConfigIndex.value = index
             val active = configs[index]
             saveConfigLocally(active.id, active.key)
+            _rawConfigJson.value = loadRawConfig()
+            _configResetTrigger.value++
         }
     }
 
@@ -153,6 +178,20 @@ class AppViewModel : ViewModel() {
                 is Event.AddConfig -> addConfig(event.config)
                 is Event.DeleteConfig -> deleteConfig(event.config)
                 is Event.SelectConfig -> selectConfig(event.index)
+                is Event.SaveRawConfig -> {
+                    withContext(Dispatchers.IO) {
+                        saveRawConfig(event.json)
+                        _rawConfigJson.value = loadRawConfig()
+                    }
+                }
+                Event.LoadDefaultConfig -> {
+                    withContext(Dispatchers.IO) {
+                        val defaultContent = loadDefaultConfigContent()
+                        saveRawConfig(defaultContent)
+                        _rawConfigJson.value = loadRawConfig()
+                        _configResetTrigger.value++
+                    }
+                }
             }
         }
     }
