@@ -50,7 +50,7 @@ jobs:
             arch: arm64
             artifact-name: lion-vpn-linux-arm64
             upload-path: cmp/desktopApp/build/compose/binaries/main-release/app/lion-vpn
-          - os: macos-13
+          - os: macos-26-intel
             platform: macos
             arch: amd64
             artifact-name: lion-vpn-macos-amd64
@@ -78,12 +78,15 @@ jobs:
           python-version: "3.11"
           cache: "pip"
 
-      - name: Pre-install cryptography for Windows ARM64
+      - name: Install Python build tools (Windows ARM64)
         if: matrix.platform == 'windows' && matrix.arch == 'arm64'
         run: |
-          python -m pip install "cryptography<=46.0.3"
-
-      - name: Install Python build tools
+          python -m venv .venv
+          .venv\Scripts\python.exe -m pip install --upgrade pip
+          .venv\Scripts\python.exe -m pip install "cryptography<=46.0.3"
+          .venv\Scripts\python.exe -m pip install -r requirements.txt pyinstaller
+      - name: Install Python build tools (Other Platforms)
+        if: "!(matrix.platform == 'windows' && matrix.arch == 'arm64')"
         run: |
           python -m pip install --upgrade pip
           python -m pip install -r requirements.txt pyinstaller
