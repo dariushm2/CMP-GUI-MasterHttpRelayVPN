@@ -1,2 +1,2 @@
-rootProject.extra["versionCode"] = 100
-rootProject.extra["versionName"] = "1.0.0-alpha"
+rootProject.extra["versionCode"] = 101
+rootProject.extra["versionName"] = "1.0.0-alpha-2"
