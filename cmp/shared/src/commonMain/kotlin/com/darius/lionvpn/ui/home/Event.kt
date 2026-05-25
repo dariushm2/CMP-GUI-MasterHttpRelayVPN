@@ -1,5 +1,6 @@
 package com.darius.lionvpn.ui.home
 
+import com.darius.lionvpn.ui.model.Lang
 import com.darius.lionvpn.ui.model.SavedConfig
 
 sealed interface Event {
@@ -12,4 +13,5 @@ sealed interface Event {
     data class SelectConfig(val index: Int) : Event
     data class SaveRawConfig(val json: String) : Event
     object LoadDefaultConfig : Event
+    data class ChangeLanguage(val language: Lang) : Event
 }

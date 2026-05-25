@@ -1,7 +1,9 @@
-package com.darius.lionvpn
+package com.darius.lionvpn.config
 
 import java.io.File
 import kotlinx.serialization.json.*
+import com.darius.lionvpn.findResourcesDir
+import com.darius.lionvpn.findRepoRoot
 import com.darius.lionvpn.ui.model.SavedConfig
 
 fun saveConfigLocally(deploymentId: String, authKey: String): Boolean {
@@ -97,92 +99,6 @@ fun saveRawConfig(content: String): Boolean {
         println("[Config JVM] Error saving raw config: ${e.message}")
         false
     }
-}
-
-fun loadSavedScripts(): List<SavedConfig> {
-    return try {
-        val file = File(getSavedScriptsFilePath())
-        if (file.exists()) {
-            val content = file.readText(Charsets.UTF_8)
-            Json.decodeFromString<List<SavedConfig>>(content)
-        } else {
-            emptyList()
-        }
-    } catch (e: Exception) {
-        println("[Config JVM] Error loading saved scripts: ${e.message}")
-        emptyList()
-    }
-}
-
-fun saveSavedScripts(scripts: List<SavedConfig>): Boolean {
-    return try {
-        val file = File(getSavedScriptsFilePath())
-        file.parentFile?.mkdirs()
-        val content = Json.encodeToString(scripts)
-        file.writeText(content, Charsets.UTF_8)
-        true
-    } catch (e: Exception) {
-        println("[Config JVM] Error saving scripts: ${e.message}")
-        false
-    }
-}
-
-fun loadActiveScriptIndex(): Int {
-    return try {
-        val file = File(getActiveScriptIndexFilePath())
-        if (file.exists()) {
-            file.readText(Charsets.UTF_8).trim().toIntOrNull() ?: -1
-        } else {
-            -1
-        }
-    } catch (e: Exception) {
-        -1
-    }
-}
-
-fun saveActiveScriptIndex(index: Int): Boolean {
-    return try {
-        val file = File(getActiveScriptIndexFilePath())
-        file.parentFile?.mkdirs()
-        file.writeText(index.toString(), Charsets.UTF_8)
-        true
-    } catch (e: Exception) {
-        false
-    }
-}
-
-fun getUserDataDirectory(): File {
-    val jvmPlatform = JvmPlatform()
-    val homeDir = System.getProperty("user.home")
-    val appDirName = "LionVPN"
-    
-    val dir = when (jvmPlatform.os) {
-        JvmPlatform.OS.WIN -> {
-            val appData = System.getenv("APPDATA")
-            if (appData != null) File(appData, appDirName) else File(homeDir, "AppData/Roaming/$appDirName")
-        }
-        JvmPlatform.OS.MAC -> {
-            File(homeDir, "Library/Application Support/$appDirName")
-        }
-        JvmPlatform.OS.LINUX -> {
-            val xdgConfig = System.getenv("XDG_CONFIG_HOME")
-            if (xdgConfig != null) File(xdgConfig, appDirName.lowercase()) else File(homeDir, ".config/${appDirName.lowercase()}")
-        }
-    }
-    
-    if (!dir.exists()) {
-        dir.mkdirs()
-    }
-
-    return dir
-}
-
-private fun getSavedScriptsFilePath(): String {
-    return File(getUserDataDirectory(), "saved_scripts.json").absolutePath
-}
-
-private fun getActiveScriptIndexFilePath(): String {
-    return File(getUserDataDirectory(), "active_script_index.txt").absolutePath
 }
 
 fun loadDefaultConfigContent(): String {

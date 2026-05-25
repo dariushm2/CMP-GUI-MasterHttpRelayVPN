@@ -1,5 +1,6 @@
 package com.darius.lionvpn.ui.home
 
+import com.darius.lionvpn.ui.model.Lang
 import com.darius.lionvpn.ui.model.SavedConfig
 
 data class HomeState(
@@ -8,5 +9,6 @@ data class HomeState(
     val savedConfigs: List<SavedConfig> = emptyList(),
     val selectedConfigIndex: Int = -1,
     val rawConfigJson: String = "",
-    val configResetTrigger: Int = 0
+    val configResetTrigger: Int = 0,
+    val language: Lang = Lang.FA,
 )
