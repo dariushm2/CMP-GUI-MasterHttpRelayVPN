@@ -136,15 +136,13 @@ private fun Sidebar(
                     .padding(bottom = stackLg),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Box(
+                Text(
+                    text = "🦁",
+                    style = displayLg,
                     modifier = Modifier
-                        .size(40.dp)
                         .background(primary.copy(alpha = 0.15f), roundedDefault)
-                        .border(1.dp, primary.copy(alpha = 0.3f), roundedDefault),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text("🦁", style = displayLg)
-                }
+                        .border(1.dp, primary.copy(alpha = 0.3f), roundedDefault)
+                )
                 Spacer(modifier = Modifier.width(12.dp))
                 Column {
                     Text(
