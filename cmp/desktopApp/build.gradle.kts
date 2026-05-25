@@ -23,26 +23,22 @@ dependencies {
     implementation(libs.koin.test)
 }
 
-sourceSets {
-    main {
-        resources {
-            val os = System.getProperty("os.name").lowercase()
-            if (!os.contains("mac")) exclude("macos/**")
-            if (!os.contains("win")) exclude("windows/**")
-            if (!os.contains("linux")) exclude("linux/**")
-        }
-    }
-}
 
 val prepareAppResourcesForPackaging = tasks.register<Copy>("prepareAppResourcesForPackaging") {
     dependsOn("bundlePythonExecutable")
     val os = System.getProperty("os.name").lowercase()
-    from(project.file("src/main/resources"))
-    into(layout.buildDirectory.dir("tmp/packaged-resources"))
+    val platformDirName = when {
+        os.contains("mac") -> "macos"
+        os.contains("win") -> "windows"
+        else -> "linux"
+    }
     
-    if (!os.contains("mac")) exclude("macos/**")
-    if (!os.contains("win")) exclude("windows/**")
-    if (!os.contains("linux")) exclude("linux/**")
+    // Copy shared resources
+    from(project.file("src/main/resources"))
+    // Copy platform-specific resources directly into the root of packaged resources
+    from(project.file("src/$platformDirName/resources"))
+    
+    into(layout.buildDirectory.dir("tmp/packaged-resources/common"))
 }
 
 compose.desktop {
@@ -52,7 +48,7 @@ compose.desktop {
 
         buildTypes.release.proguard {
             isEnabled.set(true)
-            obfuscate.set(false) // Shrinks without obfuscation (safer default for reflection, avoids crashes)
+            obfuscate.set(true) // Enables aggressive class and member renaming for maximum size reduction
             configurationFiles.from(project.file("compose-desktop.pro"))
         }
 
@@ -66,13 +62,13 @@ compose.desktop {
             modules("java.instrument", "java.management", "jdk.unsupported")
 
             macOS {
-                iconFile.set(project.file("src/main/resources/macos/icon.icns"))
+                iconFile.set(project.file("src/macos/resources/icon.icns"))
             }
             windows {
-                iconFile.set(project.file("src/main/resources/windows/icon.ico"))
+                iconFile.set(project.file("src/windows/resources/icon.ico"))
             }
             linux {
-                iconFile.set(project.file("src/main/resources/linux/icon.png"))
+                iconFile.set(project.file("src/linux/resources/icon.png"))
                 shortcut = true
                 appCategory = "Network"
                 menuGroup = "Network"
@@ -129,4 +125,8 @@ tasks.configureEach {
     if (name == "prepareAppResources") {
         dependsOn("prepareAppResourcesForPackaging")
     }
+}
+
+tasks.withType<org.jetbrains.compose.desktop.application.tasks.AbstractJLinkTask>().configureEach {
+    freeArgs.addAll("--compress=0", "--strip-debug", "--no-header-files", "--no-man-pages")
 }
