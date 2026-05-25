@@ -133,6 +133,11 @@ def main() -> int:
     example_dest = dest_dir / "config.example.json"
     if example_src.exists():
         log(f"Copying config.example.json to {example_dest}")
+        if example_dest.exists():
+            try:
+                os.chmod(example_dest, 0o644)
+            except Exception:
+                pass
         shutil.copy2(example_src, example_dest)
 
     # 2. Check if we need to compile (Incremental Build)

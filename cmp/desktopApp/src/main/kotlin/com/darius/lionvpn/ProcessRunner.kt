@@ -33,10 +33,11 @@ object ProcessRunner {
     fun installCert() {
         println("Installing Certificate for: $binaryPath")
 
+        val configFile = File(getUserDataDirectory(), "config.json")
         val processBuilder = when(platform.os) {
             JvmPlatform.OS.WIN,
-            JvmPlatform.OS.MAC -> ProcessBuilder(binaryPath, "--install-cert")
-            else -> ProcessBuilder("pkexec", binaryPath, "--install-cert")
+            JvmPlatform.OS.MAC -> ProcessBuilder(binaryPath, "--config", configFile.absolutePath, "--install-cert")
+            else -> ProcessBuilder("pkexec", binaryPath, "--config", configFile.absolutePath, "--install-cert")
         }
 
         processBuilder.runProcess { isSuccess ->
@@ -48,10 +49,11 @@ object ProcessRunner {
     fun uninstallCert() {
         println("Uninstalling Certificate for: $binaryPath")
 
+        val configFile = File(getUserDataDirectory(), "config.json")
         val processBuilder = when(platform.os) {
             JvmPlatform.OS.WIN,
-            JvmPlatform.OS.MAC -> ProcessBuilder(binaryPath, "--uninstall-cert")
-            else -> ProcessBuilder("pkexec", binaryPath, "--uninstall-cert")
+            JvmPlatform.OS.MAC -> ProcessBuilder(binaryPath, "--config", configFile.absolutePath, "--uninstall-cert")
+            else -> ProcessBuilder("pkexec", binaryPath, "--config", configFile.absolutePath, "--uninstall-cert")
         }
 
         processBuilder.runProcess { isSuccess ->
@@ -67,7 +69,8 @@ object ProcessRunner {
         }
 
         println("Launching Python VPN binary: $binaryPath")
-        val processBuilder = ProcessBuilder(binaryPath)
+        val configFile = File(getUserDataDirectory(), "config.json")
+        val processBuilder = ProcessBuilder(binaryPath, "--config", configFile.absolutePath)
 
         process = processBuilder.runProcess {
             println("[VPN Process] Process stopped!")

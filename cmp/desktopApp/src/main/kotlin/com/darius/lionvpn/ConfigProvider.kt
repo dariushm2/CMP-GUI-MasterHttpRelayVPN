@@ -13,10 +13,7 @@ fun saveConfigLocally(deploymentId: String, authKey: String): Boolean {
         }
         ensureExampleFileReadOnly(exampleFile)
 
-        val binaryPath = getPythonExecutablePath()
-        val binaryFile = File(binaryPath)
-
-        val configFile = File(binaryFile.parentFile, "config.json")
+        val configFile = File(getUserDataDirectory(), "config.json")
 
         // READ existing config if it exists, otherwise read example config
         val fileToRead = if (configFile.exists()) configFile else exampleFile
@@ -54,9 +51,7 @@ fun saveConfigLocally(deploymentId: String, authKey: String): Boolean {
 
 fun loadRawConfig(): String {
     return try {
-        val binaryPath = getPythonExecutablePath()
-        val binaryFile = File(binaryPath)
-        val configFile = File(binaryFile.parentFile, "config.json")
+        val configFile = File(getUserDataDirectory(), "config.json")
         
         var fileToRead = configFile
         if (!fileToRead.exists()) {
@@ -66,7 +61,17 @@ fun loadRawConfig(): String {
                 exampleFile = File(findRepoRoot(), "config.example.json")
             }
             ensureExampleFileReadOnly(exampleFile)
-            fileToRead = exampleFile
+            
+            // Create user's config.json from example template on first load
+            try {
+                getUserDataDirectory().mkdirs()
+                exampleFile.copyTo(configFile, overwrite = true)
+                println("[Config JVM] Initialized user config.json from template.")
+                fileToRead = configFile
+            } catch (copyEx: Exception) {
+                println("[Config JVM] Failed to copy template config: ${copyEx.message}")
+                fileToRead = exampleFile
+            }
         }
         
         if (fileToRead.exists()) {
@@ -82,9 +87,7 @@ fun loadRawConfig(): String {
 
 fun saveRawConfig(content: String): Boolean {
     return try {
-        val binaryPath = getPythonExecutablePath()
-        val binaryFile = File(binaryPath)
-        val configFile = File(binaryFile.parentFile, "config.json")
+        val configFile = File(getUserDataDirectory(), "config.json")
         
         configFile.parentFile?.mkdirs()
         configFile.writeText(content, Charsets.UTF_8)
@@ -148,24 +151,38 @@ fun saveActiveScriptIndex(index: Int): Boolean {
     }
 }
 
-private fun getSavedScriptsFilePath(): String {
-    val binaryPath = getPythonExecutablePath()
-    val binaryFile = File(binaryPath)
-    return if (binaryFile.parentFile != null) {
-        File(binaryFile.parentFile, "saved_scripts.json").absolutePath
-    } else {
-        File(findResourcesDir(), "saved_scripts.json").absolutePath
+fun getUserDataDirectory(): File {
+    val jvmPlatform = JvmPlatform()
+    val homeDir = System.getProperty("user.home")
+    val appDirName = "LionVPN"
+    
+    val dir = when (jvmPlatform.os) {
+        JvmPlatform.OS.WIN -> {
+            val appData = System.getenv("APPDATA")
+            if (appData != null) File(appData, appDirName) else File(homeDir, "AppData/Roaming/$appDirName")
+        }
+        JvmPlatform.OS.MAC -> {
+            File(homeDir, "Library/Application Support/$appDirName")
+        }
+        JvmPlatform.OS.LINUX -> {
+            val xdgConfig = System.getenv("XDG_CONFIG_HOME")
+            if (xdgConfig != null) File(xdgConfig, appDirName.lowercase()) else File(homeDir, ".config/${appDirName.lowercase()}")
+        }
     }
+    
+    if (!dir.exists()) {
+        dir.mkdirs()
+    }
+
+    return dir
+}
+
+private fun getSavedScriptsFilePath(): String {
+    return File(getUserDataDirectory(), "saved_scripts.json").absolutePath
 }
 
 private fun getActiveScriptIndexFilePath(): String {
-    val binaryPath = getPythonExecutablePath()
-    val binaryFile = File(binaryPath)
-    return if (binaryFile.parentFile != null) {
-        File(binaryFile.parentFile, "active_script_index.txt").absolutePath
-    } else {
-        File(findResourcesDir(), "active_script_index.txt").absolutePath
-    }
+    return File(getUserDataDirectory(), "active_script_index.txt").absolutePath
 }
 
 fun loadDefaultConfigContent(): String {
