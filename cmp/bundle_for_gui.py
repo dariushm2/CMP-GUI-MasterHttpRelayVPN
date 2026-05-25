@@ -172,17 +172,8 @@ def main() -> int:
         "--exclude-module", "tkinter",
         "--exclude-module", "sqlite3",
         "--exclude-module", "unittest",
-        "--exclude-module", "multiprocessing",
         "--exclude-module", "pydoc",
         "--exclude-module", "pdb",
-        "--exclude-module", "lib2to3",
-        "--exclude-module", "distutils",
-        "--exclude-module", "setuptools",
-        "--exclude-module", "pip",
-        "--exclude-module", "email",
-        "--exclude-module", "html",
-        "--exclude-module", "http",
-        "--exclude-module", "xml",
         "main.py"
     ]
 

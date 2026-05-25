@@ -128,5 +128,5 @@ tasks.configureEach {
 }
 
 tasks.withType<org.jetbrains.compose.desktop.application.tasks.AbstractJLinkTask>().configureEach {
-    freeArgs.addAll("--compress=2", "--strip-debug", "--no-header-files", "--no-man-pages")
+    freeArgs.addAll("--compress=0", "--strip-debug", "--no-header-files", "--no-man-pages")
 }
