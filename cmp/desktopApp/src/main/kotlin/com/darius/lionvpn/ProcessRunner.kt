@@ -11,6 +11,7 @@ import kotlin.collections.plus
 
 import org.koin.mp.KoinPlatform.getKoin
 import com.darius.lionvpn.proxy.ProxyManager
+import kotlinx.serialization.json.*
 
 object ProcessRunner {
 
@@ -79,7 +80,18 @@ object ProcessRunner {
         if (process != null) {
             _isVpnRunning.value = true
             if (isSystemProxyEnabled) {
-                proxyManager.enableProxy(8085)
+                // Parse configured dynamic HTTP port and host from config.json
+                val rawConfig = loadRawConfig()
+                val (host, port) = try {
+                    val configObj = Json.parseToJsonElement(rawConfig).jsonObject
+                    val h = configObj["listen_host"]?.jsonPrimitive?.content ?: "127.0.0.1"
+                    val p = configObj["http_port"]?.jsonPrimitive?.intOrNull ?: 8085
+                    h to p
+                } catch (e: Exception) {
+                    "127.0.0.1" to 8085
+                }
+                println("[VPN Process] Enabling system proxy forwarding on dynamic address: $host:$port")
+                proxyManager.enableProxy(host, port)
             }
         }
     }

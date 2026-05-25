@@ -10,4 +10,6 @@ sealed interface Event {
     data class AddConfig(val config: SavedConfig) : Event
     data class DeleteConfig(val config: SavedConfig) : Event
     data class SelectConfig(val index: Int) : Event
+    data class SaveRawConfig(val json: String) : Event
+    object LoadDefaultConfig : Event
 }

@@ -26,6 +26,7 @@ import lion_vpn.shared.generated.resources.*
 enum class HomeTab {
     Dashboard,
     Scripts,
+    EditConfig,
     Certificates,
     About
 }
@@ -90,6 +91,10 @@ fun HomeScreen(
                                 onClick = onClick
                             )
                             HomeTab.Scripts -> ScriptsTab(
+                                state = state,
+                                onClick = onClick
+                            )
+                            HomeTab.EditConfig -> EditConfigTab(
                                 state = state,
                                 onClick = onClick
                             )
@@ -177,6 +182,12 @@ private fun Sidebar(
                     icon = Icons.Default.Terminal,
                     isActive = activeTab == HomeTab.Scripts,
                     onClick = { onTabSelect(HomeTab.Scripts) }
+                )
+                SidebarNavItem(
+                    label = stringResource(Res.string.tab_edit_config),
+                    icon = Icons.Default.Settings,
+                    isActive = activeTab == HomeTab.EditConfig,
+                    onClick = { onTabSelect(HomeTab.EditConfig) }
                 )
                 SidebarNavItem(
                     label = stringResource(Res.string.tab_certificates),

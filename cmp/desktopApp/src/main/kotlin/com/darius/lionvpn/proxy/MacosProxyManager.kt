@@ -24,14 +24,14 @@ object MacosProxyManager : ProxyManager {
         return output.lines().filter { it.isNotBlank() && !it.startsWith("An asterisk") }
     }
 
-    override fun enableProxy(port: Int) {
+    override fun enableProxy(host: String, port: Int) {
         if (!getPlatform().isMac()) return
 
-        println("[Mac Proxy Manager] Enabling macOS system proxy to 127.0.0.1:$port")
+        println("[Mac Proxy Manager] Enabling macOS system proxy to $host:$port")
         val services = getNetworkServices()
         for (service in services) {
-            runCommand("networksetup", "-setwebproxy", service, "127.0.0.1", port.toString())
-            runCommand("networksetup", "-setsecurewebproxy", service, "127.0.0.1", port.toString())
+            runCommand("networksetup", "-setwebproxy", service, host, port.toString())
+            runCommand("networksetup", "-setsecurewebproxy", service, host, port.toString())
         }
     }
 
