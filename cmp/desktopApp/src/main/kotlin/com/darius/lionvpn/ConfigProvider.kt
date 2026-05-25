@@ -11,6 +11,7 @@ fun saveConfigLocally(deploymentId: String, authKey: String): Boolean {
         if (!exampleFile.exists()) {
             exampleFile = File(findRepoRoot(), "config.example.json")
         }
+        ensureExampleFileReadOnly(exampleFile)
 
         val binaryPath = getPythonExecutablePath()
         val binaryFile = File(binaryPath)
@@ -64,6 +65,7 @@ fun loadRawConfig(): String {
             if (!exampleFile.exists()) {
                 exampleFile = File(findRepoRoot(), "config.example.json")
             }
+            ensureExampleFileReadOnly(exampleFile)
             fileToRead = exampleFile
         }
         
@@ -173,6 +175,7 @@ fun loadDefaultConfigContent(): String {
         if (!exampleFile.exists()) {
             exampleFile = File(findRepoRoot(), "config.example.json")
         }
+        ensureExampleFileReadOnly(exampleFile)
         
         if (exampleFile.exists()) {
             val content = exampleFile.readText(Charsets.UTF_8)
@@ -204,5 +207,16 @@ fun loadDefaultConfigContent(): String {
     } catch (e: Exception) {
         println("[Config JVM] Error loading default config: ${e.message}")
         ""
+    }
+}
+
+private fun ensureExampleFileReadOnly(file: File) {
+    try {
+        if (file.exists() && file.canWrite()) {
+            file.setWritable(false, false) // Set read-only for current and other users
+            println("[Config JVM] Set ${file.name} to read-only.")
+        }
+    } catch (e: Exception) {
+        println("[Config JVM] Could not set ${file.name} to read-only: ${e.message}")
     }
 }
