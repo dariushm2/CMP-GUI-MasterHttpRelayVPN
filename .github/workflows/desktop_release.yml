@@ -1,4 +1,4 @@
-name: Desktop GUI Release
+name: Desktop Release
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
@@ -24,7 +24,7 @@ permissions:
 
 jobs:
   build-desktop-gui:
-    name: Build GUI for ${{ matrix.platform }}
+    name: Build for ${{ matrix.platform }} (${{ matrix.arch }})
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -32,15 +32,33 @@ jobs:
         include:
           - os: windows-latest
             platform: windows
-            artifact-name: lion-vpn-windows
+            arch: amd64
+            artifact-name: lion-vpn-windows-amd64
+            upload-path: cmp/desktopApp/build/compose/binaries/main-release/app/lion-vpn
+          - os: windows-11-arm
+            platform: windows
+            arch: arm64
+            artifact-name: lion-vpn-windows-arm64
             upload-path: cmp/desktopApp/build/compose/binaries/main-release/app/lion-vpn
           - os: ubuntu-latest
             platform: linux
-            artifact-name: lion-vpn-linux
+            arch: amd64
+            artifact-name: lion-vpn-linux-amd64
             upload-path: cmp/desktopApp/build/compose/binaries/main-release/app/lion-vpn
+          - os: ubuntu-24.04-arm
+            platform: linux
+            arch: arm64
+            artifact-name: lion-vpn-linux-arm64
+            upload-path: cmp/desktopApp/build/compose/binaries/main-release/app/lion-vpn
+          - os: macos-13
+            platform: macos
+            arch: amd64
+            artifact-name: lion-vpn-macos-amd64
+            upload-path: cmp/desktopApp/build/compose/binaries/main-release/app
           - os: macos-latest
             platform: macos
-            artifact-name: lion-vpn-macos
+            arch: arm64
+            artifact-name: lion-vpn-macos-arm64
             upload-path: cmp/desktopApp/build/compose/binaries/main-release/app
 
     steps:
@@ -59,6 +77,11 @@ jobs:
         with:
           python-version: "3.11"
           cache: "pip"
+
+      - name: Pre-install cryptography for Windows ARM64
+        if: matrix.platform == 'windows' && matrix.arch == 'arm64'
+        run: |
+          python -m pip install "cryptography<=46.0.3"
 
       - name: Install Python build tools
         run: |
@@ -86,7 +109,7 @@ jobs:
           if-no-files-found: error
 
   publish-gui-release:
-    name: Publish GUI Release
+    name: Publish Desktop Release
     runs-on: ubuntu-latest
     needs: build-desktop-gui
     if: always() && !cancelled() && (startsWith(github.ref, 'refs/tags/gui-v') || (github.event_name == 'workflow_dispatch' && github.event.inputs.publish == 'true'))
@@ -119,25 +142,46 @@ jobs:
         run: |
           mkdir -p release-dist
           
-          # Compress Windows
-          mkdir -p temp-win
-          mv final-gui-assets/lion-vpn-windows temp-win/lion-vpn
-          cd temp-win
-          zip -r ../release-dist/lion-vpn-windows.zip lion-vpn
+          # Compress Windows amd64
+          mkdir -p temp-win-amd64
+          mv final-gui-assets/lion-vpn-windows-amd64 temp-win-amd64/lion-vpn
+          cd temp-win-amd64
+          zip -r ../release-dist/lion-vpn-windows-amd64.zip lion-vpn
           cd ..
-          rm -rf temp-win
+          rm -rf temp-win-amd64
           
-          # Compress Linux
-          mkdir -p temp-linux
-          mv final-gui-assets/lion-vpn-linux temp-linux/lion-vpn
-          cd temp-linux
-          tar -czf ../release-dist/lion-vpn-linux.tar.gz lion-vpn
+          # Compress Windows arm64
+          mkdir -p temp-win-arm64
+          mv final-gui-assets/lion-vpn-windows-arm64 temp-win-arm64/lion-vpn
+          cd temp-win-arm64
+          zip -r ../release-dist/lion-vpn-windows-arm64.zip lion-vpn
           cd ..
-          rm -rf temp-linux
+          rm -rf temp-win-arm64
           
-          # Compress macOS
-          cd final-gui-assets/lion-vpn-macos
-          zip -r -y ../../release-dist/lion-vpn-macos.zip lion-vpn.app
+          # Compress Linux amd64
+          mkdir -p temp-linux-amd64
+          mv final-gui-assets/lion-vpn-linux-amd64 temp-linux-amd64/lion-vpn
+          cd temp-linux-amd64
+          tar -czf ../release-dist/lion-vpn-linux-amd64.tar.gz lion-vpn
+          cd ..
+          rm -rf temp-linux-amd64
+          
+          # Compress Linux arm64
+          mkdir -p temp-linux-arm64
+          mv final-gui-assets/lion-vpn-linux-arm64 temp-linux-arm64/lion-vpn
+          cd temp-linux-arm64
+          tar -czf ../release-dist/lion-vpn-linux-arm64.tar.gz lion-vpn
+          cd ..
+          rm -rf temp-linux-arm64
+          
+          # Compress macOS amd64
+          cd final-gui-assets/lion-vpn-macos-amd64
+          zip -r -y ../../release-dist/lion-vpn-macos-amd64.zip lion-vpn.app
+          cd ../..
+          
+          # Compress macOS arm64
+          cd final-gui-assets/lion-vpn-macos-arm64
+          zip -r -y ../../release-dist/lion-vpn-macos-arm64.zip lion-vpn.app
           cd ../..
           
           echo "Compressed release files:"
@@ -151,4 +195,4 @@ jobs:
           generate_release_notes: true
           draft: false
           prerelease: false
-          name: "GUI Release ${{ steps.resolve_tag.outputs.tag_name }}"
+          name: "LionVPN Release ${{ steps.resolve_tag.outputs.tag_name }}"
