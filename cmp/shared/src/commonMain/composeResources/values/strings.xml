@@ -110,7 +110,6 @@
     <!-- Edit Config Tab -->
     <string name="tab_edit_config">ویرایش پیکربندی</string>
     <string name="edit_config_title">تنظیمات پیشرفته برنامه</string>
-    <string name="edit_config_subtitle">تغییر پارامترهای فایل پیکربندی اصلی برنامه (config.json)</string>
     <string name="save_settings">ذخیره</string>
     <string name="settings_saved_success">تنظیمات با موفقیت ذخیره شد!</string>
     <string name="settings_save_error">خطا در ذخیره تنظیمات.</string>

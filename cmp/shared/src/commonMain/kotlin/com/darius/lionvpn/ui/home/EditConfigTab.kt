@@ -80,18 +80,12 @@ fun EditConfigTab(
                     )
                 )
                 Text(
-                    text = stringResource(Res.string.edit_config_subtitle),
+                    text = stringResource(Res.string.edit_config_label),
                     style = bodySm.copy(color = onSurfaceVariant)
                 )
             }
 
             Divider(color = outlineVariant)
-
-            // Code Workspace Label
-            Text(
-                text = stringResource(Res.string.edit_config_label),
-                style = titleSm.copy(color = primary, fontWeight = FontWeight.Bold, fontSize = 15.sp)
-            )
 
             // Premium Code Workspace Card styled like a dark log terminal console
             Card(

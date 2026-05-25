@@ -184,16 +184,16 @@ private fun Sidebar(
                     onClick = { onTabSelect(HomeTab.Scripts) }
                 )
                 SidebarNavItem(
-                    label = stringResource(Res.string.tab_edit_config),
-                    icon = Icons.Default.Settings,
-                    isActive = activeTab == HomeTab.EditConfig,
-                    onClick = { onTabSelect(HomeTab.EditConfig) }
-                )
-                SidebarNavItem(
                     label = stringResource(Res.string.tab_certificates),
                     icon = Icons.Default.VerifiedUser,
                     isActive = activeTab == HomeTab.Certificates,
                     onClick = { onTabSelect(HomeTab.Certificates) }
+                )
+                SidebarNavItem(
+                    label = stringResource(Res.string.tab_edit_config),
+                    icon = Icons.Default.Settings,
+                    isActive = activeTab == HomeTab.EditConfig,
+                    onClick = { onTabSelect(HomeTab.EditConfig) }
                 )
                 SidebarNavItem(
                     label = stringResource(Res.string.tab_about),
