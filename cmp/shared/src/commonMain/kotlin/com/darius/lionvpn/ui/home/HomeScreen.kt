@@ -14,7 +14,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.LineHeightStyle
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -138,8 +141,10 @@ private fun Sidebar(
             ) {
                 Text(
                     text = "🦁",
-                    style = displayLg,
+                    fontSize = 30.sp,
+                    textAlign = TextAlign.Center,
                     modifier = Modifier
+                        .size(40.dp)
                         .background(primary.copy(alpha = 0.15f), roundedDefault)
                         .border(1.dp, primary.copy(alpha = 0.3f), roundedDefault)
                 )
