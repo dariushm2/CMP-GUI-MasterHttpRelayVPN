@@ -121,7 +121,7 @@ def main() -> int:
         platform_name = "linux"
         bin_name = "MasterHttpRelayVPN"
 
-    dest_dir = repo_root / "cmp" / "desktopApp" / "src" / "main" / "resources" / platform_name
+    dest_dir = repo_root / "cmp" / "desktopApp" / "src" / platform_name / "resources"
     dest_path = dest_dir / bin_name
 
     log(f"Platform detected: {platform_name}")
@@ -169,6 +169,20 @@ def main() -> int:
         "--onefile",
         "--name", "MasterHttpRelayVPN",
         "--paths", "src",
+        "--exclude-module", "tkinter",
+        "--exclude-module", "sqlite3",
+        "--exclude-module", "unittest",
+        "--exclude-module", "multiprocessing",
+        "--exclude-module", "pydoc",
+        "--exclude-module", "pdb",
+        "--exclude-module", "lib2to3",
+        "--exclude-module", "distutils",
+        "--exclude-module", "setuptools",
+        "--exclude-module", "pip",
+        "--exclude-module", "email",
+        "--exclude-module", "html",
+        "--exclude-module", "http",
+        "--exclude-module", "xml",
         "main.py"
     ]
 

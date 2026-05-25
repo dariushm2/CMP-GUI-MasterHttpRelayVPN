@@ -14,3 +14,28 @@
 
 # Suppress verbose JVM note logs to keep build output clean
 -dontnote **
+
+# =========================================================================
+# Obfuscation Safety Rules
+# =========================================================================
+
+# Keep our own classes and members to prevent any DI (Koin) or Serialization issues
+-keep class com.darius.lionvpn.** { *; }
+
+# Keep Koin DI core annotation definitions and reflection targets
+-keep class org.insertkoin.** { *; }
+-keep class org.koin.** { *; }
+
+# Keep Kotlin Serialization metadata and generated serializers
+-keepattributes *Annotation*,Signature,InnerClasses,EnclosingMethod
+-keepclassmembers class * {
+    *** Companion;
+}
+-keepclasseswithmembers class * {
+    @kotlinx.serialization.Serializable *** Serializer(...);
+}
+-keep class kotlinx.serialization.** { *; }
+
+# Keep Ktor engine and networking classes
+-keep class io.ktor.** { *; }
+
