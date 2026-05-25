@@ -50,7 +50,7 @@ jobs:
             arch: arm64
             artifact-name: lion-vpn-linux-arm64
             upload-path: cmp/desktopApp/build/compose/binaries/main-release/app/lion-vpn
-          - os: macos-13
+          - os: macos-26-intel
             platform: macos
             arch: amd64
             artifact-name: lion-vpn-macos-amd64
