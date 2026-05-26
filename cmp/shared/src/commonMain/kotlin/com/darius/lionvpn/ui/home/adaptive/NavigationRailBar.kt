@@ -29,52 +29,54 @@ fun NavigationRailBar(
     modifier: Modifier = Modifier
 ) {
     val scrollState = rememberScrollState()
-    val allItemsVisible = !scrollState.canScrollForward && !scrollState.canScrollBackward
-    NavigationRail(
-        containerColor = surfaceContainerLowest,
-        header = {
-            // Compact Logo
-            Text(
-                text = "🦁",
-                fontSize = 30.sp,
-                textAlign = TextAlign.Center,
+    BoxWithConstraints(modifier = modifier.fillMaxHeight().width(72.dp)) {
+        val allItemsVisible = maxHeight >= 520.dp
+
+        NavigationRail(
+            containerColor = surfaceContainerLowest,
+            header = {
+                // Compact Logo - padding collapses to minimal when space is constrained
+                Text(
+                    text = "🦁",
+                    fontSize = 30.sp,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .size(40.dp)
+                        .background(primary.copy(alpha = 0.15f), roundedDefault)
+                        .border(1.dp, primary.copy(alpha = 0.3f), roundedDefault)
+                )
+            },
+            modifier = Modifier
+                .fillMaxSize()
+                .background(surfaceContainerLowest)
+                .padding(vertical = if (allItemsVisible) stackLg else 0.dp)
+        ) {
+            Column(
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier
+                    .weight(1f)
+                    .verticalScroll(scrollState)
+            ) {
+                Item(HomeTab.Dashboard, activeTab, onTabSelect)
+                Spacer(modifier = Modifier.height(8.dp))
+                Item(HomeTab.Scripts, activeTab, onTabSelect)
+                Spacer(modifier = Modifier.height(8.dp))
+                Item(HomeTab.Certificates, activeTab, onTabSelect)
+                Spacer(modifier = Modifier.height(8.dp))
+                Item(HomeTab.EditConfig, activeTab, onTabSelect)
+                Spacer(modifier = Modifier.height(8.dp))
+                Item(HomeTab.About, activeTab, onTabSelect)
+            }
+
+            // Language Switcher at the bottom - padding collapses to minimal when space is constrained
+            IconButton(
+                onClick = onLanguageToggle,
                 modifier = Modifier
                     .size(40.dp)
-                    .background(primary.copy(alpha = 0.15f), roundedDefault)
-                    .border(1.dp, primary.copy(alpha = 0.3f), roundedDefault)
-            )
-        },
-        modifier = modifier
-            .fillMaxHeight()
-            .width(72.dp)
-            .padding(vertical = if (allItemsVisible) stackLg else 0.dp)
-    ) {
-        Column(
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier
-                .weight(1f)
-                .verticalScroll(scrollState)
-        ) {
-            Item(HomeTab.Dashboard, activeTab, onTabSelect)
-            Spacer(modifier = Modifier.height(8.dp))
-            Item(HomeTab.Scripts, activeTab, onTabSelect)
-            Spacer(modifier = Modifier.height(8.dp))
-            Item(HomeTab.Certificates, activeTab, onTabSelect)
-            Spacer(modifier = Modifier.height(8.dp))
-            Item(HomeTab.EditConfig, activeTab, onTabSelect)
-            Spacer(modifier = Modifier.height(8.dp))
-            Item(HomeTab.About, activeTab, onTabSelect)
-        }
-
-        // Language Switcher at the bottom
-        IconButton(
-            onClick = onLanguageToggle,
-            modifier = Modifier
-                .size(40.dp)
-                .background(surfaceContainerLow, roundedDefault)
-                .border(1.dp, outlineVariant.copy(alpha = 0.5f), roundedDefault)
-        ) {
+                    .background(surfaceContainerLow, roundedDefault)
+                    .border(1.dp, outlineVariant.copy(alpha = 0.5f), roundedDefault)
+            ) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Icon(
                     imageVector = Icons.Default.Language,
@@ -89,6 +91,7 @@ fun NavigationRailBar(
             }
         }
     }
+}
 }
 
 @Composable
