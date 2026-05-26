@@ -15,25 +15,32 @@ import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.koin.android.ext.android.getKoin
+import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.compose.koinInject
 import java.io.File
+import com.darius.lionvpn.ui.home.Event
+import com.darius.lionvpn.config.*
+import com.darius.lionvpn.model.AndroidUiEffect
 
 class MainActivity : ComponentActivity() {
 
     private var resolvedCaCertFile: File? = null
     private val vm: AndroidAppViewModel by viewModel()
+    private val configTemplateProvider: ConfigTemplateProvider by inject()
+    private val vpnPreferencesManager: VpnPreferencesManager by inject()
+    private val vpnServiceManager: VpnServiceManager by inject()
+    private val vpnCertificateManager: VpnCertificateManager by inject()
 
     private val saveCertLauncher = registerForActivityResult(
         ActivityResultContracts.CreateDocument("*/*")
     ) { uri ->
         if (uri != null) {
             val caCertFile = resolvedCaCertFile ?: File(cacheDir, "ca/ca.crt")
-            saveCertificateUri(uri, caCertFile)
+            vpnCertificateManager.saveCertificateUri(uri, caCertFile)
             vm.onCertSavedSuccess()
         } else {
             ProxyService.addLogLine("Certificate saving cancelled by user.")
@@ -44,7 +51,7 @@ class MainActivity : ComponentActivity() {
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
         if (result.resultCode == RESULT_OK) {
-            startVpnService()
+            vpnServiceManager.startVpnService()
         } else {
             ProxyService.addLogLine("VPN permission denied by user.")
         }
@@ -56,38 +63,49 @@ class MainActivity : ComponentActivity() {
         getKoin().get<ContextFactory>().attach(this)
 
         // Load initial configs from SharedPreferences reactively on startup
-        vm.initializeConfigs(loadConfigsFromPrefs(), loadSelectedIndexFromPrefs())
+        val configs = vpnPreferencesManager.loadConfigsFromPrefs()
+        val selectedIndex = vpnPreferencesManager.loadSelectedIndexFromPrefs()
+        val rawConfig = vpnPreferencesManager.loadRawConfigFromPrefs()
+        val lang = vpnPreferencesManager.loadLanguageFromPrefs()
 
-        // Observe flow modifications reactively and save back to SharedPreferences
-        lifecycleScope.launch {
-            combine(vm.savedConfigs, vm.selectedConfigIndex) { configs, index ->
-                Pair(configs, index)
-            }.collect { (configs, index) ->
-                withContext(Dispatchers.IO) {
-                    saveConfigsToPrefs(configs, index)
-                }
-            }
+        val initialRawConfig = rawConfig.ifBlank {
+            val active = if (selectedIndex in configs.indices) configs[selectedIndex] else null
+            configTemplateProvider.generateDefaultJson(active?.id ?: "", active?.key ?: "")
         }
+
+        vm.initializeConfigs(
+            configs,
+            selectedIndex,
+            initialRawConfig,
+            lang
+        )
 
         // Listen for UI effects emitted by the pure parameterless ViewModel
         lifecycleScope.launch {
             vm.uiEffect.collect { effect ->
                 when (effect) {
+                    is AndroidUiEffect.SaveSettings -> {
+                        withContext(Dispatchers.IO) {
+                            vpnPreferencesManager.saveConfigsToPrefs(vm.savedConfigs.value, vm.selectedConfigIndex.value)
+                            vpnPreferencesManager.saveSettingsToPrefs(vm.rawConfigJson.value, vm.language.value)
+                        }
+                    }
                     is AndroidUiEffect.ConnectVpn -> {
                         val isRunning = ProxyService.isVpnRunning.value
                         if (isRunning) {
-                            stopVpnService()
+                            vpnServiceManager.stopVpnService()
                         } else {
                             val vpnIntent = VpnService.prepare(this@MainActivity)
                             if (vpnIntent != null) {
                                 vpnPrepareLauncher.launch(vpnIntent)
                             } else {
-                                startVpnService()
+                                vpnServiceManager.startVpnService()
                             }
                         }
                     }
                     is AndroidUiEffect.CheckAndSaveCertificate -> {
-                        checkAndGenerateCertificate(lifecycleScope) { caCertFile ->
+                        lifecycleScope.launch {
+                            val caCertFile = vpnCertificateManager.checkAndGenerateCertificate()
                             resolvedCaCertFile = caCertFile
                             ProxyService.addLogLine("Searching for CA certificate at: ${caCertFile.absolutePath}")
                             if (!caCertFile.exists()) {
@@ -125,7 +143,16 @@ class MainActivity : ComponentActivity() {
                 connectivityHandler = koinInject(),
                 state = homeState,
                 onClick = { event ->
-                    vm.handleEvent(event)
+                    when (event) {
+                        Event.LoadDefaultConfig -> {
+                            val configsState = homeState.savedConfigs
+                            val indexState = homeState.selectedConfigIndex
+                            val active = if (indexState in configsState.indices) configsState[indexState] else null
+                            val defaultContent = configTemplateProvider.generateDefaultJson(active?.id ?: "", active?.key ?: "")
+                            vm.onLoadDefaultConfig(defaultContent)
+                        }
+                        else -> vm.handleEvent(event)
+                    }
                 }
             )
 
