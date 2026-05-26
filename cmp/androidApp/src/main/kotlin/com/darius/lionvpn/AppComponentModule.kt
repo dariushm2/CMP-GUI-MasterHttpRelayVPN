@@ -23,6 +23,9 @@ val appComponentModule = module {
     single {
         VpnCertificateManager(androidContext())
     }
+    single {
+        VpnLanguageManager(get())
+    }
     single<NetworkHelper> {
         AndroidNetworkHelper(androidContext())
     }

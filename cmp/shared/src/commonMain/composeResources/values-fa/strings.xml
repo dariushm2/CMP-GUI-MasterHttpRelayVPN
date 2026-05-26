@@ -1,0 +1,120 @@
+<resources>
+    <!-- Existing Strings -->
+    <string name="connection_lost">اتصال قطع شد!</string>
+    <string name="something_went_wrong">خطایی رخ داده است</string>
+    <string name="retry">تلاش مجدد</string>
+    <string name="debug">دیباگ</string>
+    <string name="back_button">دکمه بازگشت</string>
+
+    <!-- Home / Sidebar Navigation -->
+    <string name="app_name">Lion VPN</string>
+    <string name="shield_logo_desc">لوگوی سپر</string>
+    <string name="tab_dashboard">داشبورد</string>
+    <string name="tab_scripts">اسکریپت‌ها</string>
+    <string name="tab_certificates">گواهی‌</string>
+
+    <!-- Dashboard Tab -->
+    <string name="power_vpn_button_desc">دکمه روشن/خاموش وی‌پی‌ان</string>
+    <string name="no_config">بدون اسکریپت</string>
+    <string name="logs_terminal_desc">ترمینال گزارش‌ها</string>
+    <string name="system_logs">گزارش‌های سیستم</string>
+    <string name="clear_logs_desc">گزارش‌ها را پاک کنید</string>
+
+    <!-- Certificates Tab -->
+    <string name="certificates_title">مدیریت گواهی HTTPS</string>
+    <string name="certificates_subtitle">برای اینکه برنامه بتواند کار کند، باید یک گواهی CA نصب کند.</string>
+    <string name="manual_controls">کنترل‌های دستی</string>
+    <string name="install_icon_desc">آیکون نصب</string>
+    <string name="install_https_cert">نصب گواهی</string>
+    <string name="uninstall_icon_desc">آیکون لغو نصب</string>
+    <string name="uninstall_certificate">حذف گواهی</string>
+    <string name="uninstallation_note">توجه: حذف گواهی باعث توقف ارتباط می شود.</string>
+
+    <!-- Scripts Tab -->
+    <string name="scripts_management">مدیریت اسکریپت‌ها</string>
+    <string name="add_script_icon_desc">آیکون افزودن پروفایل اسکریپت</string>
+    <string name="add_script">افزودن اسکریپت</string>
+    <string name="selected_check_desc">علامت انتخاب شده</string>
+    <string name="deployment_id">شناسه استقرار: %1$s</string>
+    <string name="active">فعال</string>
+    <string name="standby">آماده به کار</string>
+    <string name="delete_profile_icon_desc">آیکون حذف پروفایل</string>
+    <string name="copy_deployment_id_desc">کپی شناسه استقرار</string>
+    <string name="copied_toast">شناسه استقرار با موفقیت کپی شد</string>
+    <string name="new_script_profile">پروفایل اسکریپت جدید</string>
+    <string name="close_add_profile_icon_desc">آیکون بستن افزودن پروفایل</string>
+    <string name="profile_label">نام پروفایل</string>
+    <string name="profile_label_placeholder">نام اختیاری مانند شماره ۱، حساب خودم یا هر چی</string>
+    <string name="deployment_id_label">شناسه استقرار Deployment ID</string>
+    <string name="deployment_id_placeholder">Deployment ID</string>
+    <string name="deployment_id_icon_desc">آیکون شناسه استقرار</string>
+    <string name="relay_auth_key_label">کلید احراز هویت Auth Key</string>
+    <string name="relay_auth_key_placeholder">Auth Key</string>
+    <string name="auth_key_icon_desc">آیکون کلید احراز هویت</string>
+    <string name="hide">پنهان</string>
+    <string name="show">پیدا</string>
+    <string name="error_profile_label_blank">برچسب پروفایل نمی‌تواند خالی باشد.</string>
+    <string name="error_deployment_id_blank">شناسه استقرار نمی‌تواند خالی باشد.</string>
+    <string name="error_auth_key_blank">کلید احراز هویت نمی‌تواند خالی باشد.</string>
+    <string name="save_profile">ذخیره پروفایل</string>
+
+    <!-- Setup Instructions -->
+    <string name="setup_instructions_title">راهنمای راه‌اندازی اسکریپت</string>
+    <string name="setup_instructions_click_to_view">برای مشاهده راهنمای گام‌به‌گام راه‌اندازی کلیک کنید</string>
+    <string name="setup_instructions_close">بستن راهنما</string>
+    <string name="setup_instructions_intro">برای راه‌اندازی پروفایل اسکریپت، مراحل زیر را دنبال کنید:</string>
+    <string name="setup_instructions_step1">۱. کد موجود در لینک زیر را از گیت‌هاب کپی کنید:</string>
+    <string name="setup_instructions_step2">۲. وارد حساب کاربری گوگل خود در سایت زیر شده، یک پروژه جدید بسازید و کد کپی شده را جایگزین محتوای فعلی کنید:</string>
+    <string name="setup_instructions_step3">۳. در ویرایشگر، عبارت CHANGE_ME_TO_A_STRONG_SECRET را پیدا کرده و با کلمه عبور قوی انتخابی خود جایگزین کنید.</string>
+    <string name="setup_instructions_step4">۴. روی دکمه Deploy کلیک کرده و New deployment -> Web app را انتخاب کنید.</string>
+    <string name="setup_instructions_step5">۵. گزینه Execute as را روی Me تنظیم کنید.</string>
+    <string name="setup_instructions_step6">۶. گزینه Who has access را روی Anyone تنظیم کنید.</string>
+    <string name="setup_instructions_step7">۷. روی Deploy کلیک کرده، دسترسی‌های لازم را تایید کنید و در نهایت شناسه استقرار (Deployment ID) و کلمه عبور خود را کپی کرده و در فرم برنامه ثبت کنید.</string>
+
+    <!-- About Tab -->
+    <string name="tab_about">درباره برنامه</string>
+    <string name="about_subtitle">آشنایی با مکانیزم عبور از فیلترینگ و نحوه کارکرد سیستم رله</string>
+    <string name="about_title">لاین وی‌پی‌ان چیست و چگونه کار می‌کند؟</string>
+    <string name="about_description">این برنامه ترافیک اینترنتی شما را بسته‌بندی (Repackage) کرده و آن را به شکل درخواست‌های معمولی به سرورهای گوگل ارسال می‌کند. از آنجا که دامنه و ترافیک سرورهای گوگل در حالت عادی فیلتر نیستند، این ترافیک بدون هیچ مانعی از سد فیلترینگ عبور می‌کند.
+
+سپس در سمت گوگل (از طریق اسکریپتی که در حساب گوگل خود مستقر کرده‌اید)، این بسته باز شده (Depackage) و به سمت سرور مقصد اصلی فرستاده می‌شود. پس از دریافت پاسخ از مقصد، سرور گوگل اطلاعات پاسخ را مجدداً بسته‌بندی کرده و به صورت معکوس برای برنامه ارسال می‌کند. این فرآیند دقیقاً مانند یک وی‌پی‌ان (VPN) عمل کرده و به شما امکان می‌دهد وب‌سایت‌های مسدود شده را بدون مشکل باز کنید.</string>
+    <string name="about_features_title">مزایای این روش:</string>
+    <string name="about_feature_1">⚡ عبور امن از فیلترینگ با استفاده از زیرساخت‌های پایدار گوگل (Google Infrastructure)</string>
+    <string name="about_feature_2">🔒 عدم امکان مسدودسازی به دلیل استفاده از دامنه‌های رسمی گوگل</string>
+    <string name="about_feature_3">🛠️ کنترل کامل روی سرور میانی (Google Apps Script شخصی شما)</string>
+
+    <!-- About Limits Box -->
+    <string name="about_limits_title">محدودیت‌های مصرف گوگل و نحوه عبور از آن</string>
+    <string name="about_limits_description">گوگل برای استفاده از سرویس رایگان Apps Script محدودیت‌های مصرف روزانه (Rate Limits) اعمال می‌کند. اگر حجم ترافیک مصرفی شما از این سقف مشخص عبور کند، سرور گوگل موقتاً پاسخ‌دهی را متوقف خواهد کرد.
+
+برای حل کامل این مشکل، شما می‌توانید چندین استقرار (Deployment) مختلف روی یک یا چند حساب گوگل مختلف ایجاد کنید. در صورتی که با این محدودیت مواجه شدید، کافیست در بخش «اسکریپت‌ها» شناسه استقرار (Deployment ID) فعال خود را به شناسه دیگری تغییر دهید تا بدون وقفه و مشکل به اتصال آزاد ادامه دهید.</string>
+
+    <!-- About Tab Diagram Labels -->
+    <string name="about_diagram_title">نحوه انتقال و عبور ترافیک (Traffic Flow Architecture)</string>
+    <string name="about_step_device">دستگاه شما</string>
+    <string name="about_step_device_desc">بسته‌بندی ترافیک\n(Repackage)</string>
+    <string name="about_step_relay">رله گوگل</string>
+    <string name="about_step_relay_desc">بازگشایی و دریافت\n(Depackage)</string>
+    <string name="about_step_destination">سایت مقصد</string>
+    <string name="about_step_destination_desc">دریافت پاسخ\n(Destination)</string>
+    
+    <!-- About Tab Image/Icon Descriptions -->
+    <string name="about_desc_device_icon">دستگاه کلاینت</string>
+    <string name="about_desc_flow_icon">جهت انتقال ترافیک</string>
+    <string name="about_desc_relay_icon">رله پردازش ابری گوگل</string>
+    <string name="about_desc_destination_icon">وب‌سایت مقصد اینترنت</string>
+    <string name="about_desc_info_icon">آیکون درباره برنامه</string>
+    <string name="about_desc_benefits_icon">آیکون مزایای برنامه</string>
+    <string name="about_desc_warning_icon">آیکون محدودیت مصرف</string>
+
+    <!-- Edit Config Tab -->
+    <string name="tab_edit_config">ویرایش پیکربندی</string>
+    <string name="edit_config_title">تنظیمات پیشرفته برنامه</string>
+    <string name="save_settings">ذخیره</string>
+    <string name="settings_saved_success">تنظیمات با موفقیت ذخیره شد!</string>
+    <string name="settings_save_error">خطا در ذخیره تنظیمات.</string>
+    <string name="edit_config_label">محتوای فایل پیکربندی (config.json)</string>
+    <string name="error_invalid_json">قالب نوشتاری JSON نامعتبر است! لطفا صحت کاماها، کروشه‌ها و گیومه‌ها را بررسی کنید.</string>
+    <string name="json_syntax_error">خطای تحلیل ساختار: %1$s</string>
+    <string name="load_defaults">بارگذاری پیش‌فرض‌ها</string>
+</resources>

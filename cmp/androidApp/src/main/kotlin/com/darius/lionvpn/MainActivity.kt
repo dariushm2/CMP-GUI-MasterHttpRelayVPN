@@ -1,5 +1,6 @@
 package com.darius.lionvpn
 
+import android.content.Context
 import android.net.VpnService
 import android.os.Bundle
 import android.widget.Toast
@@ -30,6 +31,7 @@ class MainActivity : ComponentActivity() {
     private val vpnPreferencesManager: VpnPreferencesManager by inject()
     private val vpnServiceManager: VpnServiceManager by inject()
     private val vpnCertificateManager: VpnCertificateManager by inject()
+    private val vpnLanguageManager: VpnLanguageManager by inject()
 
     private val saveCertLauncher = registerForActivityResult(
         ActivityResultContracts.CreateDocument("*/*")
@@ -51,6 +53,11 @@ class MainActivity : ComponentActivity() {
         } else {
             ProxyService.addLogLine("VPN permission denied by user.")
         }
+    }
+
+    override fun attachBaseContext(newBase: Context) {
+        val languageManager = VpnLanguageManager(VpnPreferencesManager(newBase))
+        super.attachBaseContext(languageManager.applyLocaleToContext(newBase))
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -112,6 +119,15 @@ class MainActivity : ComponentActivity() {
                             }
                         }
                     }
+                }
+            }
+        }
+
+        // Listen to vm.language flow and recreate Activity if selected language differs from active context locale
+        lifecycleScope.launch {
+            vm.language.collect { currentLang ->
+                if (vpnLanguageManager.isCurrentLocaleDifferent(this@MainActivity, currentLang)) {
+                    recreate()
                 }
             }
         }
