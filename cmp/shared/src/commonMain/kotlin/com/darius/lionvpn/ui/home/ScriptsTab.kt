@@ -33,6 +33,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import com.darius.lionvpn.ui.model.Lang
 import com.darius.lionvpn.ui.model.SavedConfig
 import com.darius.lionvpn.ui.theme.*
@@ -409,7 +410,10 @@ private fun AddScriptDialog(
 
     val focusManager = LocalFocusManager.current
 
-    Dialog(onDismissRequest = onDismiss) {
+    Dialog(
+        onDismissRequest = onDismiss,
+        properties = DialogProperties(usePlatformDefaultWidth = false),
+    ) {
         Card(
             modifier = modifier
                 .width(480.dp)
@@ -615,7 +619,10 @@ private fun SetupInstructionsDialog(
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Dialog(onDismissRequest = onDismiss) {
+    Dialog(
+        onDismissRequest = onDismiss,
+        properties = DialogProperties(usePlatformDefaultWidth = false),
+    ) {
         Card(
             modifier = modifier
                 .width(520.dp)

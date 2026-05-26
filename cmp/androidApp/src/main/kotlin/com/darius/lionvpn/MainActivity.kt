@@ -1,18 +1,15 @@
 package com.darius.lionvpn
 
-import android.app.Activity
+import android.content.Context
 import android.net.VpnService
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.platform.LocalView
-import androidx.core.view.WindowCompat
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -34,6 +31,7 @@ class MainActivity : ComponentActivity() {
     private val vpnPreferencesManager: VpnPreferencesManager by inject()
     private val vpnServiceManager: VpnServiceManager by inject()
     private val vpnCertificateManager: VpnCertificateManager by inject()
+    private val vpnLanguageManager: VpnLanguageManager by inject()
 
     private val saveCertLauncher = registerForActivityResult(
         ActivityResultContracts.CreateDocument("*/*")
@@ -55,6 +53,11 @@ class MainActivity : ComponentActivity() {
         } else {
             ProxyService.addLogLine("VPN permission denied by user.")
         }
+    }
+
+    override fun attachBaseContext(newBase: Context) {
+        val languageManager = VpnLanguageManager(VpnPreferencesManager(newBase))
+        super.attachBaseContext(languageManager.applyLocaleToContext(newBase))
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -120,20 +123,20 @@ class MainActivity : ComponentActivity() {
             }
         }
 
+        // Listen to vm.language flow and recreate Activity if selected language differs from active context locale
+        lifecycleScope.launch {
+            vm.language.collect { currentLang ->
+                if (vpnLanguageManager.isCurrentLocaleDifferent(this@MainActivity, currentLang)) {
+                    recreate()
+                }
+            }
+        }
+
+        enableEdgeToEdge()
         setContent {
             val data = this.intent.data
             data?.toString()?.let {
                 DeepLinkHandler.setDeepLink(it)
-            }
-
-            val view = LocalView.current
-            val darkTheme = isSystemInDarkTheme()
-            SideEffect {
-                val window = (view.context as Activity).window
-                WindowCompat.getInsetsController(window, view).apply {
-                    isAppearanceLightStatusBars = !darkTheme
-                    isAppearanceLightNavigationBars = !darkTheme
-                }
             }
 
             val homeState by vm.homeState.collectAsState()

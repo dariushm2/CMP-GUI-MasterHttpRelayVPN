@@ -2,7 +2,6 @@ package com.darius.lionvpn
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -18,7 +17,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.darius.lionvpn.connectivity.ConnectivityHandler
 import com.darius.lionvpn.ui.debug.DebugScreen
-import com.darius.lionvpn.ui.errostate.NetworkLoss
 import com.darius.lionvpn.ui.home.Event
 import com.darius.lionvpn.ui.home.HomeScreen
 import com.darius.lionvpn.ui.home.HomeState
@@ -58,10 +56,8 @@ fun App(
                     Box(
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(top = innerPadding.calculateTopPadding())
                     ) {
-                        if (!isConnected) NetworkLoss()
-                        else NavGraph(
+                        NavGraph(
                             navController = navController,
                             state = state,
                             onClick = onClick,
