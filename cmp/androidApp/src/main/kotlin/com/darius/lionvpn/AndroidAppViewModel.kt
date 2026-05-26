@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.darius.lionvpn.ui.home.Event
 import com.darius.lionvpn.ui.home.HomeState
+import com.darius.lionvpn.ui.model.Lang
 import com.darius.lionvpn.ui.model.SavedConfig
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,6 +16,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.serialization.json.jsonObject
 
 sealed interface AndroidUiEffect {
     object ConnectVpn : AndroidUiEffect
@@ -32,6 +34,15 @@ class AndroidAppViewModel : ViewModel() {
     val isVpnRunning = ProxyService.isVpnRunning
     val vpnLogs = ProxyService.vpnLogs
 
+    private val _rawConfigJson = MutableStateFlow("")
+    val rawConfigJson: StateFlow<String> = _rawConfigJson.asStateFlow()
+
+    private val _configResetTrigger = MutableStateFlow(0)
+    val configResetTrigger: StateFlow<Int> = _configResetTrigger.asStateFlow()
+
+    private val _language = MutableStateFlow(com.darius.lionvpn.ui.model.Lang.FA)
+    val language: StateFlow<com.darius.lionvpn.ui.model.Lang> = _language.asStateFlow()
+
     private val _showInstructionsDialog = MutableStateFlow(false)
     val showInstructionsDialog: StateFlow<Boolean> = _showInstructionsDialog.asStateFlow()
 
@@ -40,13 +51,27 @@ class AndroidAppViewModel : ViewModel() {
         isVpnRunning,
         vpnLogs,
         _savedConfigs,
-        _selectedConfigIndex
-    ) { running, logs, configs, index ->
+        _selectedConfigIndex,
+        _rawConfigJson,
+        _configResetTrigger,
+        _language
+    ) { array ->
+        val running = array[0] as Boolean
+        val logs = array[1] as List<String>
+        val configs = array[2] as List<SavedConfig>
+        val index = array[3] as Int
+        val configJson = array[4] as String
+        val resetTrigger = array[5] as Int
+        val lang = array[6] as com.darius.lionvpn.ui.model.Lang
+
         HomeState(
             isVpnRunning = running,
             log = logs,
             savedConfigs = configs,
-            selectedConfigIndex = index
+            selectedConfigIndex = index,
+            rawConfigJson = configJson,
+            configResetTrigger = resetTrigger,
+            language = lang
         )
     }.stateIn(
         scope = viewModelScope,
@@ -57,9 +82,16 @@ class AndroidAppViewModel : ViewModel() {
     private val _uiEffect = MutableSharedFlow<AndroidUiEffect>()
     val uiEffect: SharedFlow<AndroidUiEffect> = _uiEffect.asSharedFlow()
 
-    fun initializeConfigs(configs: List<SavedConfig>, selectedIndex: Int) {
+    fun initializeConfigs(
+        configs: List<SavedConfig>,
+        selectedIndex: Int,
+        rawConfig: String,
+        lang: Lang
+    ) {
         _savedConfigs.value = configs
         _selectedConfigIndex.value = selectedIndex
+        _rawConfigJson.value = rawConfig
+        _language.value = lang
     }
 
     fun handleEvent(event: Event) {
@@ -72,8 +104,41 @@ class AndroidAppViewModel : ViewModel() {
                 is Event.AddConfig -> addConfig(event.config)
                 is Event.DeleteConfig -> deleteConfig(event.config)
                 is Event.SelectConfig -> selectConfig(event.index)
+                is Event.SaveRawConfig -> {
+                    _rawConfigJson.value = event.json
+                }
+                Event.LoadDefaultConfig -> {
+                    throw IllegalStateException("LoadDefaultConfig should be handled by the UI/Activity layer")
+                }
+                is Event.ChangeLanguage -> {
+                    _language.value = event.language
+                }
             }
         }
+    }
+
+    fun onLoadDefaultConfig(defaultJson: String) {
+        _rawConfigJson.value = defaultJson
+        _configResetTrigger.value++
+    }
+
+    private fun updateRawConfigWithActiveProfile(id: String, key: String) {
+        val currentJson = _rawConfigJson.value
+        val updatedJson = try {
+            if (currentJson.isNotBlank()) {
+                val jsonMap = kotlinx.serialization.json.Json.parseToJsonElement(currentJson).jsonObject.toMutableMap()
+                jsonMap["script_id"] = kotlinx.serialization.json.JsonPrimitive(id)
+                jsonMap["auth_key"] = kotlinx.serialization.json.JsonPrimitive(key)
+                val prettyJson = kotlinx.serialization.json.Json { prettyPrint = true }
+                prettyJson.encodeToString(kotlinx.serialization.json.JsonObject.serializer(), kotlinx.serialization.json.JsonObject(jsonMap))
+            } else {
+                ""
+            }
+        } catch (e: Exception) {
+            throw IllegalStateException("Failed to parse/update raw config json", e)
+        }
+        _rawConfigJson.value = updatedJson
+        _configResetTrigger.value++
     }
 
     fun onCertSavedSuccess() {
@@ -100,6 +165,10 @@ class AndroidAppViewModel : ViewModel() {
             nextIndex = 0
         }
         _selectedConfigIndex.value = nextIndex
+        if (nextIndex in newList.indices) {
+            val active = newList[nextIndex]
+            updateRawConfigWithActiveProfile(active.id, active.key)
+        }
     }
 
     private fun deleteConfig(config: SavedConfig) {
@@ -113,11 +182,19 @@ class AndroidAppViewModel : ViewModel() {
         }
         _savedConfigs.value = newList
         _selectedConfigIndex.value = nextIndex
+        if (nextIndex in newList.indices) {
+            val active = newList[nextIndex]
+            updateRawConfigWithActiveProfile(active.id, active.key)
+        } else {
+            updateRawConfigWithActiveProfile("", "")
+        }
     }
 
     private fun selectConfig(index: Int) {
         if (index in _savedConfigs.value.indices) {
             _selectedConfigIndex.value = index
+            val active = _savedConfigs.value[index]
+            updateRawConfigWithActiveProfile(active.id, active.key)
         }
     }
 }
