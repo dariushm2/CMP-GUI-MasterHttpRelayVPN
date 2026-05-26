@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.SideEffect
@@ -120,21 +121,22 @@ class MainActivity : ComponentActivity() {
             }
         }
 
+        enableEdgeToEdge()
         setContent {
             val data = this.intent.data
             data?.toString()?.let {
                 DeepLinkHandler.setDeepLink(it)
             }
 
-            val view = LocalView.current
-            val darkTheme = isSystemInDarkTheme()
-            SideEffect {
-                val window = (view.context as Activity).window
-                WindowCompat.getInsetsController(window, view).apply {
-                    isAppearanceLightStatusBars = !darkTheme
-                    isAppearanceLightNavigationBars = !darkTheme
-                }
-            }
+//            val view = LocalView.current
+//            val darkTheme = isSystemInDarkTheme()
+//            SideEffect {
+//                val window = (view.context as Activity).window
+//                WindowCompat.getInsetsController(window, view).apply {
+//                    isAppearanceLightStatusBars = !darkTheme
+//                    isAppearanceLightNavigationBars = !darkTheme
+//                }
+//            }
 
             val homeState by vm.homeState.collectAsState()
             val showInstructionsDialog by vm.showInstructionsDialog.collectAsState()
