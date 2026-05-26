@@ -11,22 +11,11 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PowerSettingsNew
@@ -60,8 +49,6 @@ fun DashboardTab(
     onClick: (Event) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val scrollState = rememberScrollState()
-    
     // Check if configuration is active
     val activeConfig = if (state.selectedConfigIndex in state.savedConfigs.indices) {
         state.savedConfigs[state.selectedConfigIndex]
@@ -83,29 +70,68 @@ fun DashboardTab(
         }
     }
 
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .verticalScroll(scrollState)
-            .padding(containerPadding),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(gutter)
-    ) {
-        // Connection Hero Glass Card
-        ConnectionHeroCard(
-            isVpnRunning = state.isVpnRunning,
-            isConnectEnabled = isConnectEnabled,
-            activeConfigName = activeConfig?.name,
-            address = address,
-            onConnectToggle = { if (isConnectEnabled) onClick(Event.Connect) }
-        )
+    BoxWithConstraints(modifier = modifier.fillMaxSize()) {
+        val showSideBySide = maxHeight < 480.dp
 
-        // Terminal Log Console Card
-        TerminalLogConsole(
-            logs = state.log,
-            onClick = onClick,
-            modifier = Modifier.weight(1f)
-        )
+        if (!showSideBySide) {
+            // Balanced non-scrollable Column for Portrait Mobile (no scroll conflicts!)
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(containerPadding),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(gutter)
+            ) {
+                ConnectionHeroCard(
+                    isVpnRunning = state.isVpnRunning,
+                    isConnectEnabled = isConnectEnabled,
+                    address = address,
+                    onConnectToggle = { if (isConnectEnabled) onClick(Event.Connect) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f)
+                        .heightIn(max = 280.dp) // Capped at 280dp on tall screens
+                )
+
+                TerminalLogConsole(
+                    logs = state.log,
+                    onClick = onClick,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f) // Balanced logs space filling the rest
+                )
+            }
+        } else {
+            // Side-by-side Row for Wide Screens OR Compact Height Screens (Desktop, Tablets, Landscape Phones)
+            Row(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(containerPadding),
+                horizontalArrangement = Arrangement.spacedBy(gutter),
+                verticalAlignment = Alignment.Top
+            ) {
+                // Connection Hero Card on the Left (adapts height but caps at 320dp)
+                ConnectionHeroCard(
+                    isVpnRunning = state.isVpnRunning,
+                    isConnectEnabled = isConnectEnabled,
+                    address = address,
+                    onConnectToggle = { if (isConnectEnabled) onClick(Event.Connect) },
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight()
+                        .heightIn(max = 320.dp)
+                )
+
+                // Terminal Log Console Card on the Right (fills rest of height)
+                TerminalLogConsole(
+                    logs = state.log,
+                    onClick = onClick,
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight()
+                )
+            }
+        }
     }
 }
 
@@ -113,7 +139,6 @@ fun DashboardTab(
 private fun ConnectionHeroCard(
     isVpnRunning: Boolean,
     isConnectEnabled: Boolean,
-    activeConfigName: String?,
     address: String,
     onConnectToggle: () -> Unit,
     modifier: Modifier = Modifier
@@ -141,9 +166,7 @@ private fun ConnectionHeroCard(
     )
 
     Card(
-        modifier = modifier
-            .fillMaxWidth()
-            .height(240.dp),
+        modifier = modifier,
         shape = roundedLg,
         colors = CardDefaults.cardColors(
             containerColor = Color(0x1F1E293B) // 70% opacity in slate-800 context
