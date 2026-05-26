@@ -14,7 +14,7 @@ enum class WindowWidthSizeClass {
 fun calculateWindowWidthSizeClass(width: Dp): WindowWidthSizeClass {
     return when {
         width < 600.dp -> WindowWidthSizeClass.Compact
-        width < 1200.dp -> WindowWidthSizeClass.Medium
+        width < 1000.dp -> WindowWidthSizeClass.Medium
         else -> WindowWidthSizeClass.Expanded
     }
 }

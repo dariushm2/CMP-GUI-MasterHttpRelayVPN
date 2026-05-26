@@ -37,11 +37,6 @@ fun Sidebar(
             .width(240.dp)
             .fillMaxHeight()
             .background(surfaceContainerLowest)
-            .border(
-                width = 1.dp,
-                color = outlineVariant,
-                shape = androidx.compose.ui.graphics.RectangleShape
-            )
             .padding(vertical = stackLg),
         verticalArrangement = Arrangement.SpaceBetween
     ) {

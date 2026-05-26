@@ -53,7 +53,6 @@ fun HomeScreen(
             Row(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(innerPadding)
             ) {
                 // Side Navigation: Medium (Rail) vs. Expanded (Sidebar)
                 when {
@@ -84,6 +83,7 @@ fun HomeScreen(
                         .weight(1f)
                         .fillMaxHeight()
                         .background(background)
+                        .padding(innerPadding)
                 ) {
                     // Soft background glow gradient
                     Box(

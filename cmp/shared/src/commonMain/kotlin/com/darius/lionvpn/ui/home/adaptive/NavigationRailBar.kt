@@ -3,6 +3,8 @@ package com.darius.lionvpn.ui.home.adaptive
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -10,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.darius.lionvpn.ui.home.HomeTab
@@ -29,34 +32,27 @@ fun NavigationRailBar(
         containerColor = surfaceContainerLowest,
         header = {
             // Compact Logo
-            Box(
+            Text(
+                text = "🦁",
+                fontSize = 30.sp,
+                textAlign = TextAlign.Center,
                 modifier = Modifier
-                    .size(44.dp)
+                    .size(40.dp)
                     .background(primary.copy(alpha = 0.15f), roundedDefault)
                     .border(1.dp, primary.copy(alpha = 0.3f), roundedDefault)
-                    .padding(bottom = 2.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = "🦁",
-                    fontSize = 24.sp
-                )
-            }
+            )
         },
         modifier = modifier
             .fillMaxHeight()
             .width(72.dp)
-            .border(
-                width = 1.dp,
-                color = outlineVariant,
-                shape = androidx.compose.ui.graphics.RectangleShape
-            )
-            .padding(vertical = stackLg),
+
     ) {
         Column(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.weight(1f)
+            modifier = Modifier
+                .weight(1f)
+                .verticalScroll(rememberScrollState())
         ) {
             Item(HomeTab.Dashboard, activeTab, onTabSelect)
             Spacer(modifier = Modifier.height(8.dp))
@@ -73,7 +69,6 @@ fun NavigationRailBar(
         IconButton(
             onClick = onLanguageToggle,
             modifier = Modifier
-                .padding(bottom = 16.dp)
                 .size(40.dp)
                 .background(surfaceContainerLow, roundedDefault)
                 .border(1.dp, outlineVariant.copy(alpha = 0.5f), roundedDefault)
@@ -108,7 +103,7 @@ private fun Item(
         colors = NavigationRailItemDefaults.colors(
             selectedIconColor = secondary,
             selectedTextColor = secondary,
-            indicatorColor = secondary.copy(alpha = 0.1f)
+            indicatorColor = secondary.copy(alpha = 0.1f),
         )
     )
 }
