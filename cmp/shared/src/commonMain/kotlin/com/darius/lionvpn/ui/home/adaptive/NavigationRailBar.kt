@@ -28,6 +28,8 @@ fun NavigationRailBar(
     onLanguageToggle: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val scrollState = rememberScrollState()
+    val allItemsVisible = !scrollState.canScrollForward && !scrollState.canScrollBackward
     NavigationRail(
         containerColor = surfaceContainerLowest,
         header = {
@@ -45,14 +47,14 @@ fun NavigationRailBar(
         modifier = modifier
             .fillMaxHeight()
             .width(72.dp)
-
+            .padding(vertical = if (allItemsVisible) stackLg else 0.dp)
     ) {
         Column(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
                 .weight(1f)
-                .verticalScroll(rememberScrollState())
+                .verticalScroll(scrollState)
         ) {
             Item(HomeTab.Dashboard, activeTab, onTabSelect)
             Spacer(modifier = Modifier.height(8.dp))
