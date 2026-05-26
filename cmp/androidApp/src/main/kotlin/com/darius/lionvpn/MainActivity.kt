@@ -26,6 +26,7 @@ import java.io.File
 import com.darius.lionvpn.ui.model.SavedConfig
 import com.darius.lionvpn.ui.home.Event
 import com.darius.lionvpn.config.*
+import com.darius.lionvpn.model.AndroidUiEffect
 
 class MainActivity : ComponentActivity() {
 

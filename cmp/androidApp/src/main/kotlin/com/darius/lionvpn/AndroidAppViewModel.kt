@@ -2,6 +2,7 @@ package com.darius.lionvpn
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.darius.lionvpn.model.AndroidUiEffect
 import com.darius.lionvpn.ui.home.Event
 import com.darius.lionvpn.ui.home.HomeState
 import com.darius.lionvpn.ui.model.Lang
@@ -18,11 +19,6 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.jsonObject
 
-sealed interface AndroidUiEffect {
-    object ConnectVpn : AndroidUiEffect
-    object CheckAndSaveCertificate : AndroidUiEffect
-}
-
 class AndroidAppViewModel : ViewModel() {
 
     private val _savedConfigs = MutableStateFlow<List<SavedConfig>>(emptyList())
@@ -38,10 +34,9 @@ class AndroidAppViewModel : ViewModel() {
     val rawConfigJson: StateFlow<String> = _rawConfigJson.asStateFlow()
 
     private val _configResetTrigger = MutableStateFlow(0)
-    val configResetTrigger: StateFlow<Int> = _configResetTrigger.asStateFlow()
 
-    private val _language = MutableStateFlow(com.darius.lionvpn.ui.model.Lang.FA)
-    val language: StateFlow<com.darius.lionvpn.ui.model.Lang> = _language.asStateFlow()
+    private val _language = MutableStateFlow(Lang.FA)
+    val language: StateFlow<Lang> = _language.asStateFlow()
 
     private val _showInstructionsDialog = MutableStateFlow(false)
     val showInstructionsDialog: StateFlow<Boolean> = _showInstructionsDialog.asStateFlow()
@@ -62,7 +57,7 @@ class AndroidAppViewModel : ViewModel() {
         val index = array[3] as Int
         val configJson = array[4] as String
         val resetTrigger = array[5] as Int
-        val lang = array[6] as com.darius.lionvpn.ui.model.Lang
+        val lang = array[6] as Lang
 
         HomeState(
             isVpnRunning = running,
@@ -71,7 +66,7 @@ class AndroidAppViewModel : ViewModel() {
             selectedConfigIndex = index,
             rawConfigJson = configJson,
             configResetTrigger = resetTrigger,
-            language = lang
+            language = lang,
         )
     }.stateIn(
         scope = viewModelScope,
