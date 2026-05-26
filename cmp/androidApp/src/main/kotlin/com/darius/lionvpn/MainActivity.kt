@@ -15,7 +15,6 @@ import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.koin.android.ext.android.getKoin
@@ -23,7 +22,6 @@ import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.compose.koinInject
 import java.io.File
-import com.darius.lionvpn.ui.model.SavedConfig
 import com.darius.lionvpn.ui.home.Event
 import com.darius.lionvpn.config.*
 import com.darius.lionvpn.model.AndroidUiEffect

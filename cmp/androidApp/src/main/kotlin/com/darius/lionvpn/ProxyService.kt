@@ -232,7 +232,7 @@ class ProxyService : VpnService() {
         private val _isVpnRunning = MutableStateFlow(false)
         val isVpnRunning: StateFlow<Boolean> = _isVpnRunning.asStateFlow()
 
-        private val _vpnLogs = MutableStateFlow(listOf("Lion VPN"))
+        private val _vpnLogs = MutableStateFlow(emptyList<String>())
         val vpnLogs: StateFlow<List<String>> = _vpnLogs.asStateFlow()
 
         // Exposed static method for Chaquopy Python code to stream logs to UI
