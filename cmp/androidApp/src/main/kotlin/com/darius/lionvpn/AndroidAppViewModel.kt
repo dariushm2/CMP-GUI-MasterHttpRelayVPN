@@ -96,17 +96,28 @@ class AndroidAppViewModel : ViewModel() {
                 is Event.InstallCertificate -> generateAndInstallCert()
                 is Event.UninstallCertificate -> { /* TODO */ }
                 is Event.ClearLogs -> ProxyService.clearLogs()
-                is Event.AddConfig -> addConfig(event.config)
-                is Event.DeleteConfig -> deleteConfig(event.config)
-                is Event.SelectConfig -> selectConfig(event.index)
+                is Event.AddConfig -> {
+                    addConfig(event.config)
+                    emitSaveSettings()
+                }
+                is Event.DeleteConfig -> {
+                    deleteConfig(event.config)
+                    emitSaveSettings()
+                }
+                is Event.SelectConfig -> {
+                    selectConfig(event.index)
+                    emitSaveSettings()
+                }
                 is Event.SaveRawConfig -> {
                     _rawConfigJson.value = event.json
+                    emitSaveSettings()
                 }
                 Event.LoadDefaultConfig -> {
                     throw IllegalStateException("LoadDefaultConfig should be handled by the UI/Activity layer")
                 }
                 is Event.ChangeLanguage -> {
                     _language.value = event.language
+                    emitSaveSettings()
                 }
             }
         }
@@ -115,6 +126,9 @@ class AndroidAppViewModel : ViewModel() {
     fun onLoadDefaultConfig(defaultJson: String) {
         _rawConfigJson.value = defaultJson
         _configResetTrigger.value++
+        viewModelScope.launch {
+            emitSaveSettings()
+        }
     }
 
     private fun updateRawConfigWithActiveProfile(id: String, key: String) {
@@ -150,6 +164,10 @@ class AndroidAppViewModel : ViewModel() {
 
     private suspend fun generateAndInstallCert() {
         _uiEffect.emit(AndroidUiEffect.CheckAndSaveCertificate)
+    }
+
+    private suspend fun emitSaveSettings() {
+        _uiEffect.emit(AndroidUiEffect.SaveSettings)
     }
 
     private fun addConfig(config: SavedConfig) {

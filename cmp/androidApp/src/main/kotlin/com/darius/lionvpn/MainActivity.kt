@@ -82,31 +82,16 @@ class MainActivity : ComponentActivity() {
             lang
         )
 
-        // Observe flow modifications reactively and save back to SharedPreferences
-        lifecycleScope.launch {
-            combine(
-                vm.savedConfigs,
-                vm.selectedConfigIndex,
-                vm.rawConfigJson,
-                vm.language
-            ) { configs, index, rawConfig, lang ->
-                listOf(configs, index, rawConfig, lang)
-            }.collect { list ->
-                val configs = list[0] as List<SavedConfig>
-                val index = list[1] as Int
-                val rawConfig = list[2] as String
-                val lang = list[3] as com.darius.lionvpn.ui.model.Lang
-                withContext(Dispatchers.IO) {
-                    vpnPreferencesManager.saveConfigsToPrefs(configs, index)
-                    vpnPreferencesManager.saveSettingsToPrefs(rawConfig, lang)
-                }
-            }
-        }
-
         // Listen for UI effects emitted by the pure parameterless ViewModel
         lifecycleScope.launch {
             vm.uiEffect.collect { effect ->
                 when (effect) {
+                    is AndroidUiEffect.SaveSettings -> {
+                        withContext(Dispatchers.IO) {
+                            vpnPreferencesManager.saveConfigsToPrefs(vm.savedConfigs.value, vm.selectedConfigIndex.value)
+                            vpnPreferencesManager.saveSettingsToPrefs(vm.rawConfigJson.value, vm.language.value)
+                        }
+                    }
                     is AndroidUiEffect.ConnectVpn -> {
                         val isRunning = ProxyService.isVpnRunning.value
                         if (isRunning) {
