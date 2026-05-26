@@ -1,5 +1,7 @@
 package com.darius.lionvpn.ui.home.adaptive
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Language
@@ -10,6 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -29,7 +32,16 @@ fun CompactTopBar(
         title = {
             CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text("🦁", fontSize = 24.sp)
+                    Text(
+                        text = "🦁",
+                        fontSize = 24.sp,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier
+                            .size(32.dp)
+                            .background(primary.copy(alpha = 0.15f), roundedDefault)
+                            .border(1.dp, primary.copy(alpha = 0.3f), roundedDefault)
+                    )
+                    Spacer(modifier = Modifier.width(2.dp))
                     Text(
                         text = stringResource(Res.string.app_name),
                         style = headlineMd.copy(
