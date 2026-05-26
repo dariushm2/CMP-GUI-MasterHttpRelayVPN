@@ -5,6 +5,7 @@ enum class Lang(val label: String) {
     FA("fa");
 
     companion object {
-        fun Lang.isEnglish() = this == Lang.EN
+        fun Lang.isEnglish() = this == EN
+        fun Lang.isPersian() = this == FA
     }
 }

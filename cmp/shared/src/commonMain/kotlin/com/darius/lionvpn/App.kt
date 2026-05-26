@@ -57,7 +57,6 @@ fun App(
                         modifier = Modifier
                             .fillMaxSize()
                     ) {
-                        //if (!isConnected) NetworkLoss()
                         NavGraph(
                             navController = navController,
                             state = state,

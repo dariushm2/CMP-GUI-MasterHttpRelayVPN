@@ -20,7 +20,7 @@ val generateBuildConfig = tasks.register("generateBuildConfig") {
         outputFile.writeText("""
             package com.darius.lionvpn
 
-            public object BuildConfig {
+            public object SharedBuildConfig {
                 public const val APP_VERSION: String = "$versionName"
             }
         """.trimIndent())

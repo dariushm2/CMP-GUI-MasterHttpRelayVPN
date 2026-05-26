@@ -17,7 +17,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.darius.lionvpn.BuildConfig
+import com.darius.lionvpn.SharedBuildConfig
 import com.darius.lionvpn.ui.home.HomeTab
 import com.darius.lionvpn.ui.model.Lang
 import com.darius.lionvpn.ui.theme.*
@@ -69,7 +69,7 @@ fun Sidebar(
                         )
                     )
                     Text(
-                        text = BuildConfig.APP_VERSION,
+                        text = SharedBuildConfig.APP_VERSION,
                         style = monoCode.copy(
                             fontSize = 10.sp,
                             color = onSurfaceVariant.copy(alpha = 0.6f),
