@@ -87,10 +87,17 @@ To get started, first deploy your Google Apps Script relay. This is identical to
 
 All GUI application source code and build tasks reside in the `/cmp` directory. 
 
+> [!TIP]
+> **Quick Distributable Desktop Build:** You can generate a native, standalone installer for your current OS by running:
+> ```bash
+> cd cmp && ./gradlew :desktopApp:packageDistributionForCurrentOS
+> ```
+
 Before building, navigate to the `/cmp` folder in your terminal:
 ```bash
 cd cmp
 ```
+
 
 #### 💻 Desktop App (macOS, Windows, Linux)
 The desktop build automatically compiles and packages the Python proxy engine into your app resources folder.
@@ -126,8 +133,6 @@ The desktop build automatically compiles and packages the Python proxy engine in
 
 *   **UI Framework:** [Compose Multiplatform](https://github.com/JetBrains/compose-multiplatform) (by JetBrains)
 *   **Dependency Injection:** [Koin](https://insert-koin.io/) (for multiplatform DI registration)
-*   **HTTP Client:** [Ktor Client](https://ktor.io/) (Ktor-Darwin for iOS, Ktor-OkHttp for Android)
-*   **Logging Engine:** [Timber](https://github.com/JakeWharton/timber) (Android) & custom console pipes
 *   **Embedded Python Runtimes:**
     *   **Android:** [Chaquopy](https://chaquo.com/chaquopy/) (embeds CPython into Gradle build flows)
     *   **Desktop:** [PyInstaller](https://pyinstaller.org/) & native environment launchers
