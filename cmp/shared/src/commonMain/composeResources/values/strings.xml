@@ -107,6 +107,16 @@ To fully bypass this, you can create multiple deployments on one or more Google 
     <string name="about_desc_benefits_icon">Benefits Icon</string>
     <string name="about_desc_warning_icon">Limits Warning Icon</string>
 
+    <!-- About Project/GitHub Section -->
+    <string name="about_project_title">Open Source Project</string>
+    <string name="about_project_desc_part1">This app is a multi-platform GUI client for </string>
+    <string name="about_project_desc_part2">. You can inspect the source code of this </string>
+    <string name="about_project_desc_part3"> or check the </string>
+    <string name="about_project_desc_part4"> to report bugs and contribute.</string>
+    <string name="about_project_gui_fork">GUI fork</string>
+    <string name="about_project_upstream">upstream project</string>
+    <string name="about_project_github_desc">Official GitHub Repository</string>
+
     <!-- Edit Config Tab -->
     <string name="tab_edit_config">Edit Config</string>
     <string name="save_settings">Save</string>
