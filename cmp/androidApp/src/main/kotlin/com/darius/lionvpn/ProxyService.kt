@@ -35,13 +35,22 @@ class ProxyService : VpnService() {
         val action = intent?.action
         Timber.i("ProxyService onStartCommand action: $action")
 
-        if (action == ACTION_STOP) {
+        if (intent == null || action == null) {
+            Timber.i("ProxyService restarted by system with null intent. Restoring VPN state...")
+            val prefs = getSharedPreferences("vpn_config", Context.MODE_PRIVATE)
+            val rawConfig = prefs.getString("raw_config_json", "") ?: ""
+            if (rawConfig.isNotBlank()) {
+                startProxy(rawConfig)
+            } else {
+                stopProxy()
+                stopSelf()
+                return START_NOT_STICKY
+            }
+        } else if (action == ACTION_STOP) {
             stopProxy()
             stopSelf()
             return START_NOT_STICKY
-        }
-
-        if (action == ACTION_START) {
+        } else if (action == ACTION_START) {
             val configJson = intent.getStringExtra(EXTRA_CONFIG) ?: "{}"
             startProxy(configJson)
         }
