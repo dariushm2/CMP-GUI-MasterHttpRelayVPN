@@ -14,3 +14,7 @@
 -dontwarn org.openjsse.javax.net.ssl.SSLParameters
 -dontwarn org.openjsse.javax.net.ssl.SSLSocket
 -dontwarn org.openjsse.net.ssl.OpenJSSE
+
+# Keep ProxyService and its companion methods for Chaquopy Python interaction
+-keep class com.darius.lionvpn.ProxyService { *; }
+-keep class com.darius.lionvpn.ProxyService$Companion { *; }

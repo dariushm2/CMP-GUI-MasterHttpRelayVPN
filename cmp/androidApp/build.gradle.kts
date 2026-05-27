@@ -41,9 +41,9 @@ android {
         }
         create("release") {
             storeFile = file("release.keystore")
-            storePassword = System.getenv("KEYSTORE_PASSWORD") ?: "defaultPassword"
+            storePassword = System.getenv("KEYSTORE_PASSWORD") ?: "android"
             keyAlias = "releaseKeyAlias"
-            keyPassword = System.getenv("KEY_PASSWORD") ?: "defaultKeyPassword"
+            keyPassword = System.getenv("KEY_PASSWORD") ?: "android"
         }
     }
 
@@ -55,7 +55,6 @@ android {
             isMinifyEnabled = false
             isDebuggable = true
             applicationIdSuffix = ".debug"
-            versionNameSuffix = "-debug"
             signingConfig = signingConfigs.getByName("debug")
         }
         release {
