@@ -88,10 +88,9 @@ To get started, first deploy your Google Apps Script relay. This is identical to
 All GUI application source code and build tasks reside in the `/cmp` directory. 
 
 > [!TIP]
-> **Quick Distributable Desktop Build:** You can generate a native, standalone installer for your current OS by running:
-> ```bash
-> cd cmp && ./gradlew :desktopApp:packageDistributionForCurrentOS
-> ```
+> **Desktop Distributables vs. Installers:** 
+> * Run `cd cmp && ./gradlew :desktopApp:createReleaseDistributable` to quickly create an unpackaged, highly optimized portable app folder you can run directly.
+> * Run `cd cmp && ./gradlew :desktopApp:packageDistributionForCurrentOS` to compile and build a native installer (e.g. DMG, MSI, DEB) for your OS.
 
 Before building, navigate to the `/cmp` folder in your terminal:
 ```bash
@@ -106,11 +105,22 @@ The desktop build automatically compiles and packages the Python proxy engine in
     ```bash
     ./gradlew :desktopApp:run
     ```
-*   **Build Standalone Distribution Package:**
+*   **Create Unpackaged Distributable App (Fast Portable Folder):**
+    ```bash
+    ./gradlew :desktopApp:createDistributable
+    ```
+    This generates a pre-compiled, unpackaged application executable and its dependencies inside the `cmp/desktopApp/build/compose/binaries/main/app` directory, allowing you to run it directly without installing.
+*   **Create Release Distributable (Minified/Optimized Folder):**
+    ```bash
+    ./gradlew :desktopApp:createReleaseDistributable
+    ```
+    This packages the fully optimized and shrunken (Proguard optimized) release-ready application folder under `cmp/desktopApp/build/compose/binaries/main-release/app`.
+*   **Build Standalone Distribution Package (Native Installer):**
     ```bash
     ./gradlew :desktopApp:packageDistributionForCurrentOS
     ```
     This generates native installers (e.g., `.dmg` on macOS, `.msi` on Windows, `.deb` on Linux) inside the `cmp/desktopApp/build/compose/binaries` directory.
+
 
 #### 📱 Android App
 *   **Run / Install Debug APK on Device:**

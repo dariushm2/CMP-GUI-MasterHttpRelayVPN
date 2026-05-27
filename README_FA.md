@@ -88,10 +88,9 @@ graph TD
 تمام کدهای منبع برنامه‌های رابط کاربری و دستورات ساخت آن‌ها در پوشه `/cmp` قرار دارند.
 
 > [!TIP]
-> **ساخت سریع نسخه نصبی مستقل دسکتاپ:** شما می‌توانید با اجرای دستور زیر، یک فایل نصبی بومی و مستقل برای سیستم‌عامل فعلی خود تولید کنید:
-> ```bash
-> cd cmp && ./gradlew :desktopApp:packageDistributionForCurrentOS
-> ```
+> **تفاوت نسخه‌های پرتابل پوشه‌ای با فایل‌های نصبی:** 
+> * دستور `cd cmp && ./gradlew :desktopApp:createReleaseDistributable` را برای ساخت سریع یک پوشه مستقل، پرتابل و بهینه‌سازی‌شده که بدون نیاز به نصب قابل اجراست اجرا کنید.
+> * دستور `cd cmp && ./gradlew :desktopApp:packageDistributionForCurrentOS` را برای ساخت و تولید یک فایل نصبی بومی (مانند DMG، MSI یا DEB) مخصوص سیستم‌عامل خود اجرا کنید.
 
 قبل از شروع، در ترمینال خود به پوشه `/cmp` بروید:
 ```bash
@@ -106,11 +105,22 @@ cd cmp
     ```bash
     ./gradlew :desktopApp:run
     ```
-*   **خروجی گرفتن نسخه نصبی نهایی:**
+*   **ساخت نسخه پرتابل/پوشه‌ای غیرنصبی (سریع):**
+    ```bash
+    ./gradlew :desktopApp:createDistributable
+    ```
+    این دستور یک پوشه حاوی فایل اجرایی غیرنصبی و پیش‌کامپایل‌شده به همراه تمامی نیازمندی‌هایش را در مسیر `cmp/desktopApp/build/compose/binaries/main/app` ایجاد می‌کند که بدون نیاز به نصب قابل اجراست.
+*   **ساخت نسخه پرتابل بهینه‌شده نهایی (Release Distributable):**
+    ```bash
+    ./gradlew :desktopApp:createReleaseDistributable
+    ```
+    این دستور پوشه مستقل و بهینه‌سازی‌شده (پروگارد شده) نهایی را در مسیر `cmp/desktopApp/build/compose/binaries/main-release/app` آماده می‌کند.
+*   **خروجی گرفتن نسخه نصبی نهایی (Native OS Installer):**
     ```bash
     ./gradlew :desktopApp:packageDistributionForCurrentOS
     ```
     این دستور فایل نصبی بومی (مانند `.dmg` روی مک، `.msi` روی ویندوز و `.deb` روی لینوکس) را در مسیر `cmp/desktopApp/build/compose/binaries` ایجاد می‌کند.
+
 
 #### 📱 نسخه اندروید
 *   **نصب مستقیم نسخه دیباگ روی گوشی یا شبیه‌ساز:**
