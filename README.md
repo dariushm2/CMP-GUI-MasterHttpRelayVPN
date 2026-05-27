@@ -142,6 +142,25 @@ The desktop build automatically compiles and packages the Python proxy engine in
 
 ---
 
+## 🛠️ Development Guidelines
+
+To maintain clean and scalable code within this fork project, all contributions (especially within the `/cmp` directory) must strictly adhere to our custom development guidelines.
+
+For full details, please refer to the detailed guidelines:
+* **[CMP Development Rules & Guidelines](file:///Users/dariush/Projects/CMP-GUI-MasterHttpRelayVPN/cmp/skills/cmp-rules/SKILL.md)**
+
+Key principles include:
+1. **Fork Separation:** Keep all customized work inside the `/cmp` directory. Never touch upstream files.
+2. **Small Composables:** Decompose large components and always place them in single-purpose files or sub-packages. Add `modifier: Modifier = Modifier` as the last parameter to every Composable.
+3. **No Context in ViewModels:** Keep Android Context isolated; never pass it into ViewModels to avoid memory leaks.
+4. **Decoupled Architecture:** Encapsulate features and use delegates, managers, and providers.
+5. **No Hardcoding:** Never hardcode resources like strings or colors; use resource references.
+6. **Import Hygiene:** Never use wildcard (`*`) imports and always optimize imports on every edit.
+7. **Size Limit:** Keep source files strictly under 500 lines.
+
+---
+
 ## 🛡️ License
 
 This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file for details.
+
