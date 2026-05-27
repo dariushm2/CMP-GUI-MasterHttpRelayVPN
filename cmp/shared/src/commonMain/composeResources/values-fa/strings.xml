@@ -109,11 +109,9 @@
 
     <!-- Edit Config Tab -->
     <string name="tab_edit_config">ویرایش پیکربندی</string>
-    <string name="edit_config_title">تنظیمات پیشرفته برنامه</string>
     <string name="save_settings">ذخیره</string>
     <string name="settings_saved_success">تنظیمات با موفقیت ذخیره شد!</string>
     <string name="settings_save_error">خطا در ذخیره تنظیمات.</string>
-    <string name="edit_config_label">محتوای فایل پیکربندی (config.json)</string>
     <string name="error_invalid_json">قالب نوشتاری JSON نامعتبر است! لطفا صحت کاماها، کروشه‌ها و گیومه‌ها را بررسی کنید.</string>
     <string name="json_syntax_error">خطای تحلیل ساختار: %1$s</string>
     <string name="load_defaults">بارگذاری پیش‌فرض‌ها</string>

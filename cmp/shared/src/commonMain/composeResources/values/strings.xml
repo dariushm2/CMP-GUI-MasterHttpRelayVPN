@@ -109,11 +109,9 @@ To fully bypass this, you can create multiple deployments on one or more Google 
 
     <!-- Edit Config Tab -->
     <string name="tab_edit_config">Edit Config</string>
-    <string name="edit_config_title">Advanced Configuration</string>
     <string name="save_settings">Save</string>
     <string name="settings_saved_success">Settings saved successfully!</string>
     <string name="settings_save_error">Error saving settings.</string>
-    <string name="edit_config_label">Configuration File Content (config.json)</string>
     <string name="error_invalid_json">Invalid JSON syntax! Please check commas, braces, and quotes.</string>
     <string name="json_syntax_error">Syntax Error: %1$s</string>
     <string name="load_defaults">Load Defaults</string>

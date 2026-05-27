@@ -69,24 +69,6 @@ fun EditConfigTab(
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(gutter)
         ) {
-            // Tab Header
-            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                Text(
-                    text = stringResource(Res.string.edit_config_title),
-                    style = headlineMd.copy(
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = onSurface
-                    )
-                )
-                Text(
-                    text = stringResource(Res.string.edit_config_label),
-                    style = bodySm.copy(color = onSurfaceVariant)
-                )
-            }
-
-            Divider(color = outlineVariant)
-
             // Premium Code Workspace Card styled like a dark log terminal console
             Card(
                 modifier = Modifier
@@ -96,39 +78,115 @@ fun EditConfigTab(
                 colors = CardDefaults.cardColors(containerColor = surfaceContainerLowest),
                 border = borderStrokeGlass()
             ) {
-                OutlinedTextField(
-                    value = jsonInput,
-                    onValueChange = { 
-                        jsonInput = it
-                        syntaxError = null // Clear error when user changes text
-                    },
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(Color.Black.copy(alpha = 0.4f)) // Terminal-style deep console background
-                        .focusRequester(focusRequester) // Auto-focus requested
-                        .padding(4.dp),
-                    textStyle = monoCode.copy(
-                        fontSize = 12.sp,
-                        color = onSurface,
-                        textDirection = TextDirection.Ltr // JSON keys/values are English LTR
-                    ),
-                    singleLine = false,
-                    placeholder = { 
-                        Text(
-                            text = "{ }",
-                            style = monoCode.copy(color = onSurfaceVariant.copy(alpha = 0.4f))
+                Column(modifier = Modifier.fillMaxSize()) {
+                    // Header bar matching the Dashboard TerminalLog header style
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(surfaceContainerLow)
+                            .padding(horizontal = gutter, vertical = 4.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Settings,
+                                contentDescription = stringResource(Res.string.tab_edit_config),
+                                tint = primary,
+                                modifier = Modifier.size(16.dp)
+                            )
+                            Text(
+                                text = "config.json",
+                                style = labelCaps.copy(color = onSurfaceVariant)
+                            )
+                        }
+
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(4.dp)
+                        ) {
+                            // Reload/Load Defaults button
+                            IconButton(
+                                onClick = {
+                                    syntaxError = null // Clear any errors
+                                    onClick(Event.LoadDefaultConfig)
+                                },
+                                modifier = Modifier.size(32.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.SettingsBackupRestore,
+                                    contentDescription = stringResource(Res.string.load_defaults),
+                                    tint = onSurfaceVariant.copy(alpha = 0.8f),
+                                    modifier = Modifier.size(18.dp)
+                                )
+                            }
+
+                            // Save Settings button
+                            IconButton(
+                                onClick = {
+                                    try {
+                                        // Evaluation step: parse JSON directly using kotlinx.serialization
+                                        Json.parseToJsonElement(jsonInput)
+                                        
+                                        // If it parses successfully, save it!
+                                        syntaxError = null
+                                        onClick(Event.SaveRawConfig(jsonInput))
+                                        showSuccessToast = true
+                                    } catch (e: Exception) {
+                                        // Catch parsing syntax exceptions and display inline error banner
+                                        syntaxError = e.localizedMessage ?: e.message ?: "Unknown syntax error"
+                                    }
+                                },
+                                modifier = Modifier.size(32.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Save,
+                                    contentDescription = stringResource(Res.string.save_settings),
+                                    tint = secondary,
+                                    modifier = Modifier.size(18.dp)
+                                )
+                            }
+                        }
+                    }
+
+                    // Content - Code Workspace
+                    OutlinedTextField(
+                        value = jsonInput,
+                        onValueChange = { 
+                            jsonInput = it
+                            syntaxError = null // Clear error when user changes text
+                        },
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(Color.Black.copy(alpha = 0.4f)) // Terminal-style deep console background
+                            .focusRequester(focusRequester) // Auto-focus requested
+                            .padding(4.dp),
+                        textStyle = monoCode.copy(
+                            fontSize = 12.sp,
+                            color = onSurface,
+                            textDirection = TextDirection.Ltr // JSON keys/values are English LTR
+                        ),
+                        singleLine = false,
+                        placeholder = { 
+                            Text(
+                                text = "{ }",
+                                style = monoCode.copy(color = onSurfaceVariant.copy(alpha = 0.4f))
+                            )
+                        },
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedTextColor = onSurface,
+                            unfocusedTextColor = onSurface,
+                            focusedContainerColor = Color.Transparent,
+                            unfocusedContainerColor = Color.Transparent,
+                            focusedBorderColor = Color.Transparent,
+                            unfocusedBorderColor = Color.Transparent,
+                            cursorColor = secondary
                         )
-                    },
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedTextColor = onSurface,
-                        unfocusedTextColor = onSurface,
-                        focusedContainerColor = Color.Transparent,
-                        unfocusedContainerColor = Color.Transparent,
-                        focusedBorderColor = Color.Transparent,
-                        unfocusedBorderColor = Color.Transparent,
-                        cursorColor = secondary
                     )
-                )
+                }
             }
 
             // Dismissible Syntax Evaluation Error Banner
@@ -182,77 +240,6 @@ fun EditConfigTab(
                             )
                         }
                     }
-                }
-            }
-
-            // Action Buttons Row (Save Settings and Load Defaults next to each other)
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(gutter),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                // Save Settings Button
-                Button(
-                    onClick = {
-                        try {
-                            // Evaluation step: parse JSON directly using kotlinx.serialization
-                            Json.parseToJsonElement(jsonInput)
-                            
-                            // If it parses successfully, save it!
-                            syntaxError = null
-                            onClick(Event.SaveRawConfig(jsonInput))
-                            showSuccessToast = true
-                        } catch (e: Exception) {
-                            // Catch parsing syntax exceptions and display inline error banner
-                            syntaxError = e.localizedMessage ?: e.message ?: "Unknown syntax error"
-                        }
-                    },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = secondary,
-                        contentColor = onSecondary
-                    ),
-                    shape = roundedDefault,
-                    modifier = Modifier
-                        .weight(1f)
-                        .height(46.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Save,
-                        contentDescription = "Save Settings",
-                        modifier = Modifier.size(18.dp)
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = stringResource(Res.string.save_settings),
-                        style = titleSm.copy(fontSize = 14.sp, fontWeight = FontWeight.Bold)
-                    )
-                }
-
-                // Load Defaults Button
-                OutlinedButton(
-                    onClick = {
-                        syntaxError = null // Clear any errors
-                        onClick(Event.LoadDefaultConfig)
-                    },
-                    border = BorderStroke(1.dp, primary.copy(alpha = 0.5f)),
-                    shape = roundedDefault,
-                    colors = ButtonDefaults.outlinedButtonColors(
-                        contentColor = primary
-                    ),
-                    modifier = Modifier
-                        .weight(1f)
-                        .height(46.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.SettingsBackupRestore,
-                        contentDescription = "Load Defaults",
-                        modifier = Modifier.size(18.dp)
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = stringResource(Res.string.load_defaults),
-                        style = titleSm.copy(fontSize = 14.sp, fontWeight = FontWeight.Bold)
-                    )
                 }
             }
         }
