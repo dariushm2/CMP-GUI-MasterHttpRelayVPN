@@ -107,13 +107,21 @@
     <string name="about_desc_benefits_icon">آیکون مزایای برنامه</string>
     <string name="about_desc_warning_icon">آیکون محدودیت مصرف</string>
 
+    <!-- About Project/GitHub Section -->
+    <string name="about_project_title">پروژه متن‌باز و آزاد</string>
+    <string name="about_project_desc_part1">این برنامه صرفاً یک رابط کاربری گرافیکی (GUI) چندسکویی برای </string>
+    <string name="about_project_desc_part2"> است. شما می‌توانید کدهای منبع این </string>
+    <string name="about_project_desc_part3"> را بررسی کنید یا </string>
+    <string name="about_project_desc_part4"> را برای گزارش اشکالات و مشارکت مشاهده نمایید.</string>
+    <string name="about_project_gui_fork">نسخه فورک شده</string>
+    <string name="about_project_upstream">مخزن اصلی (Upstream)</string>
+    <string name="about_project_github_desc">مخزن رسمی گیت‌هاب</string>
+
     <!-- Edit Config Tab -->
     <string name="tab_edit_config">ویرایش پیکربندی</string>
-    <string name="edit_config_title">تنظیمات پیشرفته برنامه</string>
     <string name="save_settings">ذخیره</string>
     <string name="settings_saved_success">تنظیمات با موفقیت ذخیره شد!</string>
     <string name="settings_save_error">خطا در ذخیره تنظیمات.</string>
-    <string name="edit_config_label">محتوای فایل پیکربندی (config.json)</string>
     <string name="error_invalid_json">قالب نوشتاری JSON نامعتبر است! لطفا صحت کاماها، کروشه‌ها و گیومه‌ها را بررسی کنید.</string>
     <string name="json_syntax_error">خطای تحلیل ساختار: %1$s</string>
     <string name="load_defaults">بارگذاری پیش‌فرض‌ها</string>

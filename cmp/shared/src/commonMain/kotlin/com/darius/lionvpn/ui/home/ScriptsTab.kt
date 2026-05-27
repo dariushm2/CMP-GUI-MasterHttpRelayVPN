@@ -30,6 +30,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -468,7 +469,15 @@ private fun AddScriptDialog(
                     OutlinedTextField(
                         value = name,
                         onValueChange = { name = it; formError = "" },
-                        placeholder = { Text(stringResource(Res.string.profile_label_placeholder)) },
+                        textStyle = bodyMd.copy(color = onSurface),
+                        placeholder = { 
+                            Text(
+                                text = stringResource(Res.string.profile_label_placeholder),
+                                style = bodyMd,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            ) 
+                        },
                         modifier = Modifier.fillMaxWidth(),
                         singleLine = true,
                         shape = roundedDefault,
@@ -490,7 +499,15 @@ private fun AddScriptDialog(
                     OutlinedTextField(
                         value = id,
                         onValueChange = { id = it; formError = "" },
-                        placeholder = { Text(stringResource(Res.string.deployment_id_placeholder)) },
+                        textStyle = bodyMd.copy(color = onSurface),
+                        placeholder = { 
+                            Text(
+                                text = stringResource(Res.string.deployment_id_placeholder),
+                                style = bodyMd,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            ) 
+                        },
                         leadingIcon = {
                             Icon(
                                 imageVector = Icons.Default.Info,
@@ -520,7 +537,15 @@ private fun AddScriptDialog(
                     OutlinedTextField(
                         value = key,
                         onValueChange = { key = it; formError = "" },
-                        placeholder = { Text(stringResource(Res.string.relay_auth_key_placeholder)) },
+                        textStyle = bodyMd.copy(color = onSurface),
+                        placeholder = { 
+                            Text(
+                                text = stringResource(Res.string.relay_auth_key_placeholder),
+                                style = bodyMd,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            ) 
+                        },
                         leadingIcon = {
                             Icon(
                                 imageVector = Icons.Default.Lock,
