@@ -21,3 +21,7 @@ class AndroidApplicationComponent(
 actual fun isDebugBuild(): Boolean =
     (getKoin().get<ContextFactory>().getContext() as Context)
         .applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE != 0
+
+actual fun getCurrentTimeString(): String {
+    return java.time.LocalTime.now().format(java.time.format.DateTimeFormatter.ofPattern("HH:mm:ss"))
+}

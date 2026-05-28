@@ -72,8 +72,7 @@ class ProxyService : VpnService() {
         _isVpnRunning.value = true
         
         // Log starting message instantly in English only matching log timestamp pattern
-        val timeStr = java.time.LocalTime.now().format(java.time.format.DateTimeFormatter.ofPattern("HH:mm:ss"))
-        _vpnLogs.value = listOf("$timeStr  • INFO   [Client  ]  VPN process is starting... warming up")
+        _vpnLogs.value = listOf(VpnLogger.formatInfo("Client", "VPN process is starting... warming up"))
 
         establishVpn()
 
@@ -90,7 +89,7 @@ class ProxyService : VpnService() {
                 entry.callAttr("start_proxy", configJson)
             } catch (e: Exception) {
                 Timber.e(e, "Error running Python proxy server")
-                addLogLine("Error: ${e.message}")
+                addLogLine(VpnLogger.formatInfo("Client", "Error: ${e.message}"))
             } finally {
                 Timber.i("Python proxy thread terminated.")
                 stopVpn()
@@ -119,10 +118,10 @@ class ProxyService : VpnService() {
             }
             
             vpnInterface = builder.establish()
-            addLogLine("System-wide VPN proxy established successfully.")
+            addLogLine(VpnLogger.formatInfo("Client", "System-wide VPN proxy established successfully"))
         } catch (e: Exception) {
             Timber.e(e, "Failed to establish VPN interface")
-            addLogLine("Error establishing VPN: ${e.message}")
+            addLogLine(VpnLogger.formatInfo("Client", "Error establishing VPN: ${e.message}"))
         }
     }
 
@@ -133,7 +132,7 @@ class ProxyService : VpnService() {
             Timber.e(e, "Error closing VPN interface")
         }
         vpnInterface = null
-        addLogLine("System-wide VPN proxy tunnel closed.")
+        addLogLine(VpnLogger.formatInfo("Client", "System-wide VPN proxy tunnel closed"))
     }
 
     private fun stopProxy() {
@@ -189,7 +188,7 @@ class ProxyService : VpnService() {
 
     override fun onRevoke() {
         Timber.i("VPN Revoked by system/user.")
-        addLogLine("VPN connection revoked by system.")
+        addLogLine(VpnLogger.formatInfo("Client", "VPN connection revoked by system"))
         stopProxy()
         stopSelf()
         super.onRevoke()
@@ -261,7 +260,7 @@ class ProxyService : VpnService() {
             
             // Watch for HTTP proxy start logs to transition to CONNECTED state on Android
             if (_vpnState.value == ConnectionState.CONNECTING) {
-                if (line.contains("HTTP proxy listening on") || line.contains("SOCKS5 proxy listening on")) {
+                if (VpnLogger.isConnectionSuccessLog(line)) {
                     _vpnState.value = ConnectionState.CONNECTED
                 }
             }

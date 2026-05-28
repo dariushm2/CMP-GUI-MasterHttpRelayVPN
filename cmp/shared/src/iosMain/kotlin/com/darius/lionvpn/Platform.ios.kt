@@ -2,6 +2,8 @@ package com.darius.lionvpn
 
 import com.darius.lionvpn.connectivity.NetworkHelper
 import platform.UIKit.UIDevice
+import platform.Foundation.NSDate
+import platform.Foundation.NSDateFormatter
 import kotlin.experimental.ExperimentalNativeApi
 
 class IOSPlatform : Platform {
@@ -22,3 +24,10 @@ class IosApplicationComponent(
 
 @OptIn(ExperimentalNativeApi::class)
 actual fun isDebugBuild(): Boolean = kotlin.native.Platform.isDebugBinary
+
+actual fun getCurrentTimeString(): String {
+    val formatter = NSDateFormatter().apply {
+        dateFormat = "HH:mm:ss"
+    }
+    return formatter.stringFromDate(NSDate())
+}
