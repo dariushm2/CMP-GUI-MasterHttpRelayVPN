@@ -16,6 +16,7 @@
     <!-- Dashboard Tab -->
     <string name="power_vpn_button_desc">دکمه روشن/خاموش وی‌پی‌ان</string>
     <string name="no_config">بدون اسکریپت</string>
+    <string name="connecting">در حال اتصال...</string>
     <string name="logs_terminal_desc">ترمینال گزارش‌ها</string>
     <string name="system_logs">گزارش‌های سیستم</string>
     <string name="clear_logs_desc">گزارش‌ها را پاک کنید</string>

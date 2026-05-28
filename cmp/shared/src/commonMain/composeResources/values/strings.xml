@@ -16,6 +16,7 @@
     <!-- Dashboard Tab -->
     <string name="power_vpn_button_desc">VPN Power Button</string>
     <string name="no_config">No Script</string>
+    <string name="connecting">Connecting...</string>
     <string name="logs_terminal_desc">Logs Terminal</string>
     <string name="system_logs">System Logs</string>
     <string name="clear_logs_desc">Clear Logs</string>

@@ -15,6 +15,7 @@ import android.os.ParcelFileDescriptor
 import androidx.core.app.NotificationCompat
 import com.chaquo.python.Python
 import com.chaquo.python.android.AndroidPlatform
+import com.darius.lionvpn.ui.home.ConnectionState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -67,8 +68,12 @@ class ProxyService : VpnService() {
         val notification = createNotification()
         startForeground(NOTIFICATION_ID, notification)
 
+        _vpnState.value = ConnectionState.CONNECTING
         _isVpnRunning.value = true
-        _vpnLogs.value = listOf("Lion VPN Android Started")
+        
+        // Log starting message instantly in English only matching log timestamp pattern
+        val timeStr = java.time.LocalTime.now().format(java.time.format.DateTimeFormatter.ofPattern("HH:mm:ss"))
+        _vpnLogs.value = listOf("$timeStr  • INFO   [Client  ]  VPN process is starting... warming up")
 
         establishVpn()
 
@@ -89,6 +94,7 @@ class ProxyService : VpnService() {
             } finally {
                 Timber.i("Python proxy thread terminated.")
                 stopVpn()
+                _vpnState.value = ConnectionState.DISCONNECTED
                 _isVpnRunning.value = false
             }
         }.apply {
@@ -136,6 +142,7 @@ class ProxyService : VpnService() {
         
         val threadToStop = pythonThread
         pythonThread = null
+        _vpnState.value = ConnectionState.DISCONNECTED
         _isVpnRunning.value = false
 
         // Run the shutdown sequence in a separate background thread to keep the main UI thread responsive
@@ -241,6 +248,9 @@ class ProxyService : VpnService() {
         private val _isVpnRunning = MutableStateFlow(false)
         val isVpnRunning: StateFlow<Boolean> = _isVpnRunning.asStateFlow()
 
+        private val _vpnState = MutableStateFlow(ConnectionState.DISCONNECTED)
+        val vpnState: StateFlow<ConnectionState> = _vpnState.asStateFlow()
+
         private val _vpnLogs = MutableStateFlow(emptyList<String>())
         val vpnLogs: StateFlow<List<String>> = _vpnLogs.asStateFlow()
 
@@ -248,6 +258,14 @@ class ProxyService : VpnService() {
         @JvmStatic
         fun addLogLine(line: String) {
             Timber.d("[Python log] %s", line)
+            
+            // Watch for HTTP proxy start logs to transition to CONNECTED state on Android
+            if (_vpnState.value == ConnectionState.CONNECTING) {
+                if (line.contains("HTTP proxy listening on") || line.contains("SOCKS5 proxy listening on")) {
+                    _vpnState.value = ConnectionState.CONNECTED
+                }
+            }
+            
             val currentList = _vpnLogs.value.toMutableList()
             // Cap log buffer size at 300 entries to prevent memory leaks
             if (currentList.size > 300) {
