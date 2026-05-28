@@ -1,7 +1,13 @@
 package com.darius.lionvpn.ui.theme
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+
+@Composable
+fun borderStrokeGlass() = BorderStroke(1.dp, Color(0x33DAE2FD)) // Outline-variant alpha border
 
 val roundedSm = RoundedCornerShape(4.dp)
 val roundedDefault = RoundedCornerShape(8.dp)
