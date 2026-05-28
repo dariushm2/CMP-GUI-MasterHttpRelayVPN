@@ -83,7 +83,7 @@ fun DashboardTab(
                 verticalArrangement = Arrangement.spacedBy(gutter)
             ) {
                 ConnectionHeroCard(
-                    isVpnRunning = state.isVpnRunning,
+                    vpnState = state.connectionState,
                     isConnectEnabled = isConnectEnabled,
                     address = address,
                     onConnectToggle = { if (isConnectEnabled) onClick(Event.Connect) },
@@ -112,7 +112,7 @@ fun DashboardTab(
             ) {
                 // Connection Hero Card on the Left (adapts height but caps at 320dp)
                 ConnectionHeroCard(
-                    isVpnRunning = state.isVpnRunning,
+                    vpnState = state.connectionState,
                     isConnectEnabled = isConnectEnabled,
                     address = address,
                     onConnectToggle = { if (isConnectEnabled) onClick(Event.Connect) },
@@ -137,7 +137,7 @@ fun DashboardTab(
 
 @Composable
 private fun ConnectionHeroCard(
-    isVpnRunning: Boolean,
+    vpnState: ConnectionState,
     isConnectEnabled: Boolean,
     address: String,
     onConnectToggle: () -> Unit,
@@ -206,20 +206,24 @@ private fun ConnectionHeroCard(
                 nodes.forEach { (nodePos, _) ->
                     // Line to central VPN engine
                     drawLine(
-                        color = if (isVpnRunning) secondary.copy(alpha = 0.2f) else outlineVariant.copy(alpha = 0.15f),
+                        color = when (vpnState) {
+                            ConnectionState.CONNECTED -> secondary.copy(alpha = 0.2f)
+                            ConnectionState.CONNECTING -> tertiary.copy(alpha = 0.2f)
+                            ConnectionState.DISCONNECTED -> outlineVariant.copy(alpha = 0.15f)
+                        },
                         start = nodePos,
                         end = Offset(centerX, centerY),
                         strokeWidth = 1.5.dp.toPx()
                     )
 
                     // Draw animated flows along lines if connected
-                    if (isVpnRunning) {
+                    if (vpnState != ConnectionState.DISCONNECTED) {
                         val dx = centerX - nodePos.x
                         val dy = centerY - nodePos.y
                         val currentX = nodePos.x + dx * flowProgress
                         val currentY = nodePos.y + dy * flowProgress
                         drawCircle(
-                            color = secondary,
+                            color = if (vpnState == ConnectionState.CONNECTING) tertiary else secondary,
                             radius = 3.dp.toPx(),
                             center = Offset(currentX, currentY)
                         )
@@ -227,7 +231,11 @@ private fun ConnectionHeroCard(
 
                     // Node dot
                     drawCircle(
-                        color = if (isVpnRunning) secondary else outlineVariant,
+                        color = when (vpnState) {
+                            ConnectionState.CONNECTED -> secondary
+                            ConnectionState.CONNECTING -> tertiary
+                            ConnectionState.DISCONNECTED -> outlineVariant
+                        },
                         radius = 4.dp.toPx(),
                         center = nodePos
                     )
@@ -247,19 +255,22 @@ private fun ConnectionHeroCard(
                     contentAlignment = Alignment.Center
                 ) {
                     // Pulse Ring Layer when active
-                    if (isVpnRunning) {
+                    if (vpnState != ConnectionState.DISCONNECTED) {
                         Box(
                             modifier = Modifier
                                 .fillMaxSize(pulseProgress)
-                                .background(secondary.copy(alpha = pulseAlpha), CircleShape)
+                                .background(
+                                    (if (vpnState == ConnectionState.CONNECTING) tertiary else secondary).copy(alpha = pulseAlpha),
+                                    CircleShape
+                                )
                         )
                     }
 
                     // Outer connection glow bloom when connected
-                    val glowModifier = if (isVpnRunning) {
+                    val glowModifier = if (vpnState != ConnectionState.DISCONNECTED) {
                         Modifier.drawBehind {
                             drawCircle(
-                                color = secondary.copy(alpha = 0.25f),
+                                color = (if (vpnState == ConnectionState.CONNECTING) tertiary else secondary).copy(alpha = 0.25f),
                                 radius = 96.dp.toPx()
                             )
                         }
@@ -275,10 +286,10 @@ private fun ConnectionHeroCard(
                             .background(surfaceContainerHighest, CircleShape)
                             .border(
                                 width = 4.dp,
-                                color = when {
-                                    isVpnRunning -> secondary
-                                    isConnectEnabled -> primary
-                                    else -> outlineVariant
+                                color = when (vpnState) {
+                                    ConnectionState.CONNECTED -> secondary
+                                    ConnectionState.CONNECTING -> tertiary
+                                    ConnectionState.DISCONNECTED -> if (isConnectEnabled) primary else outlineVariant
                                 },
                                 shape = CircleShape
                             )
@@ -290,26 +301,26 @@ private fun ConnectionHeroCard(
                             Icon(
                                 imageVector = Icons.Default.PowerSettingsNew,
                                 contentDescription = stringResource(Res.string.power_vpn_button_desc),
-                                tint = when {
-                                    isVpnRunning -> secondary
-                                    isConnectEnabled -> primary
-                                    else -> onSurfaceVariant.copy(alpha = 0.4f)
+                                tint = when (vpnState) {
+                                    ConnectionState.CONNECTED -> secondary
+                                    ConnectionState.CONNECTING -> tertiary
+                                    ConnectionState.DISCONNECTED -> if (isConnectEnabled) primary else onSurfaceVariant.copy(alpha = 0.4f)
                                 },
                                 modifier = Modifier.size(54.dp)
                             )
                             Spacer(modifier = Modifier.height(10.dp))
                             Text(
-                                text = when {
-                                    isVpnRunning -> address
-                                    isConnectEnabled -> ""
-                                    else -> stringResource(Res.string.no_config)
+                                text = when (vpnState) {
+                                    ConnectionState.CONNECTED -> address
+                                    ConnectionState.CONNECTING -> ""
+                                    ConnectionState.DISCONNECTED -> if (isConnectEnabled) "" else stringResource(Res.string.no_config)
                                 },
                                 style = labelCaps.copy(
                                     fontSize = 11.sp,
-                                    color = when {
-                                        isVpnRunning -> secondary
-                                        isConnectEnabled -> onSurfaceVariant
-                                        else -> onSurfaceVariant.copy(alpha = 0.4f)
+                                    color = when (vpnState) {
+                                        ConnectionState.CONNECTED -> secondary
+                                        ConnectionState.CONNECTING -> tertiary
+                                        ConnectionState.DISCONNECTED -> if (isConnectEnabled) onSurfaceVariant else onSurfaceVariant.copy(alpha = 0.4f)
                                     },
                                     letterSpacing = 2.sp
                                 )

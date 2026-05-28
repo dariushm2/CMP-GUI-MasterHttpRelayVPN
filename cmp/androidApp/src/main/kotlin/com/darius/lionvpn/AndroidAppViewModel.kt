@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.darius.lionvpn.model.AndroidUiEffect
 import com.darius.lionvpn.ui.home.Event
 import com.darius.lionvpn.ui.home.HomeState
+import com.darius.lionvpn.ui.home.ConnectionState
 import com.darius.lionvpn.ui.model.Lang
 import com.darius.lionvpn.ui.model.SavedConfig
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -27,7 +28,7 @@ class AndroidAppViewModel : ViewModel() {
     private val _selectedConfigIndex = MutableStateFlow(-1)
     val selectedConfigIndex: StateFlow<Int> = _selectedConfigIndex.asStateFlow()
 
-    val isVpnRunning = ProxyService.isVpnRunning
+    val vpnState = ProxyService.vpnState
     val vpnLogs = ProxyService.vpnLogs
 
     private val _rawConfigJson = MutableStateFlow("")
@@ -43,7 +44,7 @@ class AndroidAppViewModel : ViewModel() {
 
     // Expose dynamic HomeState compiled reactively from underlying flows using stateIn
     val homeState: StateFlow<HomeState> = combine(
-        isVpnRunning,
+        vpnState,
         vpnLogs,
         _savedConfigs,
         _selectedConfigIndex,
@@ -51,7 +52,7 @@ class AndroidAppViewModel : ViewModel() {
         _configResetTrigger,
         _language
     ) { array ->
-        val running = array[0] as Boolean
+        val state = array[0] as ConnectionState
         val logs = array[1] as List<String>
         val configs = array[2] as List<SavedConfig>
         val index = array[3] as Int
@@ -60,7 +61,7 @@ class AndroidAppViewModel : ViewModel() {
         val lang = array[6] as Lang
 
         HomeState(
-            isVpnRunning = running,
+            connectionState = state,
             log = logs,
             savedConfigs = configs,
             selectedConfigIndex = index,

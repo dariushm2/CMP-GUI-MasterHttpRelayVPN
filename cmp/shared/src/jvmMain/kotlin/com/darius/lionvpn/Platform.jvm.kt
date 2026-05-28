@@ -31,3 +31,7 @@ class JvmApplicationComponent(
 )
 
 actual fun isDebugBuild(): Boolean = true
+
+actual fun getCurrentTimeString(): String {
+    return java.time.LocalTime.now().format(java.time.format.DateTimeFormatter.ofPattern("HH:mm:ss"))
+}

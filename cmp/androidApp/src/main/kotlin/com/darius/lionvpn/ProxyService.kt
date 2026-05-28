@@ -15,6 +15,7 @@ import android.os.ParcelFileDescriptor
 import androidx.core.app.NotificationCompat
 import com.chaquo.python.Python
 import com.chaquo.python.android.AndroidPlatform
+import com.darius.lionvpn.ui.home.ConnectionState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -67,8 +68,11 @@ class ProxyService : VpnService() {
         val notification = createNotification()
         startForeground(NOTIFICATION_ID, notification)
 
+        _vpnState.value = ConnectionState.CONNECTING
         _isVpnRunning.value = true
-        _vpnLogs.value = listOf("Lion VPN Android Started")
+        
+        // Log starting message instantly in English only matching log timestamp pattern
+        _vpnLogs.value = listOf(VpnLogger.formatInfo("VPN process is starting... warming up"))
 
         establishVpn()
 
@@ -85,10 +89,11 @@ class ProxyService : VpnService() {
                 entry.callAttr("start_proxy", configJson)
             } catch (e: Exception) {
                 Timber.e(e, "Error running Python proxy server")
-                addLogLine("Error: ${e.message}")
+                addLogLine(VpnLogger.formatInfo("Error: ${e.message}"))
             } finally {
                 Timber.i("Python proxy thread terminated.")
                 stopVpn()
+                _vpnState.value = ConnectionState.DISCONNECTED
                 _isVpnRunning.value = false
             }
         }.apply {
@@ -113,10 +118,10 @@ class ProxyService : VpnService() {
             }
             
             vpnInterface = builder.establish()
-            addLogLine("System-wide VPN proxy established successfully.")
+            addLogLine(VpnLogger.formatInfo("System-wide VPN proxy established successfully"))
         } catch (e: Exception) {
             Timber.e(e, "Failed to establish VPN interface")
-            addLogLine("Error establishing VPN: ${e.message}")
+            addLogLine(VpnLogger.formatInfo("Error establishing VPN: ${e.message}"))
         }
     }
 
@@ -127,7 +132,7 @@ class ProxyService : VpnService() {
             Timber.e(e, "Error closing VPN interface")
         }
         vpnInterface = null
-        addLogLine("System-wide VPN proxy tunnel closed.")
+        addLogLine(VpnLogger.formatInfo("System-wide VPN proxy tunnel closed"))
     }
 
     private fun stopProxy() {
@@ -136,6 +141,7 @@ class ProxyService : VpnService() {
         
         val threadToStop = pythonThread
         pythonThread = null
+        _vpnState.value = ConnectionState.DISCONNECTED
         _isVpnRunning.value = false
 
         // Run the shutdown sequence in a separate background thread to keep the main UI thread responsive
@@ -182,7 +188,7 @@ class ProxyService : VpnService() {
 
     override fun onRevoke() {
         Timber.i("VPN Revoked by system/user.")
-        addLogLine("VPN connection revoked by system.")
+        addLogLine(VpnLogger.formatInfo("VPN connection revoked by system"))
         stopProxy()
         stopSelf()
         super.onRevoke()
@@ -241,6 +247,9 @@ class ProxyService : VpnService() {
         private val _isVpnRunning = MutableStateFlow(false)
         val isVpnRunning: StateFlow<Boolean> = _isVpnRunning.asStateFlow()
 
+        private val _vpnState = MutableStateFlow(ConnectionState.DISCONNECTED)
+        val vpnState: StateFlow<ConnectionState> = _vpnState.asStateFlow()
+
         private val _vpnLogs = MutableStateFlow(emptyList<String>())
         val vpnLogs: StateFlow<List<String>> = _vpnLogs.asStateFlow()
 
@@ -248,6 +257,14 @@ class ProxyService : VpnService() {
         @JvmStatic
         fun addLogLine(line: String) {
             Timber.d("[Python log] %s", line)
+            
+            // Watch for HTTP proxy start logs to transition to CONNECTED state on Android
+            if (_vpnState.value == ConnectionState.CONNECTING) {
+                if (VpnLogger.isConnectionSuccessLog(line)) {
+                    _vpnState.value = ConnectionState.CONNECTED
+                }
+            }
+            
             val currentList = _vpnLogs.value.toMutableList()
             // Cap log buffer size at 300 entries to prevent memory leaks
             if (currentList.size > 300) {
