@@ -46,9 +46,6 @@ This skill enforces critical coding standards, architectural patterns, and struc
 - **Limit**: Files generally **must not exceed 500 lines**. If a file grows beyond 500 lines, refactor, decompose, and split it into multiple files or sub-packages.
 
 ## Rule 8: GitHub Pull Request Standards
-- **Rule 8a (Title)**: Every pull request title must start with the related issue number enclosed in square brackets, followed by a space and the title.
-  - *Example*: `[45] docs: add CMP development rules and guidelines skill`
-- **Rule 8b (Description)**: The very first line of any pull request description must be `# #<issue_number>` (where `<issue_number>` is the numerical issue number).
-  - *Example*: `# #45`
-  - The rest of the PR description, breakdown, and references must go below this header line.
-
+- **Rule 8a (Title)**: Every pull request title must be clear, concise, and descriptive, starting with a standard semantic commit type prefix (e.g., `feat:`, `fix:`, `docs:`, `chore:`, `refactor:`).
+  - *Example*: `docs: add CMP development rules and guidelines skill`
+- **Rule 8b (Description)**: The pull request description must clearly summarize the changes made, the files affected, and how the changes were verified.
