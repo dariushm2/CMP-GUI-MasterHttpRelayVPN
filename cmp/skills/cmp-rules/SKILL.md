@@ -17,6 +17,7 @@ This skill enforces critical coding standards, architectural patterns, and struc
   1. Within the same file if they are small and cohesive, OR
   2. Create a sub-package and distribute the sub-composables across multiple separate, descriptive files.
 - **Modifier Parameter**: Always add `modifier: Modifier = Modifier` (or equivalent) as the **last parameter** to every Composable function. This enables standard modifier chaining and layout customizability from the parent caller.
+- **Line Limit**: Never exceed 60 lines of code inside a single Composable function. If a Composable function grows beyond 60 lines, immediately decompose it into smaller helper Composables or separate files.
 
 ## Rule 3: ViewModel Context Guidelines
 - **Rule**: Never inject `Context` (Android Context) into any `ViewModel`.

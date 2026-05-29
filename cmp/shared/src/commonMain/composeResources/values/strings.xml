@@ -125,4 +125,13 @@ To fully bypass this, you can create multiple deployments on one or more Google 
     <string name="error_invalid_json">Invalid JSON syntax! Please check commas, braces, and quotes.</string>
     <string name="json_syntax_error">Syntax Error: %1$s</string>
     <string name="load_defaults">Load Defaults</string>
+
+    <!-- Stats Cards -->
+    <string name="stat_active_script">Active Script</string>
+    <string name="stat_executions">Executions</string>
+    <string name="stat_total_scripts">Script Pool</string>
+    <string name="stat_vpn_status">VPN Status</string>
+    <string name="stat_status_connected">Connected</string>
+    <string name="stat_status_connecting">Connecting</string>
+    <string name="stat_status_disconnected">Disconnected</string>
 </resources>

@@ -9,6 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import com.darius.lionvpn.ui.home.adaptive.*
+import com.darius.lionvpn.ui.home.dashboard.DashboardTab
 import com.darius.lionvpn.ui.model.Lang
 import com.darius.lionvpn.ui.model.Lang.Companion.isEnglish
 import com.darius.lionvpn.ui.theme.*
