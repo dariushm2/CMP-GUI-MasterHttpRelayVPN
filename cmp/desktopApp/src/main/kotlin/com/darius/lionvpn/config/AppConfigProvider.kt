@@ -5,7 +5,6 @@ import kotlinx.serialization.json.*
 import com.darius.lionvpn.findResourcesDir
 import com.darius.lionvpn.findRepoRoot
 import com.darius.lionvpn.ui.model.SavedConfig
-import com.darius.lionvpn.Constants
 
 fun saveConfigLocally(deploymentId: String, authKey: String): Boolean {
     return try {
@@ -34,17 +33,8 @@ fun saveConfigLocally(deploymentId: String, authKey: String): Boolean {
             mutableMapOf()
         }
         
-        jsonMap[Constants.KEY_SCRIPT_ID] = JsonPrimitive(deploymentId)
-        jsonMap[Constants.KEY_AUTH_KEY] = JsonPrimitive(authKey)
-        
-        val configs = loadSavedScripts()
-        val idsArray = configs.map { config ->
-            JsonObject(mapOf(
-                Constants.KEY_SCRIPT_ID to JsonPrimitive(config.id),
-                Constants.KEY_AUTH_KEY to JsonPrimitive(config.key)
-            ))
-        }
-        jsonMap[Constants.KEY_SCRIPT_IDS] = JsonArray(idsArray)
+        jsonMap["script_id"] = JsonPrimitive(deploymentId)
+        jsonMap["auth_key"] = JsonPrimitive(authKey)
         
         val finalObject = JsonObject(jsonMap)
         val prettyJson = Json { prettyPrint = true }
@@ -138,16 +128,8 @@ fun loadDefaultConfigContent(): String {
                 mutableMapOf()
             }
             
-            jsonMap[Constants.KEY_SCRIPT_ID] = JsonPrimitive(deploymentId)
-            jsonMap[Constants.KEY_AUTH_KEY] = JsonPrimitive(authKey)
-            
-            val idsArray = configs.map { config ->
-                JsonObject(mapOf(
-                    Constants.KEY_SCRIPT_ID to JsonPrimitive(config.id),
-                    Constants.KEY_AUTH_KEY to JsonPrimitive(config.key)
-                ))
-            }
-            jsonMap[Constants.KEY_SCRIPT_IDS] = JsonArray(idsArray)
+            jsonMap["script_id"] = JsonPrimitive(deploymentId)
+            jsonMap["auth_key"] = JsonPrimitive(authKey)
             
             val finalObject = JsonObject(jsonMap)
             val prettyJson = Json { prettyPrint = true }
