@@ -5,7 +5,7 @@ import java.io.File
 
 fun findRepoRoot(): File {
     val dir = File(System.getProperty("user.dir")).parentFile
-    return if (File(dir, "config.example.json").exists()) dir
+    return if (File(dir, Constants.Config.TEMPLATE_FILE_NAME).exists()) dir
     else throw FileNotFoundException()
 }
 

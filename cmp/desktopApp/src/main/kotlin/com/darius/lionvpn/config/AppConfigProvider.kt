@@ -1,7 +1,11 @@
 package com.darius.lionvpn.config
 
 import java.io.File
-import kotlinx.serialization.json.*
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.jsonObject
+import com.darius.lionvpn.Constants
 import com.darius.lionvpn.findResourcesDir
 import com.darius.lionvpn.findRepoRoot
 import com.darius.lionvpn.ui.model.SavedConfig
@@ -9,13 +13,13 @@ import com.darius.lionvpn.ui.model.SavedConfig
 fun saveConfigLocally(deploymentId: String, authKey: String): Boolean {
     return try {
         val root = findResourcesDir()
-        var exampleFile = File(root, "config.example.json")
+        var exampleFile = File(root, Constants.Config.TEMPLATE_FILE_NAME)
         if (!exampleFile.exists()) {
-            exampleFile = File(findRepoRoot(), "config.example.json")
+            exampleFile = File(findRepoRoot(), Constants.Config.TEMPLATE_FILE_NAME)
         }
         ensureExampleFileReadOnly(exampleFile)
 
-        val configFile = File(getUserDataDirectory(), "config.json")
+        val configFile = File(getUserDataDirectory(), Constants.Config.FILE_NAME)
 
         // READ existing config if it exists, otherwise read example config
         val fileToRead = if (configFile.exists()) configFile else exampleFile
@@ -33,8 +37,8 @@ fun saveConfigLocally(deploymentId: String, authKey: String): Boolean {
             mutableMapOf()
         }
         
-        jsonMap["script_id"] = JsonPrimitive(deploymentId)
-        jsonMap["auth_key"] = JsonPrimitive(authKey)
+        jsonMap[Constants.Config.SCRIPT_ID] = JsonPrimitive(deploymentId)
+        jsonMap[Constants.Config.AUTH_KEY] = JsonPrimitive(authKey)
         
         val finalObject = JsonObject(jsonMap)
         val prettyJson = Json { prettyPrint = true }
@@ -53,14 +57,14 @@ fun saveConfigLocally(deploymentId: String, authKey: String): Boolean {
 
 fun loadRawConfig(): String {
     return try {
-        val configFile = File(getUserDataDirectory(), "config.json")
+        val configFile = File(getUserDataDirectory(), Constants.Config.FILE_NAME)
         
         var fileToRead = configFile
         if (!fileToRead.exists()) {
             val root = findResourcesDir()
-            var exampleFile = File(root, "config.example.json")
+            var exampleFile = File(root, Constants.Config.TEMPLATE_FILE_NAME)
             if (!exampleFile.exists()) {
-                exampleFile = File(findRepoRoot(), "config.example.json")
+                exampleFile = File(findRepoRoot(), Constants.Config.TEMPLATE_FILE_NAME)
             }
             ensureExampleFileReadOnly(exampleFile)
             
@@ -89,7 +93,7 @@ fun loadRawConfig(): String {
 
 fun saveRawConfig(content: String): Boolean {
     return try {
-        val configFile = File(getUserDataDirectory(), "config.json")
+        val configFile = File(getUserDataDirectory(), Constants.Config.FILE_NAME)
         
         configFile.parentFile?.mkdirs()
         configFile.writeText(content, Charsets.UTF_8)
@@ -104,9 +108,9 @@ fun saveRawConfig(content: String): Boolean {
 fun loadDefaultConfigContent(): String {
     return try {
         val root = findResourcesDir()
-        var exampleFile = File(root, "config.example.json")
+        var exampleFile = File(root, Constants.Config.TEMPLATE_FILE_NAME)
         if (!exampleFile.exists()) {
-            exampleFile = File(findRepoRoot(), "config.example.json")
+            exampleFile = File(findRepoRoot(), Constants.Config.TEMPLATE_FILE_NAME)
         }
         ensureExampleFileReadOnly(exampleFile)
         
@@ -128,8 +132,8 @@ fun loadDefaultConfigContent(): String {
                 mutableMapOf()
             }
             
-            jsonMap["script_id"] = JsonPrimitive(deploymentId)
-            jsonMap["auth_key"] = JsonPrimitive(authKey)
+            jsonMap[Constants.Config.SCRIPT_ID] = JsonPrimitive(deploymentId)
+            jsonMap[Constants.Config.AUTH_KEY] = JsonPrimitive(authKey)
             
             val finalObject = JsonObject(jsonMap)
             val prettyJson = Json { prettyPrint = true }

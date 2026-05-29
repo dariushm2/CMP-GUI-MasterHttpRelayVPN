@@ -36,7 +36,7 @@ object ProcessRunner {
     fun installCert() {
         println("Installing Certificate for: $binaryPath")
 
-        val configFile = File(getUserDataDirectory(), "config.json")
+        val configFile = File(getUserDataDirectory(), Constants.Config.FILE_NAME)
         val processBuilder = when(platform.os) {
             JvmPlatform.OS.WIN,
             JvmPlatform.OS.MAC -> ProcessBuilder(binaryPath, "--config", configFile.absolutePath, "--install-cert")
@@ -52,7 +52,7 @@ object ProcessRunner {
     fun uninstallCert() {
         println("Uninstalling Certificate for: $binaryPath")
 
-        val configFile = File(getUserDataDirectory(), "config.json")
+        val configFile = File(getUserDataDirectory(), Constants.Config.FILE_NAME)
         val processBuilder = when(platform.os) {
             JvmPlatform.OS.WIN,
             JvmPlatform.OS.MAC -> ProcessBuilder(binaryPath, "--config", configFile.absolutePath, "--uninstall-cert")
@@ -78,7 +78,7 @@ object ProcessRunner {
 
         _vpnState.value = ConnectionState.CONNECTING
 
-        val configFile = File(getUserDataDirectory(), "config.json")
+        val configFile = File(getUserDataDirectory(), Constants.Config.FILE_NAME)
         val processBuilder = ProcessBuilder(binaryPath, "--config", configFile.absolutePath)
 
         process = processBuilder.runProcess(

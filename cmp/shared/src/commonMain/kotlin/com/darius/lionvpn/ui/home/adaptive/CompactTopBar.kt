@@ -40,6 +40,7 @@ fun CompactTopBar(
                             .size(32.dp)
                             .background(primary.copy(alpha = 0.15f), roundedDefault)
                             .border(1.dp, primary.copy(alpha = 0.3f), roundedDefault)
+                            .offset(y = 2.dp)
                     )
                     Spacer(modifier = Modifier.width(2.dp))
                     Text(

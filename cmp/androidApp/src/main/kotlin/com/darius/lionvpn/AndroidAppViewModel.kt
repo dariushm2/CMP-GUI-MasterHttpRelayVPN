@@ -137,8 +137,8 @@ class AndroidAppViewModel : ViewModel() {
         val updatedJson = try {
             if (currentJson.isNotBlank()) {
                 val jsonMap = kotlinx.serialization.json.Json.parseToJsonElement(currentJson).jsonObject.toMutableMap()
-                jsonMap["script_id"] = kotlinx.serialization.json.JsonPrimitive(id)
-                jsonMap["auth_key"] = kotlinx.serialization.json.JsonPrimitive(key)
+                jsonMap[Constants.Config.SCRIPT_ID] = kotlinx.serialization.json.JsonPrimitive(id)
+                jsonMap[Constants.Config.AUTH_KEY] = kotlinx.serialization.json.JsonPrimitive(key)
                 val prettyJson = kotlinx.serialization.json.Json { prettyPrint = true }
                 prettyJson.encodeToString(kotlinx.serialization.json.JsonObject.serializer(), kotlinx.serialization.json.JsonObject(jsonMap))
             } else {
