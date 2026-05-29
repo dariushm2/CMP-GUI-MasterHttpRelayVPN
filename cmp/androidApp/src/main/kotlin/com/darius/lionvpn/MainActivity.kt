@@ -73,7 +73,7 @@ class MainActivity : ComponentActivity() {
 
         val initialRawConfig = rawConfig.ifBlank {
             val active = if (selectedIndex in configs.indices) configs[selectedIndex] else null
-            configTemplateProvider.generateDefaultJson(active?.id ?: "", active?.key ?: "")
+            configTemplateProvider.generateDefaultJson(active?.id ?: "", active?.key ?: "", configs)
         }
 
         vm.initializeConfigs(
@@ -151,7 +151,7 @@ class MainActivity : ComponentActivity() {
                             val configsState = homeState.savedConfigs
                             val indexState = homeState.selectedConfigIndex
                             val active = if (indexState in configsState.indices) configsState[indexState] else null
-                            val defaultContent = configTemplateProvider.generateDefaultJson(active?.id ?: "", active?.key ?: "")
+                            val defaultContent = configTemplateProvider.generateDefaultJson(active?.id ?: "", active?.key ?: "", configsState)
                             vm.onLoadDefaultConfig(defaultContent)
                         }
                         else -> vm.handleEvent(event)

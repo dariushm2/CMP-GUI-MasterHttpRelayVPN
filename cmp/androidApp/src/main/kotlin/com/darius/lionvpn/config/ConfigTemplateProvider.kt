@@ -2,10 +2,9 @@ package com.darius.lionvpn.config
 
 import android.content.Context
 import com.darius.lionvpn.R
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.JsonPrimitive
-import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.*
+import com.darius.lionvpn.ui.model.SavedConfig
+import com.darius.lionvpn.Constants
 
 class ConfigTemplateProvider(private val context: Context) {
 
@@ -17,12 +16,21 @@ class ConfigTemplateProvider(private val context: Context) {
         }
     }
 
-    fun generateDefaultJson(id: String, key: String): String {
+    fun generateDefaultJson(id: String, key: String, configs: List<SavedConfig> = emptyList()): String {
         val template = loadTemplateJson()
         return try {
             val jsonMap = Json.parseToJsonElement(template).jsonObject.toMutableMap()
-            jsonMap["script_id"] = JsonPrimitive(id)
-            jsonMap["auth_key"] = JsonPrimitive(key)
+            jsonMap[Constants.KEY_SCRIPT_ID] = JsonPrimitive(id)
+            jsonMap[Constants.KEY_AUTH_KEY] = JsonPrimitive(key)
+            
+            val idsArray = configs.map { config ->
+                JsonObject(mapOf(
+                    Constants.KEY_SCRIPT_ID to JsonPrimitive(config.id),
+                    Constants.KEY_AUTH_KEY to JsonPrimitive(config.key)
+                ))
+            }
+            jsonMap[Constants.KEY_SCRIPT_IDS] = JsonArray(idsArray)
+            
             val prettyJson = Json { prettyPrint = true }
             prettyJson.encodeToString(JsonObject.serializer(), JsonObject(jsonMap))
         } catch (e: Exception) {
