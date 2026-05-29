@@ -49,3 +49,6 @@ This skill enforces critical coding standards, architectural patterns, and struc
 - **Rule 8a (Title)**: Every pull request title must be clear, concise, and descriptive, starting with a standard semantic commit type prefix (e.g., `feat:`, `fix:`, `docs:`, `chore:`, `refactor:`).
   - *Example*: `docs: add CMP development rules and guidelines skill`
 - **Rule 8b (Description)**: The pull request description must clearly summarize the changes made, the files affected, and how the changes were verified.
+## Rule 9: Project Context & Localization
+- **VPN Core Wrapper**: Remember that this project is a graphical user interface (GUI) wrapper designed to package, run, and manage an underlying Python VPN relay script. Maintain seamless, clean JNI or external process bridges to the Python engine.
+- **App Localization**: Remember that the application is primarily Persian (Farsi) but includes comprehensive English support. Ensure proper localization practices, robust Right-to-Left (RTL) layout compatibility, and structured translations.
