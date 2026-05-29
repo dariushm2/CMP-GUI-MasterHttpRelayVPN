@@ -1,6 +1,7 @@
 package com.darius.lionvpn.config
 
 import android.content.Context
+import com.darius.lionvpn.Constants
 import com.darius.lionvpn.R
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
@@ -21,8 +22,8 @@ class ConfigTemplateProvider(private val context: Context) {
         val template = loadTemplateJson()
         return try {
             val jsonMap = Json.parseToJsonElement(template).jsonObject.toMutableMap()
-            jsonMap["script_id"] = JsonPrimitive(id)
-            jsonMap["auth_key"] = JsonPrimitive(key)
+            jsonMap[Constants.Config.SCRIPT_ID] = JsonPrimitive(id)
+            jsonMap[Constants.Config.AUTH_KEY] = JsonPrimitive(key)
             val prettyJson = Json { prettyPrint = true }
             prettyJson.encodeToString(JsonObject.serializer(), JsonObject(jsonMap))
         } catch (e: Exception) {

@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import com.darius.lionvpn.Constants
 import com.darius.lionvpn.ui.theme.*
 import org.jetbrains.compose.resources.stringResource
 import lion_vpn.shared.generated.resources.*
@@ -99,7 +100,7 @@ fun EditConfigTab(
                                 modifier = Modifier.size(16.dp)
                             )
                             Text(
-                                text = "config.json",
+                                text = Constants.Config.FILE_NAME,
                                 style = labelCaps.copy(color = onSurfaceVariant)
                             )
                         }

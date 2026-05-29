@@ -2,6 +2,7 @@ package com.darius.lionvpn.config
 
 import android.content.Context
 import android.content.Intent
+import com.darius.lionvpn.Constants
 import com.darius.lionvpn.ProxyService
 
 class VpnServiceManager(
@@ -9,10 +10,10 @@ class VpnServiceManager(
     private val configTemplateProvider: ConfigTemplateProvider
 ) {
     fun startVpnService() {
-        val prefs = context.getSharedPreferences("vpn_config", Context.MODE_PRIVATE)
-        val rawConfig = prefs.getString("raw_config_json", "") ?: ""
-        val currentId = prefs.getString("script_id", "") ?: ""
-        val currentKey = prefs.getString("auth_key", "") ?: ""
+        val prefs = context.getSharedPreferences(Constants.Prefs.NAME, Context.MODE_PRIVATE)
+        val rawConfig = prefs.getString(Constants.Prefs.KEY_RAW_CONFIG_JSON, "") ?: ""
+        val currentId = prefs.getString(Constants.Prefs.KEY_SCRIPT_ID, "") ?: ""
+        val currentKey = prefs.getString(Constants.Prefs.KEY_AUTH_KEY, "") ?: ""
 
         val configJson = rawConfig.ifBlank {
             configTemplateProvider.generateDefaultJson(currentId, currentKey)

@@ -2,6 +2,7 @@ package com.darius.lionvpn.config
 
 import android.content.Context
 import androidx.core.content.edit
+import com.darius.lionvpn.Constants
 import com.darius.lionvpn.ui.model.Lang
 import com.darius.lionvpn.ui.model.SavedConfig
 import kotlinx.serialization.json.Json
@@ -10,11 +11,11 @@ import timber.log.Timber
 class VpnPreferencesManager(private val context: Context) {
 
     fun loadConfigsFromPrefs(): List<SavedConfig> {
-        val prefs = context.getSharedPreferences("vpn_config", Context.MODE_PRIVATE)
-        val json = prefs.getString("saved_configs_json", null)
+        val prefs = context.getSharedPreferences(Constants.Prefs.NAME, Context.MODE_PRIVATE)
+        val json = prefs.getString(Constants.Prefs.KEY_SAVED_CONFIGS_JSON, null)
         if (json.isNullOrBlank()) {
-            val legacyId = prefs.getString("script_id", "") ?: ""
-            val legacyKey = prefs.getString("auth_key", "") ?: ""
+            val legacyId = prefs.getString(Constants.Prefs.KEY_SCRIPT_ID, "") ?: ""
+            val legacyKey = prefs.getString(Constants.Prefs.KEY_AUTH_KEY, "") ?: ""
             if (legacyId.isNotBlank() && legacyKey.isNotBlank()) {
                 return listOf(SavedConfig(id = legacyId, key = legacyKey, name = "Default Config"))
             }
@@ -29,11 +30,11 @@ class VpnPreferencesManager(private val context: Context) {
     }
 
     fun loadSelectedIndexFromPrefs(): Int {
-        val prefs = context.getSharedPreferences("vpn_config", Context.MODE_PRIVATE)
-        val index = prefs.getInt("selected_config_index", -1)
+        val prefs = context.getSharedPreferences(Constants.Prefs.NAME, Context.MODE_PRIVATE)
+        val index = prefs.getInt(Constants.Prefs.KEY_SELECTED_CONFIG_INDEX, -1)
         if (index == -1) {
-            val legacyId = prefs.getString("script_id", "") ?: ""
-            val legacyKey = prefs.getString("auth_key", "") ?: ""
+            val legacyId = prefs.getString(Constants.Prefs.KEY_SCRIPT_ID, "") ?: ""
+            val legacyKey = prefs.getString(Constants.Prefs.KEY_AUTH_KEY, "") ?: ""
             if (legacyId.isNotBlank() && legacyKey.isNotBlank()) {
                 return 0
             }
@@ -42,31 +43,31 @@ class VpnPreferencesManager(private val context: Context) {
     }
 
     fun saveConfigsToPrefs(configs: List<SavedConfig>, index: Int) {
-        val prefs = context.getSharedPreferences("vpn_config", Context.MODE_PRIVATE)
+        val prefs = context.getSharedPreferences(Constants.Prefs.NAME, Context.MODE_PRIVATE)
         val json = Json.encodeToString(configs)
         prefs.edit {
-            putString("saved_configs_json", json)
-            putInt("selected_config_index", index)
+            putString(Constants.Prefs.KEY_SAVED_CONFIGS_JSON, json)
+            putInt(Constants.Prefs.KEY_SELECTED_CONFIG_INDEX, index)
 
             if (index in configs.indices) {
                 val active = configs[index]
-                putString("script_id", active.id)
-                putString("auth_key", active.key)
+                putString(Constants.Prefs.KEY_SCRIPT_ID, active.id)
+                putString(Constants.Prefs.KEY_AUTH_KEY, active.key)
             } else {
-                putString("script_id", "")
-                putString("auth_key", "")
+                putString(Constants.Prefs.KEY_SCRIPT_ID, "")
+                putString(Constants.Prefs.KEY_AUTH_KEY, "")
             }
         }
     }
 
     fun loadRawConfigFromPrefs(): String {
-        val prefs = context.getSharedPreferences("vpn_config", Context.MODE_PRIVATE)
-        return prefs.getString("raw_config_json", "") ?: ""
+        val prefs = context.getSharedPreferences(Constants.Prefs.NAME, Context.MODE_PRIVATE)
+        return prefs.getString(Constants.Prefs.KEY_RAW_CONFIG_JSON, "") ?: ""
     }
 
     fun loadLanguageFromPrefs(): Lang {
-        val prefs = context.getSharedPreferences("vpn_config", Context.MODE_PRIVATE)
-        val langStr = prefs.getString("language", "FA") ?: "FA"
+        val prefs = context.getSharedPreferences(Constants.Prefs.NAME, Context.MODE_PRIVATE)
+        val langStr = prefs.getString(Constants.Prefs.KEY_LANGUAGE, Lang.FA.name) ?: Lang.FA.name
         return try {
             Lang.valueOf(langStr)
         } catch (e: Exception) {
@@ -75,10 +76,10 @@ class VpnPreferencesManager(private val context: Context) {
     }
 
     fun saveSettingsToPrefs(rawConfig: String, lang: Lang) {
-        val prefs = context.getSharedPreferences("vpn_config", Context.MODE_PRIVATE)
+        val prefs = context.getSharedPreferences(Constants.Prefs.NAME, Context.MODE_PRIVATE)
         prefs.edit {
-            putString("raw_config_json", rawConfig)
-            putString("language", lang.name)
+            putString(Constants.Prefs.KEY_RAW_CONFIG_JSON, rawConfig)
+            putString(Constants.Prefs.KEY_LANGUAGE, lang.name)
         }
     }
 }
