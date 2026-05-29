@@ -39,11 +39,20 @@ class LogcatHandler(logging.Handler):
             # Fallback for local unit testing
             print(f"[{record.levelname}] {record.name}: {message}")
             
-        try:
-            from com.darius.lionvpn import ProxyService
-            ProxyService.addLogLine(message)
-        except ImportError:
-            pass
+        # Pushing logs to KMP UI is a heavy JNI call.
+        # Only stream critical lifecycle and warning/error records to avoid blocking the event loop.
+        is_important = (
+            record.name == "AndroidEntry" or
+            record.levelno >= logging.WARNING or
+            "listening on" in message or
+            "Relay warmup" in message
+        )
+        if is_important:
+            try:
+                from com.darius.lionvpn import ProxyService
+                ProxyService.addLogLine(message)
+            except ImportError:
+                pass
 
 _current_server = None
 _current_loop = None
@@ -64,16 +73,12 @@ async def _shutdown(server, loop):
 def start_proxy(config_json_str):
     global _current_server, _current_loop, _server_task
     
-    # Configure Logcat logger with the same PrettyFormatter used on Desktop
-    from core.logging_utils import PrettyFormatter
-    handler = LogcatHandler()
-    handler.setFormatter(PrettyFormatter(use_color=False))
-    
+    # Configure Logcat logger
     logger = logging.getLogger()
     logger.setLevel(logging.INFO)
     for h in list(logger.handlers):
         logger.removeHandler(h)
-    logger.addHandler(handler)
+    logger.addHandler(LogcatHandler())
     
     log = logging.getLogger("AndroidEntry")
     log.info("Starting Python VPN proxy backend from Kotlin...")

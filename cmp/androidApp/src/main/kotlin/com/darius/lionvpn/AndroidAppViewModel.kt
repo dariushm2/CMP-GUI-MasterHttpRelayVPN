@@ -88,14 +88,6 @@ class AndroidAppViewModel : ViewModel() {
         _selectedConfigIndex.value = selectedIndex
         _rawConfigJson.value = rawConfig
         _language.value = lang
-
-        // Automatically migrate and synchronize script_ids on startup
-        if (selectedIndex in configs.indices) {
-            val active = configs[selectedIndex]
-            updateRawConfigWithActiveProfile(active.id, active.key)
-        } else {
-            updateRawConfigWithActiveProfile("", "")
-        }
     }
 
     fun handleEvent(event: Event) {
@@ -145,20 +137,8 @@ class AndroidAppViewModel : ViewModel() {
         val updatedJson = try {
             if (currentJson.isNotBlank()) {
                 val jsonMap = kotlinx.serialization.json.Json.parseToJsonElement(currentJson).jsonObject.toMutableMap()
-                jsonMap[Constants.KEY_SCRIPT_ID] = kotlinx.serialization.json.JsonPrimitive(id)
-                jsonMap[Constants.KEY_AUTH_KEY] = kotlinx.serialization.json.JsonPrimitive(key)
-                
-                // Dynamically populate the script_ids array with all saved scripts
-                val configs = _savedConfigs.value
-                val idsArray = configs.map { config ->
-                    val map = mapOf(
-                        Constants.KEY_SCRIPT_ID to kotlinx.serialization.json.JsonPrimitive(config.id),
-                        Constants.KEY_AUTH_KEY to kotlinx.serialization.json.JsonPrimitive(config.key)
-                    )
-                    kotlinx.serialization.json.JsonObject(map)
-                }
-                jsonMap[Constants.KEY_SCRIPT_IDS] = kotlinx.serialization.json.JsonArray(idsArray)
-                
+                jsonMap["script_id"] = kotlinx.serialization.json.JsonPrimitive(id)
+                jsonMap["auth_key"] = kotlinx.serialization.json.JsonPrimitive(key)
                 val prettyJson = kotlinx.serialization.json.Json { prettyPrint = true }
                 prettyJson.encodeToString(kotlinx.serialization.json.JsonObject.serializer(), kotlinx.serialization.json.JsonObject(jsonMap))
             } else {
