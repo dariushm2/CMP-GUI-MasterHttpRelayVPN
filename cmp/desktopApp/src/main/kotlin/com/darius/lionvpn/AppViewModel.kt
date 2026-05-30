@@ -5,6 +5,8 @@ import androidx.lifecycle.viewModelScope
 import com.darius.lionvpn.ui.home.Event
 import com.darius.lionvpn.ui.home.HomeState
 import com.darius.lionvpn.ui.home.ConnectionState
+import com.darius.lionvpn.ui.home.CertOperationResult
+import com.darius.lionvpn.ui.home.CertOperationType
 import com.darius.lionvpn.config.*
 import com.darius.lionvpn.ui.model.Lang
 import com.darius.lionvpn.ui.model.SavedConfig
@@ -17,6 +19,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.runBlocking
 
 class AppViewModel : ViewModel() {
 
@@ -25,6 +28,17 @@ class AppViewModel : ViewModel() {
     private val _rawConfigJson = MutableStateFlow("")
     private val _configResetTrigger = MutableStateFlow(0)
     private val _language = MutableStateFlow(loadLanguagePreference())
+    private val _certOperationResult = MutableStateFlow<CertOperationResult?>(null)
+    private val _isCertTrusted = MutableStateFlow(
+        try {
+            runBlocking(Dispatchers.IO) {
+                ProcessRunner.checkCertTrusted()
+            }
+        } catch (e: Exception) {
+            false
+        }
+    )
+    private val _isCertBusy = MutableStateFlow(false)
 
     private val vpnState = ProcessRunner.vpnState
     private val vpnLogs = ProcessRunner.vpnLogs
@@ -37,7 +51,10 @@ class AppViewModel : ViewModel() {
         _selectedConfigIndex,
         _rawConfigJson,
         _configResetTrigger,
-        _language
+        _language,
+        _certOperationResult,
+        _isCertTrusted,
+        _isCertBusy
     ) { array ->
         val state = array[0] as ConnectionState
         val logs = array[1] as List<String>
@@ -46,6 +63,9 @@ class AppViewModel : ViewModel() {
         val configJson = array[4] as String
         val resetTrigger = array[5] as Int
         val lang = array[6] as Lang
+        val certResult = array[7] as CertOperationResult?
+        val trusted = array[8] as Boolean
+        val certBusy = array[9] as Boolean
         
         HomeState(
             connectionState = state,
@@ -54,7 +74,10 @@ class AppViewModel : ViewModel() {
             selectedConfigIndex = index,
             rawConfigJson = configJson,
             configResetTrigger = resetTrigger,
-            language = lang
+            language = lang,
+            certOperationResult = certResult,
+            isCertTrusted = trusted,
+            isCertBusy = certBusy
         )
     }.stateIn(
         scope = viewModelScope,
@@ -75,6 +98,13 @@ class AppViewModel : ViewModel() {
         viewModelScope.launch(errorHandler) {
             loadConfigs()
         }
+    }
+
+    private suspend fun checkCertStatus() {
+        val trusted = withContext(Dispatchers.IO) {
+            ProcessRunner.checkCertTrusted()
+        }
+        _isCertTrusted.value = trusted
     }
 
     private suspend fun loadConfigs() = withContext(Dispatchers.IO) {
@@ -172,14 +202,30 @@ class AppViewModel : ViewModel() {
         viewModelScope.launch(errorHandler) {
             when (event) {
                 Event.InstallCertificate -> {
-                    withContext(Dispatchers.IO) {
+                    _certOperationResult.value = null
+                    _isCertBusy.value = true
+                    val success = withContext(Dispatchers.IO) {
                         ProcessRunner.installCert()
                     }
+                    _certOperationResult.value = CertOperationResult(
+                        type = CertOperationType.INSTALL,
+                        isSuccess = success
+                    )
+                    checkCertStatus()
+                    _isCertBusy.value = false
                 }
                 Event.UninstallCertificate -> {
-                    withContext(Dispatchers.IO) {
+                    _certOperationResult.value = null
+                    _isCertBusy.value = true
+                    val success = withContext(Dispatchers.IO) {
                         ProcessRunner.uninstallCert()
                     }
+                    _certOperationResult.value = CertOperationResult(
+                        type = CertOperationType.UNINSTALL,
+                        isSuccess = success
+                    )
+                    checkCertStatus()
+                    _isCertBusy.value = false
                 }
                 Event.Connect -> {
                     withContext(Dispatchers.IO) {
@@ -212,6 +258,7 @@ class AppViewModel : ViewModel() {
                     }
                     _language.value = lang
                 }
+                Event.ClearCertResult -> _certOperationResult.value = null
             }
         }
     }

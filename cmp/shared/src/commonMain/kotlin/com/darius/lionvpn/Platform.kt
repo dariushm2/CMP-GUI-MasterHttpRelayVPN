@@ -22,3 +22,5 @@ expect fun getPlatform(): Platform
 expect fun isDebugBuild(): Boolean
 
 expect fun getCurrentTimeString(): String
+
+expect fun getCurrentTimeMillis(): Long

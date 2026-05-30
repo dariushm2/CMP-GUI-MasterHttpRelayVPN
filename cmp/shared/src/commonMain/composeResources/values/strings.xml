@@ -147,4 +147,13 @@ To fully bypass this, you can create multiple deployments on one or more Google 
     <string name="stat_status_connected">Connected</string>
     <string name="stat_status_connecting">Connecting</string>
     <string name="stat_status_disconnected">Disconnected</string>
+
+    <!-- Certificate Operation Toasts -->
+    <string name="cert_install_success">Certificate installed successfully!</string>
+    <string name="cert_install_failure">Failed to install certificate.</string>
+    <string name="cert_uninstall_success">Certificate uninstalled successfully!</string>
+    <string name="cert_uninstall_failure">Failed to uninstall certificate.</string>
+    <string name="cert_uninstall_android_note">CA certificates must be uninstalled manually from system security settings.</string>
+    <string name="cert_status_trusted">CA Certificate Trusted &amp; Active</string>
+    <string name="cert_status_not_trusted">CA Certificate Not Trusted</string>
 </resources>

@@ -8,6 +8,8 @@ import com.darius.lionvpn.ui.home.HomeState
 import com.darius.lionvpn.ui.home.ConnectionState
 import com.darius.lionvpn.ui.model.Lang
 import com.darius.lionvpn.ui.model.SavedConfig
+import com.darius.lionvpn.ui.home.CertOperationResult
+import com.darius.lionvpn.ui.home.CertOperationType
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -42,6 +44,9 @@ class AndroidAppViewModel : ViewModel() {
     private val _showInstructionsDialog = MutableStateFlow(false)
     val showInstructionsDialog: StateFlow<Boolean> = _showInstructionsDialog.asStateFlow()
 
+    private val _certOperationResult = MutableStateFlow<CertOperationResult?>(null)
+    private val _isCertBusy = MutableStateFlow(false)
+
     // Expose dynamic HomeState compiled reactively from underlying flows using stateIn
     val homeState: StateFlow<HomeState> = combine(
         vpnState,
@@ -50,7 +55,9 @@ class AndroidAppViewModel : ViewModel() {
         _selectedConfigIndex,
         _rawConfigJson,
         _configResetTrigger,
-        _language
+        _language,
+        _certOperationResult,
+        _isCertBusy
     ) { array ->
         val state = array[0] as ConnectionState
         val logs = array[1] as List<String>
@@ -59,6 +66,8 @@ class AndroidAppViewModel : ViewModel() {
         val configJson = array[4] as String
         val resetTrigger = array[5] as Int
         val lang = array[6] as Lang
+        val certResult = array[7] as CertOperationResult?
+        val certBusy = array[8] as Boolean
 
         HomeState(
             connectionState = state,
@@ -68,6 +77,9 @@ class AndroidAppViewModel : ViewModel() {
             rawConfigJson = configJson,
             configResetTrigger = resetTrigger,
             language = lang,
+            certOperationResult = certResult,
+            isAndroid = true,
+            isCertBusy = certBusy
         )
     }.stateIn(
         scope = viewModelScope,
@@ -95,7 +107,15 @@ class AndroidAppViewModel : ViewModel() {
             when (event) {
                 is Event.Connect -> connectVpn()
                 is Event.InstallCertificate -> generateAndInstallCert()
-                is Event.UninstallCertificate -> { /* TODO */ }
+                is Event.UninstallCertificate -> {
+                    _certOperationResult.value = null
+                    _certOperationResult.value = CertOperationResult(
+                        type = CertOperationType.UNINSTALL,
+                        isSuccess = true,
+                        timestamp = -1L // Special timestamp to trigger manual note Toast
+                    )
+                    _uiEffect.emit(AndroidUiEffect.UninstallCertificate)
+                }
                 is Event.ClearLogs -> ProxyService.clearLogs()
                 is Event.AddConfig -> {
                     addConfig(event.config)
@@ -120,6 +140,7 @@ class AndroidAppViewModel : ViewModel() {
                     _language.value = event.language
                     emitSaveSettings()
                 }
+                Event.ClearCertResult -> _certOperationResult.value = null
             }
         }
     }
