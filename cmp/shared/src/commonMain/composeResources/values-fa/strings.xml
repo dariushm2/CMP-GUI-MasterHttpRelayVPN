@@ -147,4 +147,13 @@
     <string name="stat_status_connected">متصل</string>
     <string name="stat_status_connecting">در حال اتصال</string>
     <string name="stat_status_disconnected">قطع شده</string>
+
+    <!-- Certificate Operation Toasts -->
+    <string name="cert_install_success">گواهی با موفقیت نصب شد!</string>
+    <string name="cert_install_failure">نصب گواهی انجام نشد.</string>
+    <string name="cert_uninstall_success">گواهی با موفقیت حذف شد!</string>
+    <string name="cert_uninstall_failure">حذف گواهی انجام نشد.</string>
+    <string name="cert_uninstall_android_note">گواهی‌های CA باید به صورت دستی از تنظیمات امنیت سیستم حذف شوند.</string>
+    <string name="cert_status_trusted">گواهی CA مورد اعتماد و فعال است</string>
+    <string name="cert_status_not_trusted">گواهی CA مورد اعتماد سیستم نیست</string>
 </resources>

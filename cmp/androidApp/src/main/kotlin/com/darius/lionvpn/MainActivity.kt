@@ -19,6 +19,8 @@ import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.compose.koinInject
 import java.io.File
+import android.content.Intent
+import android.provider.Settings
 import com.darius.lionvpn.ui.home.Event
 import com.darius.lionvpn.config.*
 import com.darius.lionvpn.model.AndroidUiEffect
@@ -116,6 +118,19 @@ class MainActivity : ComponentActivity() {
                                 Toast.makeText(this@MainActivity, "Please connect to the VPN at least once to generate the certificate.", Toast.LENGTH_LONG).show()
                             } else {
                                 saveCertLauncher.launch("lion_vpn_ca.crt")
+                            }
+                        }
+                    }
+                    is AndroidUiEffect.UninstallCertificate -> {
+                        val intent = Intent(Settings.ACTION_SECURITY_SETTINGS)
+                        try {
+                            startActivity(intent)
+                        } catch (e: Exception) {
+                            try {
+                                startActivity(Intent(Settings.ACTION_SETTINGS))
+                            } catch (ex: Exception) {
+                                ProxyService.addLogLine("Error opening Settings: ${ex.message}")
+                                Toast.makeText(this@MainActivity, "Could not open system settings automatically.", Toast.LENGTH_LONG).show()
                             }
                         }
                     }

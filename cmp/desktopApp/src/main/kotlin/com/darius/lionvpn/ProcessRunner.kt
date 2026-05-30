@@ -13,6 +13,8 @@ import com.darius.lionvpn.proxy.ProxyManager
 import com.darius.lionvpn.config.*
 import com.darius.lionvpn.ui.home.ConnectionState
 import kotlinx.serialization.json.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 object ProcessRunner {
 
@@ -33,7 +35,7 @@ object ProcessRunner {
         _vpnLogs.value = emptyList()
     }
 
-    fun installCert() {
+    suspend fun installCert(): Boolean = withContext(Dispatchers.IO) {
         println("Installing Certificate for: $binaryPath")
 
         val configFile = File(getUserDataDirectory(), Constants.Config.FILE_NAME)
@@ -43,13 +45,29 @@ object ProcessRunner {
             else -> ProcessBuilder("pkexec", binaryPath, "--config", configFile.absolutePath, "--install-cert")
         }
 
-        processBuilder.runProcess { isSuccess ->
-            if (isSuccess) println("[VPN Process] Certificate was installed successfully!")
-            else println("[VPN Process] Something went wrong!")
+        val binaryFile = File(binaryPath)
+        if (binaryFile.parentFile != null) {
+            processBuilder.directory(binaryFile.parentFile)
+        }
+        processBuilder.redirectErrorStream(true)
+
+        try {
+            val process = processBuilder.start()
+            val exitCode = process.waitFor()
+            if (exitCode == 0) {
+                println("[VPN Process] Certificate was installed successfully!")
+                true
+            } else {
+                println("[VPN Process] Something went wrong! Exit code: $exitCode")
+                false
+            }
+        } catch (e: Exception) {
+            println("[VPN Process] Failed to start install-cert process: ${e.message}")
+            false
         }
     }
 
-    fun uninstallCert() {
+    suspend fun uninstallCert(): Boolean = withContext(Dispatchers.IO) {
         println("Uninstalling Certificate for: $binaryPath")
 
         val configFile = File(getUserDataDirectory(), Constants.Config.FILE_NAME)
@@ -59,9 +77,62 @@ object ProcessRunner {
             else -> ProcessBuilder("pkexec", binaryPath, "--config", configFile.absolutePath, "--uninstall-cert")
         }
 
-        processBuilder.runProcess { isSuccess ->
-            if (isSuccess) println("[VPN Process] Certificate was uninstalled successfully!")
-            else println("[VPN Process] Something went wrong!")
+        val binaryFile = File(binaryPath)
+        if (binaryFile.parentFile != null) {
+            processBuilder.directory(binaryFile.parentFile)
+        }
+        processBuilder.redirectErrorStream(true)
+
+        try {
+            val process = processBuilder.start()
+            val exitCode = process.waitFor()
+            if (exitCode == 0) {
+                println("[VPN Process] Certificate was uninstalled successfully!")
+                true
+            } else {
+                println("[VPN Process] Something went wrong! Exit code: $exitCode")
+                false
+            }
+        } catch (e: Exception) {
+            println("[VPN Process] Failed to start uninstall-cert process: ${e.message}")
+            false
+        }
+    }
+
+    suspend fun checkCertTrusted(): Boolean = withContext(Dispatchers.IO) {
+        println("Checking if CA Certificate is trusted via native platform CLI...")
+        
+        when (platform.os) {
+            JvmPlatform.OS.WIN -> {
+                try {
+                    val process = ProcessBuilder("certutil", "-user", "-store", "Root").start()
+                    val output = process.inputStream.bufferedReader().readText()
+                    process.waitFor()
+                    output.contains("MasterHttpRelayVPN", ignoreCase = true)
+                } catch (e: Exception) {
+                    println("[VPN Process] Windows trust check failed: ${e.message}")
+                    false
+                }
+            }
+            JvmPlatform.OS.MAC -> {
+                try {
+                    val process = ProcessBuilder("security", "find-certificate", "-a", "-c", "MasterHttpRelayVPN").start()
+                    val output = process.inputStream.bufferedReader().readText()
+                    process.waitFor()
+                    output.trim().isNotEmpty()
+                } catch (e: Exception) {
+                    println("[VPN Process] macOS trust check failed: ${e.message}")
+                    false
+                }
+            }
+            else -> {
+                val anchors = listOf(
+                    "/usr/local/share/ca-certificates/MasterHttpRelayVPN.crt",
+                    "/etc/pki/ca-trust/source/anchors/MasterHttpRelayVPN.crt",
+                    "/etc/ca-certificates/trust-source/anchors/MasterHttpRelayVPN.crt"
+                )
+                anchors.any { File(it).exists() }
+            }
         }
     }
 
