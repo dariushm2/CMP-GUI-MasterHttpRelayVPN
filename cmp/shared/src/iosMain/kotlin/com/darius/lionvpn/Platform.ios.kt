@@ -4,6 +4,7 @@ import com.darius.lionvpn.connectivity.NetworkHelper
 import platform.UIKit.UIDevice
 import platform.Foundation.NSDate
 import platform.Foundation.NSDateFormatter
+import platform.Foundation.timeIntervalSince1970
 import kotlin.experimental.ExperimentalNativeApi
 
 class IOSPlatform : Platform {
