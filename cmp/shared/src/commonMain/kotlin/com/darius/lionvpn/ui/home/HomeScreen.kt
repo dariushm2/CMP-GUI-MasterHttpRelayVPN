@@ -1,18 +1,36 @@
 package com.darius.lionvpn.ui.home
 
-import androidx.compose.animation.*
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.with
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import com.darius.lionvpn.ui.home.adaptive.*
+import com.darius.lionvpn.ui.home.adaptive.BottomNavigationBar
+import com.darius.lionvpn.ui.home.adaptive.CompactTopBar
+import com.darius.lionvpn.ui.home.adaptive.NavigationRailBar
+import com.darius.lionvpn.ui.home.adaptive.Sidebar
+import com.darius.lionvpn.ui.home.adaptive.WindowWidthSizeClass
+import com.darius.lionvpn.ui.home.adaptive.calculateWindowWidthSizeClass
 import com.darius.lionvpn.ui.home.dashboard.DashboardTab
-import com.darius.lionvpn.ui.model.Lang
-import com.darius.lionvpn.ui.model.Lang.Companion.isEnglish
-import com.darius.lionvpn.ui.theme.*
+import com.darius.lionvpn.ui.home.settings.SettingsTab
+import com.darius.lionvpn.ui.theme.background
+import com.darius.lionvpn.ui.theme.primary
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
@@ -32,13 +50,7 @@ fun HomeScreen(
         Scaffold(
             topBar = {
                 if (isCompact) {
-                    CompactTopBar(
-                        language = state.language,
-                        onLanguageToggle = {
-                            val nextLang = if (state.language.isEnglish()) Lang.FA else Lang.EN
-                            onClick(Event.ChangeLanguage(nextLang))
-                        }
-                    )
+                    CompactTopBar()
                 }
             },
             bottomBar = {
@@ -60,20 +72,13 @@ fun HomeScreen(
                     isMedium -> {
                         NavigationRailBar(
                             activeTab = activeTab,
-                            onTabSelect = { activeTab = it },
-                            language = state.language,
-                            onLanguageToggle = {
-                                val nextLang = if (state.language == Lang.EN) Lang.FA else Lang.EN
-                                onClick(Event.ChangeLanguage(nextLang))
-                            }
+                            onTabSelect = { activeTab = it }
                         )
                     }
                     isExpanded -> {
                         Sidebar(
                             activeTab = activeTab,
-                            onTabSelect = { activeTab = it },
-                            language = state.language,
-                            onLanguageChange = { onClick(Event.ChangeLanguage(it)) }
+                            onTabSelect = { activeTab = it }
                         )
                     }
                 }
@@ -110,8 +115,7 @@ fun HomeScreen(
                         when (targetTab) {
                             HomeTab.Dashboard -> DashboardTab(state, onClick)
                             HomeTab.Scripts -> ScriptsTab(state, onClick)
-                            HomeTab.EditConfig -> EditConfigTab(state, onClick)
-                            HomeTab.Certificates -> CertificatesTab(onClick = onClick)
+                            HomeTab.Settings -> SettingsTab(state, onClick)
                             HomeTab.About -> AboutTab()
                         }
                     }

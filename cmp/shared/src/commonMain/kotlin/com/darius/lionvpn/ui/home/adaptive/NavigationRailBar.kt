@@ -5,18 +5,14 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.darius.lionvpn.ui.home.HomeTab
-import com.darius.lionvpn.ui.model.Lang
 import com.darius.lionvpn.ui.theme.*
 import org.jetbrains.compose.resources.stringResource
 
@@ -24,8 +20,6 @@ import org.jetbrains.compose.resources.stringResource
 fun NavigationRailBar(
     activeTab: HomeTab,
     onTabSelect: (HomeTab) -> Unit,
-    language: Lang,
-    onLanguageToggle: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val scrollState = rememberScrollState()
@@ -63,36 +57,12 @@ fun NavigationRailBar(
                 Spacer(modifier = Modifier.height(8.dp))
                 Item(HomeTab.Scripts, activeTab, onTabSelect)
                 Spacer(modifier = Modifier.height(8.dp))
-                Item(HomeTab.Certificates, activeTab, onTabSelect)
-                Spacer(modifier = Modifier.height(8.dp))
-                Item(HomeTab.EditConfig, activeTab, onTabSelect)
+                Item(HomeTab.Settings, activeTab, onTabSelect)
                 Spacer(modifier = Modifier.height(8.dp))
                 Item(HomeTab.About, activeTab, onTabSelect)
             }
-
-            // Language Switcher at the bottom - padding collapses to minimal when space is constrained
-            IconButton(
-                onClick = onLanguageToggle,
-                modifier = Modifier
-                    .size(40.dp)
-                    .background(surfaceContainerLow, roundedDefault)
-                    .border(1.dp, outlineVariant.copy(alpha = 0.5f), roundedDefault)
-            ) {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Icon(
-                    imageVector = Icons.Default.Language,
-                    contentDescription = "Switch Language",
-                    tint = secondary,
-                    modifier = Modifier.size(16.dp)
-                )
-                Text(
-                    text = if (language == Lang.EN) "FA" else "EN",
-                    style = labelCaps.copy(fontSize = 8.sp, fontWeight = FontWeight.Bold, color = secondary)
-                )
-            }
         }
     }
-}
 }
 
 @Composable
