@@ -1,5 +1,6 @@
 package com.darius.lionvpn.ui.home
 
+import com.darius.lionvpn.getCurrentTimeMillis
 import com.darius.lionvpn.ui.model.Lang
 import com.darius.lionvpn.ui.model.SavedConfig
 
@@ -17,7 +18,7 @@ enum class CertOperationType {
 data class CertOperationResult(
     val type: CertOperationType,
     val isSuccess: Boolean,
-    val timestamp: Long = System.currentTimeMillis()
+    val timestamp: Long = getCurrentTimeMillis()
 )
 
 data class HomeState(
