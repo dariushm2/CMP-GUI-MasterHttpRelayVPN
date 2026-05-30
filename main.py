@@ -90,6 +90,11 @@ def parse_args():
         help="Remove the MITM CA certificate from trusted roots and exit.",
     )
     parser.add_argument(
+        "--check-cert",
+        action="store_true",
+        help="Check if the CA certificate is trusted and exit.",
+    )
+    parser.add_argument(
         "--no-cert-check",
         action="store_true",
         help="Skip the certificate installation check on startup.",
@@ -106,9 +111,13 @@ def main():
     args = parse_args()
 
     # Handle cert-only commands before loading config so they can run standalone.
-    if args.install_cert or args.uninstall_cert:
+    if args.install_cert or args.uninstall_cert or args.check_cert:
         configure_logging("INFO")
         _log = logging.getLogger("Main")
+
+        if args.check_cert:
+            trusted = is_ca_trusted(CA_CERT_FILE)
+            sys.exit(0 if trusted else 2)
 
         if args.install_cert:
             _log.info("Installing CA certificate…")
