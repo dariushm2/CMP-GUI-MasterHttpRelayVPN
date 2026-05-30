@@ -72,7 +72,7 @@
     <string name="setup_instructions_step7">۷. روی Deploy کلیک کرده، دسترسی‌های لازم را تایید کنید و در نهایت شناسه استقرار (Deployment ID) و کلمه عبور خود را کپی کرده و در فرم برنامه ثبت کنید.</string>
 
     <!-- About Tab -->
-    <string name="tab_about">درباره برنامه</string>
+    <string name="tab_about">درباره</string>
     <string name="about_subtitle">آشنایی با مکانیزم عبور از فیلترینگ و نحوه کارکرد سیستم رله</string>
     <string name="about_title">لاین وی‌پی‌ان چیست و چگونه کار می‌کند؟</string>
     <string name="about_description">این برنامه ترافیک اینترنتی شما را بسته‌بندی (Repackage) کرده و آن را به شکل درخواست‌های معمولی به سرورهای گوگل ارسال می‌کند. از آنجا که دامنه و ترافیک سرورهای گوگل در حالت عادی فیلتر نیستند، این ترافیک بدون هیچ مانعی از سد فیلترینگ عبور می‌کند.
@@ -116,6 +116,19 @@
     <string name="about_project_gui_fork">نسخه فورک شده</string>
     <string name="about_project_upstream">مخزن اصلی (Upstream)</string>
     <string name="about_project_github_desc">مخزن رسمی گیت‌هاب</string>
+
+    <!-- Settings Tab -->
+    <string name="tab_settings">تنظیمات</string>
+    <string name="settings_section_general">تنظیمات عمومی</string>
+    <string name="settings_section_connection">اتصال و مسیریابی</string>
+    <string name="settings_section_security">امنیت و گواهی‌ها</string>
+    <string name="settings_item_language_title">زبان برنامه</string>
+    <string name="settings_item_language_desc">تغییر زبان برنامه بین فارسی و انگلیسی</string>
+    <string name="settings_item_config_title">ویرایش تنظیمات اتصال</string>
+    <string name="settings_item_config_desc">تغییر و پیکربندی دستی تنظیمات اتصال در قالب JSON</string>
+    <string name="settings_item_cert_title">گواهی‌های HTTPS</string>
+    <string name="settings_item_cert_desc">مدیریت گواهی‌های CA مورد نیاز برای ارتباط امن رله</string>
+    <string name="close_editor">بستن ویرایشگر</string>
 
     <!-- Edit Config Tab -->
     <string name="tab_edit_config">ویرایش پیکربندی</string>

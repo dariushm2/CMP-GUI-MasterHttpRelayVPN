@@ -24,8 +24,7 @@ fun BottomNavigationBar(
     ) {
         Item(HomeTab.Dashboard, activeTab, onTabSelect)
         Item(HomeTab.Scripts, activeTab, onTabSelect)
-        Item(HomeTab.Certificates, activeTab, onTabSelect)
-        Item(HomeTab.EditConfig, activeTab, onTabSelect)
+        Item(HomeTab.Settings, activeTab, onTabSelect)
         Item(HomeTab.About, activeTab, onTabSelect)
     }
 }
