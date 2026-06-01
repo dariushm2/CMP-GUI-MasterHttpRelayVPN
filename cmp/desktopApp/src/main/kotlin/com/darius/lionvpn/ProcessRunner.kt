@@ -6,6 +6,7 @@ import java.io.File
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import okio.IOException
 import kotlin.collections.plus
 import org.koin.mp.KoinPlatform.getKoin
@@ -31,6 +32,10 @@ object ProcessRunner {
 
     fun clearLogs() {
         _vpnLogs.value = emptyList()
+    }
+
+    private fun addLogLine(line: String) {
+        _vpnLogs.update { it.appendCappedLog(line) }
     }
 
     fun installCert() {
@@ -74,7 +79,7 @@ object ProcessRunner {
         println("Launching Python VPN binary: $binaryPath")
         
         // Log starting message instantly in English only matching log timestamp pattern
-        _vpnLogs.value += VpnLogger.formatInfo("VPN process is starting... warming up")
+        addLogLine(VpnLogger.formatInfo("VPN process is starting... warming up"))
 
         _vpnState.value = ConnectionState.CONNECTING
 
@@ -86,7 +91,7 @@ object ProcessRunner {
             isSystemProxyEnabled = isSystemProxyEnabled,
             onExit = {
                 println("[VPN Process] Process stopped!")
-                _vpnLogs.value += VpnLogger.formatInfo("VPN process stopped")
+                addLogLine(VpnLogger.formatInfo("VPN process stopped"))
                 _vpnState.value = ConnectionState.DISCONNECTED
                 _isVpnRunning.value = false
                 if (isSystemProxyEnabled) {
@@ -151,7 +156,7 @@ object ProcessRunner {
                 try {
                     process.inputStream.bufferedReader().useLines { lines ->
                         lines.forEach { line ->
-                            _vpnLogs.value += line
+                            addLogLine(line)
                             println("[VPN Process] $line")
                             
                             if (isVpnLogger && _vpnState.value == ConnectionState.CONNECTING) {
@@ -177,13 +182,13 @@ object ProcessRunner {
                         }
                     }
                 } catch (e: IOException) {
-                    _vpnLogs.value += VpnLogger.formatInfo("Logger thread error: ${e.message}")
+                    addLogLine(VpnLogger.formatInfo("Logger thread error: ${e.message}"))
                     println("[VPN Process] Logger thread error: ${e.message}")
                 }
             }
             process
         } catch (e: IOException) {
-            _vpnLogs.value += VpnLogger.formatInfo("Failed to start process: ${e.message}")
+            addLogLine(VpnLogger.formatInfo("Failed to start process: ${e.message}"))
             println("[VPN Process] Failed to start process: ${e.message}")
             _isVpnRunning.value = false
             _vpnState.value = ConnectionState.DISCONNECTED
