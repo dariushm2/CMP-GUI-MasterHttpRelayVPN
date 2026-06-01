@@ -28,3 +28,15 @@ object VpnLogger {
         }
     }
 }
+
+/**
+ * Appends a new line to the log list and caps the size at [capLimit] to prevent memory leaks.
+ */
+fun List<String>.appendCappedLog(newLine: String, capLimit: Int = 300): List<String> {
+    val list = this.toMutableList()
+    if (list.size >= capLimit) {
+        list.removeAt(0)
+    }
+    list.add(newLine)
+    return list
+}

@@ -19,6 +19,7 @@ import com.darius.lionvpn.ui.home.ConnectionState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import timber.log.Timber
 
 @SuppressLint("VpnServicePolicy")
@@ -265,13 +266,7 @@ class ProxyService : VpnService() {
                 }
             }
 
-            val currentList = _vpnLogs.value.toMutableList()
-            // Cap log buffer size at 300 entries to prevent memory leaks
-            if (currentList.size > 300) {
-                currentList.removeAt(0)
-            }
-            currentList.add(line)
-            _vpnLogs.value = currentList
+            _vpnLogs.update { it.appendCappedLog(line) }
         }
 
         @JvmStatic
