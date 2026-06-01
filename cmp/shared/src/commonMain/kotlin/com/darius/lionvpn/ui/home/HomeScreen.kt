@@ -28,6 +28,7 @@ import com.darius.lionvpn.ui.home.adaptive.Sidebar
 import com.darius.lionvpn.ui.home.adaptive.WindowWidthSizeClass
 import com.darius.lionvpn.ui.home.adaptive.calculateWindowWidthSizeClass
 import com.darius.lionvpn.ui.home.dashboard.DashboardTab
+import com.darius.lionvpn.ui.home.scripts.ScriptsTab
 import com.darius.lionvpn.ui.home.settings.SettingsTab
 import com.darius.lionvpn.ui.theme.background
 import com.darius.lionvpn.ui.theme.primary
