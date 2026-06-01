@@ -18,6 +18,7 @@ import com.darius.lionvpn.ui.home.Event
 import com.darius.lionvpn.ui.home.HomeState
 import com.darius.lionvpn.ui.model.SavedConfig
 import com.darius.lionvpn.ui.theme.containerPadding
+import com.darius.lionvpn.VpnLogger
 import com.darius.lionvpn.ui.theme.gutter
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.intOrNull
@@ -155,17 +156,7 @@ fun DashboardTab(
         }
     }
     val executionCount = remember(state.log) {
-        try {
-            state.log.asReversed().firstOrNull {
-                it.contains("Apps Script executions used so far:", ignoreCase = true)
-            }?.substringAfter("Apps Script executions used so far:")
-                ?.trim()
-                ?.substringBefore(" ")
-                ?.trim()
-                ?.toIntOrNull() ?: 0
-        } catch (e: Exception) {
-            0
-        }
+        VpnLogger.parseAppsScriptExecutionCount(state.log)
     }
 
     BoxWithConstraints(modifier = modifier.fillMaxSize()) {
