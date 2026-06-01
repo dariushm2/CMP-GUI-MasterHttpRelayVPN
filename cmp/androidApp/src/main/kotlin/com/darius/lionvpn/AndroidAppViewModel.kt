@@ -3,9 +3,9 @@ package com.darius.lionvpn
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.darius.lionvpn.model.AndroidUiEffect
+import com.darius.lionvpn.ui.home.ConnectionState
 import com.darius.lionvpn.ui.home.Event
 import com.darius.lionvpn.ui.home.HomeState
-import com.darius.lionvpn.ui.home.ConnectionState
 import com.darius.lionvpn.ui.model.Lang
 import com.darius.lionvpn.ui.model.SavedConfig
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -43,6 +43,7 @@ class AndroidAppViewModel : ViewModel() {
     val showInstructionsDialog: StateFlow<Boolean> = _showInstructionsDialog.asStateFlow()
 
     // Expose dynamic HomeState compiled reactively from underlying flows using stateIn
+    @Suppress("UNCHECKED_CAST")
     val homeState: StateFlow<HomeState> = combine(
         vpnState,
         vpnLogs,
@@ -82,7 +83,7 @@ class AndroidAppViewModel : ViewModel() {
         configs: List<SavedConfig>,
         selectedIndex: Int,
         rawConfig: String,
-        lang: Lang
+        lang: Lang,
     ) {
         _savedConfigs.value = configs
         _selectedConfigIndex.value = selectedIndex
