@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.ClickableText
@@ -94,7 +96,11 @@ import lion_vpn.shared.generated.resources.about_step_relay_desc
 import lion_vpn.shared.generated.resources.about_subtitle
 import lion_vpn.shared.generated.resources.about_title
 import lion_vpn.shared.generated.resources.tab_about
+import lion_vpn.shared.generated.resources.app_version_title
 import org.jetbrains.compose.resources.stringResource
+import androidx.compose.ui.text.style.TextDirection
+import com.darius.lionvpn.SharedBuildConfig
+import com.darius.lionvpn.ui.theme.monoCode
 
 @Composable
 fun AboutTab(
@@ -148,6 +154,10 @@ fun AboutTab(
                 ProjectCard()
             }
         }
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        VersionFooter(modifier = Modifier.align(Alignment.CenterHorizontally))
     }
 }
 
@@ -506,4 +516,32 @@ private fun ProjectClickableDescription(
         },
         modifier = modifier
     )
+}
+
+@Composable
+private fun VersionFooter(
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
+        Text(
+            text = stringResource(Res.string.app_version_title),
+            style = bodySm.copy(
+                fontSize = 11.sp,
+                fontWeight = FontWeight.Bold,
+                color = onSurfaceVariant.copy(alpha = 0.4f)
+            )
+        )
+        Text(
+            text = SharedBuildConfig.APP_VERSION,
+            style = monoCode.copy(
+                fontSize = 11.sp,
+                color = onSurfaceVariant.copy(alpha = 0.6f),
+                textDirection = TextDirection.Ltr
+            )
+        )
+    }
 }

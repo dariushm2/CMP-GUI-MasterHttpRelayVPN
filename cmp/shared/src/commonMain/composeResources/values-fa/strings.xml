@@ -116,6 +116,8 @@
     <string name="about_project_gui_fork">نسخه فورک شده</string>
     <string name="about_project_upstream">مخزن اصلی (Upstream)</string>
     <string name="about_project_github_desc">مخزن رسمی گیت‌هاب</string>
+    <string name="app_version_title">نسخه</string>
+
 
     <!-- Settings Tab -->
     <string name="tab_settings">تنظیمات</string>
