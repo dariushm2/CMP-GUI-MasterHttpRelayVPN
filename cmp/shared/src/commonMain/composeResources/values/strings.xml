@@ -33,7 +33,7 @@
     <!-- Scripts Tab -->
     <string name="scripts_management">Script Management</string>
     <string name="add_script_icon_desc">Add Script Profile Icon</string>
-    <string name="add_script">Add Script</string>
+    <string name="add_script">Add</string>
     <string name="selected_check_desc">Selected Checkmark</string>
     <string name="deployment_id">Deployment ID: %1$s</string>
     <string name="active">Active</string>
