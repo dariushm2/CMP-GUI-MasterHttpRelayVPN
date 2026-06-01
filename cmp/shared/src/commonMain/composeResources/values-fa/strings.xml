@@ -33,7 +33,7 @@
     <!-- Scripts Tab -->
     <string name="scripts_management">مدیریت اسکریپت‌ها</string>
     <string name="add_script_icon_desc">آیکون افزودن پروفایل اسکریپت</string>
-    <string name="add_script">افزودن اسکریپت</string>
+    <string name="add_script">افزودن</string>
     <string name="selected_check_desc">علامت انتخاب شده</string>
     <string name="deployment_id">شناسه استقرار: %1$s</string>
     <string name="active">فعال</string>
