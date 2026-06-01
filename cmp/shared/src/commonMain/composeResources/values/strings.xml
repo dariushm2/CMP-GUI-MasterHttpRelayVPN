@@ -116,6 +116,8 @@ To fully bypass this, you can create multiple deployments on one or more Google 
     <string name="about_project_gui_fork">GUI fork</string>
     <string name="about_project_upstream">upstream project</string>
     <string name="about_project_github_desc">Official GitHub Repository</string>
+    <string name="app_version_title">Version</string>
+
 
     <!-- Settings Tab -->
     <string name="tab_settings">Settings</string>
