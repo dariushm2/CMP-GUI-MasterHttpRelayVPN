@@ -7,7 +7,7 @@ import com.darius.lionvpn.ProxyService
 
 class VpnServiceManager(
     private val context: Context,
-    private val configTemplateProvider: ConfigTemplateProvider
+    private val configTemplateProvider: ConfigTemplateProvider,
 ) {
     fun startVpnService() {
         val prefs = context.getSharedPreferences(Constants.Prefs.NAME, Context.MODE_PRIVATE)

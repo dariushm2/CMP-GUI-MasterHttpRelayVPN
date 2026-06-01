@@ -11,6 +11,9 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.lifecycleScope
+import com.darius.lionvpn.config.*
+import com.darius.lionvpn.model.AndroidUiEffect
+import com.darius.lionvpn.ui.home.Event
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -19,9 +22,6 @@ import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.compose.koinInject
 import java.io.File
-import com.darius.lionvpn.ui.home.Event
-import com.darius.lionvpn.config.*
-import com.darius.lionvpn.model.AndroidUiEffect
 
 class MainActivity : ComponentActivity() {
 
