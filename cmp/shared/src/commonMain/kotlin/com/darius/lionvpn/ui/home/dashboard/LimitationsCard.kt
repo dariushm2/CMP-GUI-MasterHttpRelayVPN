@@ -59,15 +59,11 @@ import lion_vpn.shared.generated.resources.limitations_bullet2_title
 import lion_vpn.shared.generated.resources.limitations_bullet2_desc
 import lion_vpn.shared.generated.resources.limitations_bullet3_title
 import lion_vpn.shared.generated.resources.limitations_bullet3_desc
-import lion_vpn.shared.generated.resources.limitations_bullet4_title
-import lion_vpn.shared.generated.resources.limitations_bullet4_desc
 import lion_vpn.shared.generated.resources.desktop_limitations_dialog_intro
 import lion_vpn.shared.generated.resources.desktop_limitations_bullet1_title
 import lion_vpn.shared.generated.resources.desktop_limitations_bullet1_desc
 import lion_vpn.shared.generated.resources.desktop_limitations_bullet2_title
 import lion_vpn.shared.generated.resources.desktop_limitations_bullet2_desc
-import lion_vpn.shared.generated.resources.desktop_limitations_bullet3_title
-import lion_vpn.shared.generated.resources.desktop_limitations_bullet3_desc
 import lion_vpn.shared.generated.resources.limitations_dialog_got_it
 import org.jetbrains.compose.resources.stringResource
 
@@ -237,11 +233,6 @@ private fun AndroidLimitationsContent(
             title = stringResource(Res.string.limitations_bullet3_title),
             desc = stringResource(Res.string.limitations_bullet3_desc)
         )
-
-        BulletPoint(
-            title = stringResource(Res.string.limitations_bullet4_title),
-            desc = stringResource(Res.string.limitations_bullet4_desc)
-        )
     }
 }
 
@@ -269,11 +260,6 @@ private fun DesktopLimitationsContent(
         BulletPoint(
             title = stringResource(Res.string.desktop_limitations_bullet2_title),
             desc = stringResource(Res.string.desktop_limitations_bullet2_desc)
-        )
-        
-        BulletPoint(
-            title = stringResource(Res.string.desktop_limitations_bullet3_title),
-            desc = stringResource(Res.string.desktop_limitations_bullet3_desc)
         )
     }
 }

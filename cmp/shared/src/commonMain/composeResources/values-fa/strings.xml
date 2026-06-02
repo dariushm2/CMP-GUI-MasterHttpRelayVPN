@@ -155,22 +155,18 @@
     <string name="stat_limitations_value">مشاهده</string>
     <string name="limitations_dialog_title">محدودیت‌های سیستم</string>
     <string name="limitations_dialog_intro">از آنجایی که این برنامه صرفاً در لایه اپلیکیشن به عنوان یک پروکسی رله HTTP عمل می‌کند، محدودیت‌های پلتفرمی خاصی در اندروید وجود دارد که باید از آنها آگاه باشید:</string>
-    <string name="limitations_bullet1_title">عدم تونل‌سازی کامل سیستم</string>
-    <string name="limitations_bullet1_desc">برخلاف VPNهای سطح پایین مبتنی بر IP، اندروید به طور پیش‌فرض به پروکسی‌های لایه اپلیکیشن اجازه نمی‌دهد کل ترافیک شبکه سیستم‌عامل را تونل‌سازی یا مسدود (بلاک‌هول) کنند.</string>
-    <string name="limitations_bullet2_title">عدم پشتیبانی اجباری برنامه‌ها</string>
-    <string name="limitations_bullet2_desc">اگرچه پروکسی HTTP به صورت سرتاسری روی سیستم اندروید تنظیم می‌شود، اما برنامه‌ها مجبور به رعایت آن نیستند. بسیاری از برنامه‌های بومی (مانند توییتر/X، اینستاگرام، یا اپ‌های بانکی) از تنظیمات شبکه سفارشی خود استفاده می‌کنند و پروکسی را کاملاً دور می‌زنند.</string>
-    <string name="limitations_bullet3_title">استفاده از مرورگر برای برنامه‌ها</string>
-    <string name="limitations_bullet3_desc">در اندروید، برای استفاده از خدماتی مانند توییتر/X یا سایر شبکه‌های اجتماعی، باید آنها را مستقیماً داخل مرورگر وب خود (مانند کروم یا فایرفاکس) باز کنید، زیرا برنامه‌های بومی آنها از پروکسی عبور نخواهند کرد.</string>
-    <string name="limitations_bullet4_title">نیاز به نصب گواهی CA</string>
-    <string name="limitations_bullet4_desc">برای رله امن ترافیک HTTPS، باید گواهی CA را به صورت دستی نصب کنید. امنیت سخت‌گیرانه اندروید نصب گواهی‌های CA کاربر را دشوار می‌کند و برنامه‌های بومی اغلب آنها را به طور پیش‌فرض نادیده می‌گیرند مگر اینکه پچ شده باشند.</string>
+    <string name="limitations_bullet1_title">پیکربندی دستی پروکسی</string>
+    <string name="limitations_bullet1_desc">تنظیمات پروکسی سراسری توسط سیستم‌عامل اجباری نیستند. برنامه‌هایی مانند فایرفاکس و تلگرام دارای تنظیمات پروکسی داخلی خود هستند و باید به صورت دستی پیکربندی شوند.</string>
+    <string name="limitations_bullet2_title">دسترسی فقط از طریق مرورگر</string>
+    <string name="limitations_bullet2_desc">اگرچه پروکسی سراسری تنظیم شده و برنامه‌هایی مانند X (توییتر) آن را رعایت می‌کنند، اما به دلیل تدابیر امنیتی اندروید کار نخواهند کرد. کاربران در اندروید عملاً به استفاده از مرورگر وب محدود هستند.</string>
+    <string name="limitations_bullet3_title">نصب دستی گواهی CA</string>
+    <string name="limitations_bullet3_desc">نصب گواهی CA برای رله ترافیک HTTPS ضروری است. در اندروید به دلایل امنیتی، سیستم‌عامل نصب این گواهی را بسیار دشوار کرده است و این کاری است که خود کاربر باید به صورت دستی انجام دهد و برنامه نمی‌تواند آن را به صورت خودکار انجام دهد.</string>
     <string name="limitations_dialog_got_it">متوجه شدم</string>
 
     <!-- Desktop Limitations Dialog -->
     <string name="desktop_limitations_dialog_intro">از آنجایی که این برنامه به عنوان یک پروکسی رله HTTP محلی عمل می‌کند، ویژگی‌ها و پارامترهای خاصی در دسکتاپ وجود دارد که باید از آنها آگاه باشید:</string>
-    <string name="desktop_limitations_bullet1_title">پروکسی‌های اختیاری سیستم‌عامل</string>
-    <string name="desktop_limitations_bullet1_desc">پیکربندی پروکسی سراسری سیستم‌عامل کاملاً اختیاری است. شما می‌توانید مرورگرهای فردی (مانند کروم یا فایرفاکس) یا برنامه‌ها را به صورت مستقیم تنظیم کنید تا از رله محلی استفاده کنند بدون اینکه تنظیمات شبکه سیستم‌عامل تغییر کند.</string>
-    <string name="desktop_limitations_bullet2_title">نیاز به نصب گواهی CA</string>
-    <string name="desktop_limitations_bullet2_desc">برای رله و دریافت امن درخواست‌های HTTPS در دسکتاپ، باید گواهی CA تولید شده را در مخزن سیستم یا تنظیمات امنیتی مرورگر خود نصب کنید.</string>
-    <string name="desktop_limitations_bullet3_title">تنظیمات محیط برنامه (Environment Variables)</string>
-    <string name="desktop_limitations_bullet3_desc">ابزارهای خط فرمان (مانند curl، git، یا npm) و برنامه‌های بومی دسکتاپ ممکن است پروکسی سیستم‌عامل را نادیده بگیرند. شما می‌توانید آنها را به صورت دستی با استفاده از متغیرهای محیطی (http_proxy / https_proxy) یا تنظیمات داخلی آنها پیکربندی کنید.</string>
+    <string name="desktop_limitations_bullet1_title">پیکربندی پروکسی</string>
+    <string name="desktop_limitations_bullet1_desc">با اینکه تنظیمات پروکسی به صورت سراسری اعمال می شود اما استفاده از این تنظیمات توسط اپ ها اجباری نیست. برنامه‌هایی مانند فایرفاکس و تلگرام تنظیمات سیستم را نادیده می‌گیرند و نیاز دارند که تنظیمات پروکسی داخلی آن‌ها را به صورت دستی پیکربندی کنید.</string>
+    <string name="desktop_limitations_bullet2_title">نصب گواهی</string>
+    <string name="desktop_limitations_bullet2_desc">نصب گواهی CA برای رله ترافیک HTTPS ضروری است. این یک فرآیند ساده با یک کلیک است و نیاز به انجام کار خاص دیگری ندارد.</string>
 </resources>

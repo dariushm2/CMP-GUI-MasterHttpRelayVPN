@@ -155,22 +155,18 @@ To fully bypass this, you can create multiple deployments on one or more Google 
     <string name="stat_limitations_value">READ</string>
     <string name="limitations_dialog_title">SYSTEM LIMITATIONS</string>
     <string name="limitations_dialog_intro">Because this application operates purely at the application layer as an HTTP relay proxy, there are specific Android platform limitations to be aware of:</string>
-    <string name="limitations_bullet1_title">No Full System Tunneling</string>
-    <string name="limitations_bullet1_desc">Unlike lower-level IP-based VPNs, Android does not allow an application-layer proxy to tunnel or \"blackhole\" the entire operating system\'s network stack by default.</string>
-    <string name="limitations_bullet2_title">Mainly Web Browsers</string>
-    <string name="limitations_bullet2_desc">Although the HTTP proxy is set system-wide on Android, applications are not forced to respect it. Many native apps (e.g. X/Twitter, Instagram, or banking apps) use custom network settings and bypass it completely.</string>
-    <string name="limitations_bullet3_title">Use Web Browser for Apps</string>
-    <string name="limitations_bullet3_desc">For Android, you will need to open services like X (Twitter) or other social media inside your web browser (Chrome, Firefox, etc.) rather than their native apps, as the native apps will not route through the proxy.</string>
-    <string name="limitations_bullet4_title">CA Certificate Requirement</string>
-    <string name="limitations_bullet4_desc">To relay HTTPS traffic securely, you must manually install the CA certificate. Android\'s strict security makes installing user CA certificates difficult, and native apps often ignore them by default unless patched.</string>
+    <string name="limitations_bullet1_title">Proxy Configuration</string>
+    <string name="limitations_bullet1_desc">System-wide proxy settings are not enforced by the OS. Applications like Firefox and Telegram have their own internal proxy settings and must be configured manually.</string>
+    <string name="limitations_bullet2_title">Browser-Only Access</string>
+    <string name="limitations_bullet2_desc">Although a system-wide proxy is configured and native apps like X (Twitter) respect it, it will not work due to Android's security measures. Users are pretty much limited to using web browsers on Android.</string>
+    <string name="limitations_bullet3_title">Manual CA Certificate Installation</string>
+    <string name="limitations_bullet3_desc">Installing a CA certificate is required to route secure HTTPS traffic. On Android, strict OS security makes manual installation highly difficult. This is a task you must perform manually, as the app cannot do it for you.</string>
     <string name="limitations_dialog_got_it">Got it</string>
 
     <!-- Desktop Limitations Dialog -->
     <string name="desktop_limitations_dialog_intro">Because this application operates as a local HTTP relay proxy, there are specific desktop platform parameters to be aware of:</string>
-    <string name="desktop_limitations_bullet1_title">Optional OS Proxies</string>
-    <string name="desktop_limitations_bullet1_desc">Configuring the system-wide OS proxy is completely optional. You can configure individual browsers (like Chrome or Firefox) or applications to use the local relay directly without altering your OS network settings.</string>
-    <string name="desktop_limitations_bullet2_title">CA Certificate Requirement</string>
-    <string name="desktop_limitations_bullet2_desc">To intercept and relay secure HTTPS requests on desktop, you must install the generated CA certificate into your system store or your browser\'s security settings.</string>
-    <string name="desktop_limitations_bullet3_title">Environment Configuration</string>
-    <string name="desktop_limitations_bullet3_desc">Command-line tools (like curl, git, or npm) and native desktop apps may ignore the OS proxy. You can configure them manually using environment variables (http_proxy / https_proxy) or custom settings.</string>
+    <string name="desktop_limitations_bullet1_title">Manual Proxy Configuration</string>
+    <string name="desktop_limitations_bullet1_desc">System-wide proxy settings are not enforced by the OS. Applications like Firefox and Telegram bypass system settings and require you to configure their internal proxy settings manually.</string>
+    <string name="desktop_limitations_bullet2_title">CA Installation</string>
+    <string name="desktop_limitations_bullet2_desc">Installing a CA certificate is required to relay HTTPS traffic. This is a simple one-click action that requires minimal effort.</string>
 </resources>
