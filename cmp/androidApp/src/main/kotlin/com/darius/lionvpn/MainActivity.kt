@@ -1,7 +1,10 @@
 package com.darius.lionvpn
 
+import android.Manifest
 import android.content.Context
+import android.content.pm.PackageManager
 import android.net.VpnService
+import android.os.Build
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -10,6 +13,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import com.darius.lionvpn.config.*
 import com.darius.lionvpn.model.AndroidUiEffect
@@ -55,6 +59,20 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    private var pendingVpnConnectionAction: (() -> Unit)? = null
+
+    private val requestNotificationPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            ProxyService.addLogLine(VpnLogger.formatInfo("Notification permission granted."))
+        } else {
+            ProxyService.addLogLine(VpnLogger.formatInfo("Notification permission denied."))
+        }
+        pendingVpnConnectionAction?.invoke()
+        pendingVpnConnectionAction = null
+    }
+
     override fun attachBaseContext(newBase: Context) {
         val languageManager = VpnLanguageManager(VpnPreferencesManager(newBase))
         super.attachBaseContext(languageManager.applyLocaleToContext(newBase))
@@ -94,17 +112,7 @@ class MainActivity : ComponentActivity() {
                         }
                     }
                     is AndroidUiEffect.ConnectVpn -> {
-                        val isRunning = ProxyService.isVpnRunning.value
-                        if (isRunning) {
-                            vpnServiceManager.stopVpnService()
-                        } else {
-                            val vpnIntent = VpnService.prepare(this@MainActivity)
-                            if (vpnIntent != null) {
-                                vpnPrepareLauncher.launch(vpnIntent)
-                            } else {
-                                vpnServiceManager.startVpnService()
-                            }
-                        }
+                        handleConnectVpn()
                     }
                     is AndroidUiEffect.CheckAndSaveCertificate -> {
                         lifecycleScope.launch {
@@ -163,6 +171,37 @@ class MainActivity : ComponentActivity() {
                 CertInstructionsDialog(
                     onDismiss = { vm.setInstructionsDialogVisible(false) }
                 )
+            }
+        }
+    }
+
+    private fun handleConnectVpn() {
+        val isRunning = ProxyService.isVpnRunning.value
+        if (isRunning) {
+            vpnServiceManager.stopVpnService()
+        } else {
+            val startVpnAction = {
+                val vpnIntent = VpnService.prepare(this@MainActivity)
+                if (vpnIntent != null) {
+                    vpnPrepareLauncher.launch(vpnIntent)
+                } else {
+                    vpnServiceManager.startVpnService()
+                }
+            }
+
+            if (Build.VERSION.SDK_INT >= 33) {
+                if (ContextCompat.checkSelfPermission(
+                        this@MainActivity,
+                        Manifest.permission.POST_NOTIFICATIONS
+                    ) == PackageManager.PERMISSION_GRANTED
+                ) {
+                    startVpnAction()
+                } else {
+                    pendingVpnConnectionAction = startVpnAction
+                    requestNotificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                }
+            } else {
+                startVpnAction()
             }
         }
     }
