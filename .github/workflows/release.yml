@@ -219,7 +219,7 @@ jobs:
           
           # Copy Android APK and AAB (no compression needed for installable packages)
           if [ -d "final-assets/lion-vpn-android" ]; then
-            cp final-assets/lion-vpn-android/* release-dist/
+            find final-assets/lion-vpn-android -type f \( -name "*.apk" -o -name "*.aab" \) -exec cp {} release-dist/ \;
           fi
           
           echo "Compressed release files:"
