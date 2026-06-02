@@ -16,6 +16,11 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Dashboard
 import androidx.compose.material.icons.filled.Info
@@ -61,6 +66,7 @@ fun Sidebar(
 ) {
     Column(
         modifier = modifier
+            .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Start))
             .width(240.dp)
             .fillMaxHeight()
             .background(surfaceContainerLowest)
