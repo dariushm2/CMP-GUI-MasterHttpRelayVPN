@@ -42,12 +42,9 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.window.DialogProperties
 import com.darius.lionvpn.Constants
 import com.darius.lionvpn.ui.home.Event
 import com.darius.lionvpn.ui.home.HomeState
@@ -77,17 +74,42 @@ import lion_vpn.shared.generated.resources.error_invalid_json
 import lion_vpn.shared.generated.resources.json_syntax_error
 import lion_vpn.shared.generated.resources.settings_saved_success
 import org.jetbrains.compose.resources.stringResource
+import androidx.compose.foundation.layout.safeDrawingPadding
 
 @Composable
-expect fun EditConfigDialog(
+expect fun PlatformDialog(
+    onDismissRequest: () -> Unit,
+    content: @Composable () -> Unit
+)
+
+@Composable
+fun EditConfigDialog(
     state: HomeState,
     onClick: (Event) -> Unit,
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier
-)
+) {
+    PlatformDialog(onDismissRequest = onDismiss) {
+        Surface(
+            modifier = modifier
+                .fillMaxSize()
+                .padding(16.dp)
+                .safeDrawingPadding(),
+            shape = roundedLg,
+            color = surfaceContainerLowest,
+            border = borderStrokeGlass()
+        ) {
+            ConfigDialogContent(
+                state = state,
+                onClick = onClick,
+                onDismiss = onDismiss
+            )
+        }
+    }
+}
 
 @Composable
-fun ConfigDialogContent(
+private fun ConfigDialogContent(
     state: HomeState,
     onClick: (Event) -> Unit,
     onDismiss: () -> Unit,
@@ -316,10 +338,10 @@ private fun ConfigDialogSuccessToast(
     visible: Boolean,
     modifier: Modifier = Modifier
 ) {
-    androidx.compose.animation.AnimatedVisibility(
+    AnimatedVisibility(
         visible = visible,
-        enter = androidx.compose.animation.fadeIn() + androidx.compose.animation.slideInVertically(initialOffsetY = { it / 2 }),
-        exit = androidx.compose.animation.fadeOut() + androidx.compose.animation.slideOutVertically(targetOffsetY = { it / 2 }),
+        enter = fadeIn() + slideInVertically(initialOffsetY = { it / 2 }),
+        exit = fadeOut() + slideOutVertically(targetOffsetY = { it / 2 }),
         modifier = modifier
             .fillMaxWidth()
             .padding(bottom = 16.dp),
