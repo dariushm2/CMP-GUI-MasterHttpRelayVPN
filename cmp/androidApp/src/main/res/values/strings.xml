@@ -2,4 +2,18 @@
     <string name="app_name">Lion VPN</string>
 
     <string name="announcements_name">Announcements</string>
+
+    <!-- CA Certificate Installation Dialog -->
+    <string name="cert_dialog_title">Install HTTPS CA Certificate</string>
+    <string name="cert_dialog_desc">To successfully intercept and relay HTTPS traffic, you must install the generated CA certificate as a trusted credential on your device.</string>
+    <string name="cert_dialog_steps_intro">Please follow these manual steps precisely:</string>
+    <string name="cert_dialog_step1">1. Locate the file: The certificate has been saved to your storage as \'lion_vpn_ca.crt\'.</string>
+    <string name="cert_dialog_step2">2. Open security settings: Tap the \'Open Security Settings\' button below.</string>
+    <string name="cert_dialog_step3">3. Go to credentials: Find \'More security settings\' -&gt; \'Encryption &amp; credentials\' (or \'Install from device storage\').</string>
+    <string name="cert_dialog_step4">4. Choose CA certificate: Tap \'Install a certificate\' -&gt; \'CA certificate\'.</string>
+    <string name="cert_dialog_step5">5. Confirm warning: Tap \'Install anyway\' on the security warning.</string>
+    <string name="cert_dialog_step6">6. Select the file: Locate and select \'lion_vpn_ca.crt\' from your saved folder.</string>
+    <string name="cert_dialog_btn_open_settings">Open Security Settings</string>
+    <string name="cert_dialog_btn_close">Close</string>
+    <string name="cert_dialog_err_open_settings">Could not open system settings automatically.</string>
 </resources>
