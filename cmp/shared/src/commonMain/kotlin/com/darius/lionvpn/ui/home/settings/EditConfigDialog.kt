@@ -79,35 +79,15 @@ import lion_vpn.shared.generated.resources.settings_saved_success
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-fun EditConfigDialog(
+expect fun EditConfigDialog(
     state: HomeState,
     onClick: (Event) -> Unit,
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier
-) {
-    Dialog(
-        onDismissRequest = onDismiss,
-        properties = DialogProperties(usePlatformDefaultWidth = false)
-    ) {
-        Surface(
-            modifier = modifier
-                .fillMaxSize()
-                .padding(16.dp),
-            shape = roundedLg,
-            color = surfaceContainerLowest,
-            border = borderStrokeGlass()
-        ) {
-            ConfigDialogContent(
-                state = state,
-                onClick = onClick,
-                onDismiss = onDismiss
-            )
-        }
-    }
-}
+)
 
 @Composable
-private fun ConfigDialogContent(
+fun ConfigDialogContent(
     state: HomeState,
     onClick: (Event) -> Unit,
     onDismiss: () -> Unit,
