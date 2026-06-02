@@ -55,6 +55,12 @@ class ProxyService : VpnService() {
         } else if (action == ACTION_START) {
             val configJson = intent.getStringExtra(EXTRA_CONFIG) ?: "{}"
             startProxy(configJson)
+        } else if (action == ACTION_REPOST_NOTIFICATION) {
+            if (_isVpnRunning.value) {
+                Timber.i("Notification swiped away while VPN is running. Re-posting...")
+                val notification = createNotification()
+                startForeground(NOTIFICATION_ID, notification)
+            }
         }
 
         return START_STICKY
@@ -225,16 +231,27 @@ class ProxyService : VpnService() {
             this, 0, mainIntent, pendingIntentFlags
         )
 
-        return NotificationCompat.Builder(this, CHANNEL_ID)
+        val deleteIntent = Intent(this, ProxyService::class.java).apply {
+            action = ACTION_REPOST_NOTIFICATION
+        }
+        val deletePendingIntent = PendingIntent.getService(
+            this, 1, deleteIntent, pendingIntentFlags
+        )
+
+        val notification = NotificationCompat.Builder(this, CHANNEL_ID)
             .setContentTitle("Lion VPN Server Active")
             .setContentText("HTTP & SOCKS5 proxy running in background")
             .setSmallIcon(android.R.drawable.ic_menu_share) // Using standard system icon
             .setContentIntent(mainPendingIntent)
+            .setDeleteIntent(deletePendingIntent)
             .setOngoing(true)
             .setCategory(NotificationCompat.CATEGORY_SERVICE)
             .setPriority(NotificationCompat.PRIORITY_LOW)
             .addAction(android.R.drawable.ic_menu_close_clear_cancel, "Disconnect", stopPendingIntent)
             .build()
+
+        notification.flags = notification.flags or Notification.FLAG_NO_CLEAR or Notification.FLAG_ONGOING_EVENT
+        return notification
     }
 
     companion object {
@@ -243,6 +260,7 @@ class ProxyService : VpnService() {
 
         const val ACTION_START = "START"
         const val ACTION_STOP = "STOP"
+        const val ACTION_REPOST_NOTIFICATION = "REPOST_NOTIFICATION"
         const val EXTRA_CONFIG = "CONFIG"
 
         private val _isVpnRunning = MutableStateFlow(false)
