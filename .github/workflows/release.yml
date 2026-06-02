@@ -1,4 +1,4 @@
-name: Desktop Release
+name: App Release
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
@@ -6,11 +6,11 @@ env:
 on:
   push:
     tags:
-      - "gui-v*"
+      - "v*"
   workflow_dispatch:
     inputs:
       release_tag:
-        description: "Tag name to publish (example: gui-v1.0.0). If empty, tag is auto-read from project configuration."
+        description: "Tag name to publish (example: v1.0.0). If empty, tag is auto-read from project configuration."
         required: false
         type: string
       publish:
@@ -23,7 +23,7 @@ permissions:
   contents: write
 
 jobs:
-  build-desktop-gui:
+  build-desktop:
     name: Build for ${{ matrix.platform }} (${{ matrix.arch }})
     runs-on: ${{ matrix.os }}
     strategy:
@@ -111,11 +111,41 @@ jobs:
           path: ${{ matrix.upload-path }}
           if-no-files-found: error
 
-  publish-gui-release:
-    name: Publish Desktop Release
+  build-android:
+    name: Build for Android
     runs-on: ubuntu-latest
-    needs: build-desktop-gui
-    if: always() && !cancelled() && (startsWith(github.ref, 'refs/tags/gui-v') || (github.event_name == 'workflow_dispatch' && github.event.inputs.publish == 'true'))
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: "jetbrains"
+          java-version: "21"
+          cache: "gradle"
+
+      - name: Build Android APK & AAB
+        shell: bash
+        working-directory: cmp
+        run: |
+          chmod +x gradlew
+          ./gradlew :androidApp:assembleRelease :androidApp:bundleRelease --no-daemon
+
+      - name: Upload Android Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: lion-vpn-android
+          path: |
+            cmp/androidApp/build/outputs/apk/release/*.apk
+            cmp/androidApp/build/outputs/bundle/release/*.aab
+          if-no-files-found: error
+
+  publish-release:
+    name: Publish App Release
+    runs-on: ubuntu-latest
+    needs: [build-desktop, build-android]
+    if: always() && !cancelled() && (startsWith(github.ref, 'refs/tags/v') || (github.event_name == 'workflow_dispatch' && github.event.inputs.publish == 'true'))
 
     steps:
       - name: Checkout Repository
@@ -124,14 +154,14 @@ jobs:
       - name: Resolve Release Tag
         id: resolve_tag
         run: |
-          if [[ "${{ github.ref }}" == refs/tags/gui-v* ]]; then
+          if [[ "${{ github.ref }}" == refs/tags/v* ]]; then
             TAG_NAME="${{ github.ref_name }}"
           elif [[ -n "${{ github.event.inputs.release_tag }}" ]]; then
             TAG_NAME="${{ github.event.inputs.release_tag }}"
           else
             # Extract from cmp/project-config.gradle.kts
             VERSION=$(grep 'versionName' cmp/project-config.gradle.kts | cut -d'"' -f2)
-            TAG_NAME="gui-v$VERSION"
+            TAG_NAME="v$VERSION"
           fi
           echo "tag_name=$TAG_NAME" >> $GITHUB_OUTPUT
           echo "Using release tag: $TAG_NAME"
@@ -139,7 +169,7 @@ jobs:
       - name: Download all built artifacts
         uses: actions/download-artifact@v4
         with:
-          path: final-gui-assets
+          path: final-assets
 
       - name: Prepare and Compress Assets for Release
         run: |
@@ -147,7 +177,7 @@ jobs:
           
           # Compress Windows amd64
           mkdir -p temp-win-amd64
-          mv final-gui-assets/lion-vpn-windows-amd64 temp-win-amd64/lion-vpn
+          mv final-assets/lion-vpn-windows-amd64 temp-win-amd64/lion-vpn
           cd temp-win-amd64
           zip -r ../release-dist/lion-vpn-windows-amd64.zip lion-vpn
           cd ..
@@ -155,7 +185,7 @@ jobs:
           
           # Compress Windows arm64
           mkdir -p temp-win-arm64
-          mv final-gui-assets/lion-vpn-windows-arm64 temp-win-arm64/lion-vpn
+          mv final-assets/lion-vpn-windows-arm64 temp-win-arm64/lion-vpn
           cd temp-win-arm64
           zip -r ../release-dist/lion-vpn-windows-arm64.zip lion-vpn
           cd ..
@@ -163,7 +193,7 @@ jobs:
           
           # Compress Linux amd64
           mkdir -p temp-linux-amd64
-          mv final-gui-assets/lion-vpn-linux-amd64 temp-linux-amd64/lion-vpn
+          mv final-assets/lion-vpn-linux-amd64 temp-linux-amd64/lion-vpn
           cd temp-linux-amd64
           tar -czf ../release-dist/lion-vpn-linux-amd64.tar.gz lion-vpn
           cd ..
@@ -171,21 +201,26 @@ jobs:
           
           # Compress Linux arm64
           mkdir -p temp-linux-arm64
-          mv final-gui-assets/lion-vpn-linux-arm64 temp-linux-arm64/lion-vpn
+          mv final-assets/lion-vpn-linux-arm64 temp-linux-arm64/lion-vpn
           cd temp-linux-arm64
           tar -czf ../release-dist/lion-vpn-linux-arm64.tar.gz lion-vpn
           cd ..
           rm -rf temp-linux-arm64
           
           # Compress macOS amd64
-          cd final-gui-assets/lion-vpn-macos-amd64
+          cd final-assets/lion-vpn-macos-amd64
           zip -r -y ../../release-dist/lion-vpn-macos-amd64.zip lion-vpn.app
           cd ../..
           
           # Compress macOS arm64
-          cd final-gui-assets/lion-vpn-macos-arm64
+          cd final-assets/lion-vpn-macos-arm64
           zip -r -y ../../release-dist/lion-vpn-macos-arm64.zip lion-vpn.app
           cd ../..
+          
+          # Copy Android APK and AAB (no compression needed for installable packages)
+          if [ -d "final-assets/lion-vpn-android" ]; then
+            cp final-assets/lion-vpn-android/* release-dist/
+          fi
           
           echo "Compressed release files:"
           ls -lah release-dist
