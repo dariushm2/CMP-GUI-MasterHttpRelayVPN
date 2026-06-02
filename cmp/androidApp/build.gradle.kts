@@ -32,7 +32,7 @@ extensions.configure<ApplicationExtension> {
         versionCode = rootProject.extra["versionCode"] as Int
         versionName = rootProject.extra["versionName"] as String
         ndk {
-            abiFilters += listOf("armeabi-v7a", "arm64-v8a", "x86", "x86_64")
+            abiFilters += listOf("arm64-v8a")
         }
     }
 
@@ -119,7 +119,7 @@ dependencies {
 
 fun getApkName(versionName: String, buildType: String): String {
     val date = SimpleDateFormat("yyyy-MM-dd").format(Date())
-    return "lion-vpn-$versionName-$buildType-$date.apk"
+    return "lion-vpn-$versionName-arm64-v8a-$buildType-$date.apk"
 }
 
 fun Project.getOrDownloadPython(): String {
