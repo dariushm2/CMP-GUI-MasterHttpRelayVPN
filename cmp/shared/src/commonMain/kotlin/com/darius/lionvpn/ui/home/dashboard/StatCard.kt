@@ -19,6 +19,10 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -104,24 +108,14 @@ fun StatCard(
 }
 
 @Composable
-fun EmptyStatCard(modifier: Modifier = Modifier) {
-    Card(
-        modifier = modifier,
-        shape = roundedMd,
-        colors = CardDefaults.cardColors(containerColor = Color(0x0A1E293B)),
-        border = BorderStroke(1.dp, Color(0x1BFFFFFF))
-    ) {
-        Box(modifier = Modifier.fillMaxSize())
-    }
-}
-
-@Composable
 fun StatsPanelGrid(
     activeConfig: SavedConfig?,
     executionCount: Int,
     totalScriptsCount: Int,
     modifier: Modifier = Modifier
 ) {
+    var showLimitationsDialog by remember { mutableStateOf(false) }
+
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(gutter)
@@ -156,9 +150,16 @@ fun StatsPanelGrid(
                 iconColor = primary,
                 modifier = Modifier.weight(1f).fillMaxHeight()
             )
-            EmptyStatCard(
+            LimitationsStatCard(
+                onClick = { showLimitationsDialog = true },
                 modifier = Modifier.weight(1f).fillMaxHeight()
             )
         }
+    }
+
+    if (showLimitationsDialog) {
+        LimitationsDialog(
+            onDismiss = { showLimitationsDialog = false }
+        )
     }
 }
