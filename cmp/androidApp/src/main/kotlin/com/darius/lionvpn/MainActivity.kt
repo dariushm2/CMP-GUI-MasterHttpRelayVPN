@@ -18,6 +18,7 @@ import androidx.lifecycle.lifecycleScope
 import com.darius.lionvpn.config.*
 import com.darius.lionvpn.model.AndroidUiEffect
 import com.darius.lionvpn.ui.home.Event
+import com.darius.lionvpn.ui.CertInstructionsDialog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
