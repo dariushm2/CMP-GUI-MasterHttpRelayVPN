@@ -125,20 +125,18 @@ jobs:
           java-version: "21"
           cache: "gradle"
 
-      - name: Build Android APK & AAB
+      - name: Build Android APK
         shell: bash
         working-directory: cmp
         run: |
           chmod +x gradlew
-          ./gradlew :androidApp:assembleRelease :androidApp:bundleRelease --no-daemon
+          ./gradlew :androidApp:assembleRelease --no-daemon
 
       - name: Upload Android Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: lion-vpn-android
-          path: |
-            cmp/androidApp/build/outputs/apk/release/*.apk
-            cmp/androidApp/build/outputs/bundle/release/*.aab
+          path: cmp/androidApp/build/outputs/apk/release/*.apk
           if-no-files-found: error
 
   publish-release:
@@ -217,9 +215,9 @@ jobs:
           zip -r -y ../../release-dist/lion-vpn-macos-arm64.zip lion-vpn.app
           cd ../..
           
-          # Copy Android APK and AAB (no compression needed for installable packages)
+          # Copy Android APK (no compression needed for installable packages)
           if [ -d "final-assets/lion-vpn-android" ]; then
-            find final-assets/lion-vpn-android -type f \( -name "*.apk" -o -name "*.aab" \) -exec cp {} release-dist/ \;
+            find final-assets/lion-vpn-android -type f -name "*.apk" -exec cp {} release-dist/ \;
           fi
           
           echo "Compressed release files:"
