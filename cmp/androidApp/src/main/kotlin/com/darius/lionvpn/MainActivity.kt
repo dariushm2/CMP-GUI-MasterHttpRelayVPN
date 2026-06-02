@@ -78,6 +78,16 @@ class MainActivity : ComponentActivity() {
         super.attachBaseContext(languageManager.applyLocaleToContext(newBase))
     }
 
+    override fun onConfigurationChanged(newConfig: android.content.res.Configuration) {
+        val lang = vpnPreferencesManager.loadLanguageFromPrefs()
+        val locale = java.util.Locale.forLanguageTag(lang.label)
+        java.util.Locale.setDefault(locale)
+        newConfig.setLocales(android.os.LocaleList(locale))
+        newConfig.setLayoutDirection(locale)
+        super.onConfigurationChanged(newConfig)
+        vpnLanguageManager.applyLocaleToContext(this)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 

@@ -13,9 +13,15 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.NavigationRail
+import androidx.compose.material3.NavigationRailDefaults
 import androidx.compose.material3.NavigationRailItem
 import androidx.compose.material3.NavigationRailItemDefaults
 import androidx.compose.material3.Text
@@ -41,11 +47,17 @@ fun NavigationRailBar(
     modifier: Modifier = Modifier
 ) {
     val scrollState = rememberScrollState()
-    BoxWithConstraints(modifier = modifier.fillMaxHeight().width(72.dp)) {
+    BoxWithConstraints(
+        modifier = modifier
+            .fillMaxHeight()
+            .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Start))
+            .width(72.dp)
+    ) {
         val allItemsVisible = maxHeight >= 520.dp
 
         NavigationRail(
             containerColor = surfaceContainerLowest,
+            windowInsets = NavigationRailDefaults.windowInsets.only(WindowInsetsSides.Vertical),
             header = {
                 // Compact Logo - padding collapses to minimal when space is constrained
                 Text(
