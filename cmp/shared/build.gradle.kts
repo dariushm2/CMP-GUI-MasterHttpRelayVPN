@@ -10,7 +10,14 @@ plugins {
     alias(libs.plugins.detekt)
 }
 
+detekt {
+    toolVersion = libs.versions.detekt.get()
+    config.setFrom(file("${rootDir}/dependencies/detekt/detekt.yml"))
+    buildUponDefaultConfig = true
+}
+
 val generateBuildConfig = tasks.register("generateBuildConfig") {
+    description = "Generate SharedBuildConfig"
     val buildConfigDir = layout.buildDirectory.dir("generated/source/buildConfig/commonMain/kotlin")
     outputs.dir(buildConfigDir)
     doLast {
@@ -35,11 +42,12 @@ kotlin {
         compilerOptions {
             jvmTarget = JvmTarget.JVM_21
         }
+        androidResources {
+            enable = true
+        }
     }
 
-
     listOf(
-        iosX64(),
         iosArm64(),
         iosSimulatorArm64()
     ).forEach { iosTarget ->
@@ -56,40 +64,38 @@ kotlin {
             kotlin.srcDir(generateBuildConfig)
         }
         androidMain.dependencies {
-            implementation(compose.preview)
+            implementation(libs.ui.tooling.preview)
             implementation(libs.androidx.activity.compose)
 
-            implementation(libs.ktor.okhttp) // OkHttp for Android
+            implementation(libs.ktor.okhttp)
             implementation(libs.koin.android)
 
             implementation(libs.timber)
         }
         iosMain.dependencies {
-            implementation(libs.ktor.darwin) // Native Darwin client for iOS
-            implementation(libs.kotlinx.coroutinesCore) // Native coroutines
+            implementation(libs.ktor.darwin)
+            implementation(libs.kotlinx.coroutinesCore)
         }
         commonMain.dependencies {
-            implementation(compose.runtime)
-            implementation(compose.foundation)
-            implementation(compose.material3)
-            implementation(compose.materialIconsExtended)
-            implementation(compose.ui)
-            implementation(compose.components.resources)
-            implementation(compose.components.uiToolingPreview)
+            implementation(libs.runtime)
+            implementation(libs.foundation)
+            implementation(libs.material3)
+            implementation(libs.material.icons.extended)
+            implementation(libs.ui)
+            implementation(libs.components.resources)
+            implementation(libs.ui.tooling.preview)
             implementation(libs.jetbrainsNavigationCompose)
             implementation(libs.androidx.lifecycle.viewmodel)
             implementation(libs.androidx.lifecycle.runtime.compose)
 
-            implementation(libs.ktor.client.core) // Core Ktor client
+            implementation(libs.ktor.client.core)
             implementation(libs.ktor.client.content)
-            implementation(libs.ktor.client.serialization) // JSON serialization
+            implementation(libs.ktor.client.serialization)
             implementation(libs.ktor.serialization.kotlinx)
             implementation(libs.kotlinx.serialization)
-            implementation(libs.koin.core) // Adjust version as needed
-            implementation(libs.koin.compose) // Adjust version as needed
-            implementation(libs.koin.compose.viewmodel) // Adjust version as needed
-            implementation(libs.koin.test) // Optional: For testing
-
+            implementation(libs.koin.core)
+            implementation(libs.koin.compose)
+            implementation(libs.koin.compose.viewmodel)
         }
 
         jvmMain.dependencies {
@@ -104,5 +110,5 @@ compose.resources {
 }
 
 dependencies {
-
+    detektPlugins(libs.detekt.formatting)
 }
