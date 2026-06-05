@@ -35,11 +35,12 @@ kotlin {
         compilerOptions {
             jvmTarget = JvmTarget.JVM_21
         }
+        androidResources {
+            enable = true
+        }
     }
 
-
     listOf(
-        iosX64(),
         iosArm64(),
         iosSimulatorArm64()
     ).forEach { iosTarget ->

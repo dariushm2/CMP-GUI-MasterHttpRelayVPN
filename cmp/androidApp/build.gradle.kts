@@ -90,15 +90,14 @@ androidComponents {
 
 dependencies {
     implementation(projects.shared)
-    implementation(compose.foundation)
-    implementation(compose.material3)
-    implementation(compose.ui)
-    implementation(compose.materialIconsExtended)
+    implementation(libs.foundation)
+    implementation(libs.material3)
+    implementation(libs.ui)
+    implementation(libs.material.icons.extended)
+    implementation(libs.androidx.activity.compose)
+    implementation(libs.ui.tooling.preview)
 
     implementation(libs.timber)
-
-    implementation(compose.preview)
-    implementation(libs.androidx.activity.compose)
 
     implementation(libs.ktor.okhttp) // OkHttp for Android
     implementation(libs.koin.android)
@@ -107,14 +106,6 @@ dependencies {
     implementation(libs.koin.core)
     implementation(libs.koin.compose)
     implementation(libs.koin.compose.viewmodel)
-    implementation(libs.koin.test)
-
-    testImplementation(libs.kotlin.test)
-    testImplementation(libs.junit)
-    testImplementation(libs.mockito.core)
-    testImplementation(libs.mockito.kotlin)
-    testImplementation(libs.turbine)
-    testImplementation(libs.coroutines.test)
 }
 
 fun getApkName(versionName: String, buildType: String): String {
