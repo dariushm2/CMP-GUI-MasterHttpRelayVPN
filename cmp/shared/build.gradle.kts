@@ -11,8 +11,8 @@ plugins {
 }
 
 detekt {
-    toolVersion = libs.versions.detekt.toString()
-    config.setFrom(file("${rootDir}/dependencies/detekt/detekt.gradle"))
+    toolVersion = libs.versions.detekt.get()
+    config.setFrom(file("${rootDir}/dependencies/detekt/detekt.yml"))
     buildUponDefaultConfig = true
 }
 
@@ -110,5 +110,5 @@ compose.resources {
 }
 
 dependencies {
-
+    detektPlugins(libs.detekt.formatting)
 }
