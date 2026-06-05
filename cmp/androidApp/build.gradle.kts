@@ -19,7 +19,11 @@ kotlin {
     }
 }
 
-apply(from = file("${rootProject.rootDir}/dependencies/detekt/detekt.gradle"))
+detekt {
+    toolVersion = libs.versions.detekt.toString()
+    config.setFrom(file("${rootDir}/dependencies/detekt/detekt.gradle"))
+    buildUponDefaultConfig = true
+}
 
 extensions.configure<ApplicationExtension> {
     namespace = "com.darius.lionvpn"
@@ -200,6 +204,7 @@ chaquopy {
 }
 
 val copyPythonSources = tasks.register<Copy>("copyPythonSources") {
+    description = "Copy python src dir into Android python/src dir"
     from(file("../../src"))
     into(file("src/main/python/src"))
 }

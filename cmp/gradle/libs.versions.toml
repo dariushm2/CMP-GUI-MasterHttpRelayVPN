@@ -26,10 +26,12 @@ androidx-lifecycle-viewmodel = { group = "org.jetbrains.androidx.lifecycle", nam
 androidx-lifecycle-runtime-compose = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
 
 foundation = { module = "org.jetbrains.compose.foundation:foundation", version.ref = "compose-multiplatform" }
+runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "compose-multiplatform" }
+material3 = { module = "org.jetbrains.compose.material3:material3", version.ref = "material3" }
 ui = { module = "org.jetbrains.compose.ui:ui", version.ref = "compose-multiplatform" }
 ui-tooling-preview = { module = "org.jetbrains.compose.ui:ui-tooling-preview", version.ref = "compose-multiplatform" }
+components-resources = { module = "org.jetbrains.compose.components:components-resources", version.ref = "compose-multiplatform" }
 material-icons-extended = { module = "org.jetbrains.compose.material:material-icons-extended", version.ref = "materialIconsExtended" }
-material3 = { module = "org.jetbrains.compose.material3:material3", version.ref = "material3" }
 
 ktor-okhttp = { group = "io.ktor", name = "ktor-client-okhttp", version.ref = "ktor-client" }
 ktor-darwin = { group = "io.ktor", name = "ktor-client-darwin", version.ref = "ktor-client" }
@@ -44,7 +46,6 @@ jetbrainsNavigationCompose = { group = "org.jetbrains.androidx.navigation", name
 
 koin-android = { group = "io.insert-koin", name = "koin-android", version.ref = "koin" }
 koin-core = { group = "io.insert-koin", name = "koin-core", version.ref = "koin" }
-koin-test = { group = "io.insert-koin", name = "koin-test", version.ref = "koin" }
 koin-compose = { group = "io.insert-koin", name = "koin-compose", version.ref = "koin-compose" }
 koin-compose-viewmodel = { group = "io.insert-koin", name = "koin-compose-viewmodel", version.ref = "koin-compose" }
 

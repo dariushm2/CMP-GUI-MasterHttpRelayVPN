@@ -7,11 +7,17 @@ plugins {
     alias(libs.plugins.detekt)
 }
 
+detekt {
+    toolVersion = libs.versions.detekt.toString()
+    config.setFrom(file("${rootDir}/dependencies/detekt/detekt.gradle"))
+    buildUponDefaultConfig = true
+}
+
 dependencies {
     implementation(projects.shared)
-    implementation(compose.foundation)
+    implementation(libs.foundation)
     implementation(compose.desktop.currentOs)
-    implementation(compose.components.resources)
+    implementation(libs.components.resources)
     implementation(libs.kotlinx.coroutinesSwing)
     implementation(libs.kotlinx.serialization)
 
@@ -20,11 +26,11 @@ dependencies {
     implementation(libs.koin.core)
     implementation(libs.koin.compose)
     implementation(libs.koin.compose.viewmodel)
-    implementation(libs.koin.test)
 }
 
 
 val prepareAppResourcesForPackaging = tasks.register<Copy>("prepareAppResourcesForPackaging") {
+    description = "Bundle the python executable into resources"
     dependsOn("bundlePythonExecutable")
     val os = System.getProperty("os.name").lowercase()
     val platformDirName = when {
