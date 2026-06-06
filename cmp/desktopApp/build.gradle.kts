@@ -110,7 +110,7 @@ tasks.register<Exec>("bundlePythonExecutable") {
         "python3"
     }
 
-    commandLine(pythonCmd, "cmp/bundle_for_gui.py")
+    commandLine(pythonCmd, "cmp/desktopApp/bundle_python.py")
 }
 
 // Hook the bundle task into standard execution and packaging tasks

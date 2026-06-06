@@ -70,7 +70,7 @@ def check_and_bootstrap_venv() -> None:
         return
 
     script_dir = Path(__file__).resolve().parent
-    repo_root = script_dir.parent
+    repo_root = script_dir.parent.parent
     venv_dir = repo_root / ".venv"
 
     if sys.platform.startswith("win"):
@@ -102,9 +102,9 @@ def main() -> int:
     parser.add_argument("--force", action="store_true", help="Force rebuild even if sources haven't changed.")
     args = parser.parse_args()
 
-    # Determine absolute paths relative to cmp root
+    # Determine absolute paths relative to desktopApp
     script_dir = Path(__file__).resolve().parent
-    repo_root = script_dir.parent
+    repo_root = script_dir.parent.parent
 
     # Switch working directory to repo root so relative paths work
     os.chdir(repo_root)
