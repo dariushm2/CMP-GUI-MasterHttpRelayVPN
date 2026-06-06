@@ -11,6 +11,7 @@ detekt {
     toolVersion = libs.versions.detekt.get()
     config.setFrom(file("${rootDir}/dependencies/detekt/detekt.yml"))
     buildUponDefaultConfig = true
+    autoCorrect = true
 }
 
 dependencies {

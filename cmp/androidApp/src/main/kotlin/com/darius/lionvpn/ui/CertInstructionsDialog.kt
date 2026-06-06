@@ -33,9 +33,18 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import com.darius.lionvpn.R
 import com.darius.lionvpn.ProxyService
-import com.darius.lionvpn.ui.theme.*
+import com.darius.lionvpn.R
+import com.darius.lionvpn.ui.theme.bodyMd
+import com.darius.lionvpn.ui.theme.bodySm
+import com.darius.lionvpn.ui.theme.borderStrokeGlass
+import com.darius.lionvpn.ui.theme.gutter
+import com.darius.lionvpn.ui.theme.onSurface
+import com.darius.lionvpn.ui.theme.onSurfaceVariant
+import com.darius.lionvpn.ui.theme.primary
+import com.darius.lionvpn.ui.theme.roundedLg
+import com.darius.lionvpn.ui.theme.surfaceContainerLow
+import com.darius.lionvpn.ui.theme.titleSm
 
 @Composable
 fun CertInstructionsDialog(
@@ -53,13 +62,13 @@ fun CertInstructionsDialog(
         )
     ) {
         Surface(
-            modifier = Modifier
-                .fillMaxWidth(0.9f)
-                .padding(16.dp)
-                .safeDrawingPadding(),
             shape = roundedLg,
             color = surfaceContainerLow,
-            border = borderStrokeGlass()
+            border = borderStrokeGlass(),
+            modifier = Modifier
+                .fillMaxWidth(DIALOG_WIDTH_FRACTION)
+                .padding(16.dp)
+                .safeDrawingPadding()
         ) {
             Column(
                 modifier = Modifier
@@ -69,11 +78,11 @@ fun CertInstructionsDialog(
             ) {
                 CertInstructionsHeader(onDismiss = onDismiss)
 
-                HorizontalDivider(color = Color(0x33DAE2FD))
+                HorizontalDivider(color = Color(DIVIDER_COLOR_HEX))
 
                 CertInstructionsContent()
 
-                HorizontalDivider(color = Color(0x33DAE2FD))
+                HorizontalDivider(color = Color(DIVIDER_COLOR_HEX))
 
                 CertInstructionsActionButtons(
                     onDismiss = onDismiss,
@@ -88,7 +97,7 @@ fun CertInstructionsDialog(
 @Composable
 private fun CertInstructionsHeader(
     onDismiss: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Row(
         modifier = modifier.fillMaxWidth(),
@@ -125,7 +134,7 @@ private fun CertInstructionsHeader(
 
 @Composable
 private fun CertInstructionsContent(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -175,7 +184,7 @@ private fun CertInstructionsActionButtons(
     onDismiss: () -> Unit,
     context: Context,
     errMessage: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Row(
         modifier = modifier.fillMaxWidth(),
@@ -207,3 +216,6 @@ private fun CertInstructionsActionButtons(
         }
     }
 }
+
+private const val DIALOG_WIDTH_FRACTION = 0.9f
+private const val DIVIDER_COLOR_HEX = 0x33DAE2FDL

@@ -116,11 +116,12 @@ class ProxyService : VpnService() {
             }
             val builder = Builder()
             builder.setSession("Lion VPN Session")
-                .addAddress("10.8.0.2", 24)
-                .addRoute("10.8.0.0", 24) // Dummy route to satisfy establish requirement without blackholing internet
+                .addAddress("10.8.0.2", VPN_ADDRESS_PREFIX_LENGTH)
+                // Dummy route to satisfy establish requirement without blackholing internet
+                .addRoute("10.8.0.0", VPN_ADDRESS_PREFIX_LENGTH)
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                val proxyInfo = ProxyInfo.buildDirectProxy("127.0.0.1", 8085)
+                val proxyInfo = ProxyInfo.buildDirectProxy("127.0.0.1", PROXY_PORT)
                 builder.setHttpProxy(proxyInfo)
             }
 
@@ -167,7 +168,7 @@ class ProxyService : VpnService() {
             if (threadToStop != null && threadToStop.isAlive) {
                 try {
                     Timber.i("Waiting for Python proxy thread to join in background...")
-                    threadToStop.join(2000) // Wait up to 2 seconds for clean unbind/shutdown
+                    threadToStop.join(THREAD_JOIN_TIMEOUT_MS) // Wait up to 2 seconds for clean unbind/shutdown
                     if (threadToStop.isAlive) {
                         Timber.w("Python proxy thread did not exit within 2 seconds. Interrupting...")
                         threadToStop.interrupt()
@@ -262,6 +263,10 @@ class ProxyService : VpnService() {
         const val ACTION_STOP = "STOP"
         const val ACTION_REPOST_NOTIFICATION = "REPOST_NOTIFICATION"
         const val EXTRA_CONFIG = "CONFIG"
+
+        private const val VPN_ADDRESS_PREFIX_LENGTH = 24
+        private const val PROXY_PORT = 8085
+        private const val THREAD_JOIN_TIMEOUT_MS = 2000L
 
         private val _isVpnRunning = MutableStateFlow(false)
         val isVpnRunning: StateFlow<Boolean> = _isVpnRunning.asStateFlow()

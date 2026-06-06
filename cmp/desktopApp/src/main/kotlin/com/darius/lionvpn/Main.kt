@@ -4,9 +4,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
-import org.jetbrains.compose.resources.painterResource
 import lion_vpn.shared.generated.resources.Res
 import lion_vpn.shared.generated.resources.logo
+import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -44,4 +44,3 @@ fun main() {
         }
     }
 }
-

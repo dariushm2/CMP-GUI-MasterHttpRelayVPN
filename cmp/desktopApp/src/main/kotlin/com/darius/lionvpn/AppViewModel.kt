@@ -2,10 +2,19 @@ package com.darius.lionvpn
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.darius.lionvpn.config.loadActiveScriptIndex
+import com.darius.lionvpn.config.loadDefaultConfigContent
+import com.darius.lionvpn.config.loadLanguagePreference
+import com.darius.lionvpn.config.loadRawConfig
+import com.darius.lionvpn.config.loadSavedScripts
+import com.darius.lionvpn.config.saveActiveScriptIndex
+import com.darius.lionvpn.config.saveConfigLocally
+import com.darius.lionvpn.config.saveLanguagePreference
+import com.darius.lionvpn.config.saveRawConfig
+import com.darius.lionvpn.config.saveSavedScripts
+import com.darius.lionvpn.ui.home.ConnectionState
 import com.darius.lionvpn.ui.home.Event
 import com.darius.lionvpn.ui.home.HomeState
-import com.darius.lionvpn.ui.home.ConnectionState
-import com.darius.lionvpn.config.*
 import com.darius.lionvpn.ui.model.Lang
 import com.darius.lionvpn.ui.model.SavedConfig
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -39,14 +48,14 @@ class AppViewModel : ViewModel() {
         _configResetTrigger,
         _language
     ) { array ->
-        val state = array[0] as ConnectionState
-        val logs = array[1] as List<String>
-        val configs = array[2] as List<SavedConfig>
-        val index = array[3] as Int
-        val configJson = array[4] as String
-        val resetTrigger = array[5] as Int
-        val lang = array[6] as Lang
-        
+        val state = array[INDEX_VPN_STATE] as ConnectionState
+        val logs = array[INDEX_VPN_LOGS] as List<String>
+        val configs = array[INDEX_SAVED_CONFIGS] as List<SavedConfig>
+        val index = array[INDEX_SELECTED_CONFIG_INDEX] as Int
+        val configJson = array[INDEX_RAW_CONFIG_JSON] as String
+        val resetTrigger = array[INDEX_CONFIG_RESET_TRIGGER] as Int
+        val lang = array[INDEX_LANGUAGE] as Lang
+
         HomeState(
             connectionState = state,
             log = logs,
@@ -83,7 +92,7 @@ class AppViewModel : ViewModel() {
         _savedConfigs.value = configs
         _rawConfigJson.value = loadRawConfig()
         _configResetTrigger.value++
-        
+
         // Ensure index is valid, otherwise default to first configuration if list is not empty
         if (configs.isNotEmpty()) {
             if (index < 0 || index >= configs.size) {
@@ -113,7 +122,7 @@ class AppViewModel : ViewModel() {
             currentList.add(config)
             saveSavedScripts(currentList)
             _savedConfigs.value = currentList
-            
+
             // If this was the first script added, automatically select it
             if (currentList.size == 1) {
                 selectConfig(0)
@@ -127,11 +136,11 @@ class AppViewModel : ViewModel() {
         val currentList = _savedConfigs.value.toMutableList()
         val indexToDelete = currentList.indexOf(config)
         if (indexToDelete == -1) return@withContext
-        
+
         currentList.removeAt(indexToDelete)
         saveSavedScripts(currentList)
         _savedConfigs.value = currentList
-        
+
         val currentIndex = _selectedConfigIndex.value
         val newIndex = when {
             currentList.isEmpty() -> -1
@@ -139,10 +148,10 @@ class AppViewModel : ViewModel() {
             currentIndex > indexToDelete -> currentIndex - 1 // Shift index left
             else -> currentIndex
         }
-        
+
         saveActiveScriptIndex(newIndex)
         _selectedConfigIndex.value = newIndex
-        
+
         if (newIndex in currentList.indices) {
             val active = currentList[newIndex]
             saveConfigLocally(active.id, active.key)
@@ -214,5 +223,15 @@ class AppViewModel : ViewModel() {
                 }
             }
         }
+    }
+
+    companion object {
+        private const val INDEX_VPN_STATE = 0
+        private const val INDEX_VPN_LOGS = 1
+        private const val INDEX_SAVED_CONFIGS = 2
+        private const val INDEX_SELECTED_CONFIG_INDEX = 3
+        private const val INDEX_RAW_CONFIG_JSON = 4
+        private const val INDEX_CONFIG_RESET_TRIGGER = 5
+        private const val INDEX_LANGUAGE = 6
     }
 }

@@ -1,10 +1,10 @@
 package com.darius.lionvpn.config
 
-import java.io.File
-import kotlinx.serialization.json.Json
 import com.darius.lionvpn.JvmPlatform
 import com.darius.lionvpn.ui.model.Lang
 import com.darius.lionvpn.ui.model.SavedConfig
+import kotlinx.serialization.json.Json
+import java.io.File
 
 fun loadConf(): LionVpnConf {
     return try {
@@ -35,27 +35,21 @@ fun saveConf(conf: LionVpnConf): Boolean {
     }
 }
 
-fun loadSavedScripts(): List<SavedConfig> {
-    return loadConf().savedConfigs
-}
+fun loadSavedScripts(): List<SavedConfig> = loadConf().savedConfigs
 
 fun saveSavedScripts(scripts: List<SavedConfig>): Boolean {
     val current = loadConf()
     return saveConf(current.copy(savedConfigs = scripts))
 }
 
-fun loadActiveScriptIndex(): Int {
-    return loadConf().selectedConfigIndex
-}
+fun loadActiveScriptIndex(): Int = loadConf().selectedConfigIndex
 
 fun saveActiveScriptIndex(index: Int): Boolean {
     val current = loadConf()
     return saveConf(current.copy(selectedConfigIndex = index))
 }
 
-fun loadLanguagePreference(): Lang {
-    return Lang.valueOf(loadConf().language.uppercase())
-}
+fun loadLanguagePreference(): Lang = Lang.valueOf(loadConf().language.uppercase())
 
 fun saveLanguagePreference(language: Lang): Boolean {
     val current = loadConf()
@@ -66,21 +60,26 @@ fun getUserDataDirectory(): File {
     val jvmPlatform = JvmPlatform()
     val homeDir = System.getProperty("user.home")
     val appDirName = "LionVPN"
-    
+
     val dir = when (jvmPlatform.os) {
         JvmPlatform.OS.WIN -> {
             val appData = System.getenv("APPDATA")
-            if (appData != null) File(appData, appDirName) else File(homeDir, "AppData/Roaming/$appDirName")
+            if (appData != null) File(appData, appDirName)
+            else File(homeDir, "AppData/Roaming/$appDirName")
         }
         JvmPlatform.OS.MAC -> {
             File(homeDir, "Library/Application Support/$appDirName")
         }
         JvmPlatform.OS.LINUX -> {
             val xdgConfig = System.getenv("XDG_CONFIG_HOME")
-            if (xdgConfig != null) File(xdgConfig, appDirName.lowercase()) else File(homeDir, ".config/${appDirName.lowercase()}")
+            if (xdgConfig != null) {
+                File(xdgConfig, appDirName.lowercase())
+            } else {
+                File(homeDir, ".config/${appDirName.lowercase()}")
+            }
         }
     }
-    
+
     if (!dir.exists()) {
         dir.mkdirs()
     }

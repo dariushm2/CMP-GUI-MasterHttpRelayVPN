@@ -1,6 +1,10 @@
 package com.darius.lionvpn
 
-import com.darius.lionvpn.config.*
+import com.darius.lionvpn.config.ConfigTemplateProvider
+import com.darius.lionvpn.config.VpnCertificateManager
+import com.darius.lionvpn.config.VpnLanguageManager
+import com.darius.lionvpn.config.VpnPreferencesManager
+import com.darius.lionvpn.config.VpnServiceManager
 import com.darius.lionvpn.connectivity.ConnectivityHandler
 import com.darius.lionvpn.connectivity.NetworkHelper
 import org.koin.android.ext.koin.androidContext

@@ -31,7 +31,9 @@ class VpnCertificateManager(private val context: Context) {
                     ProxyService.addLogLine("CA certificate not found. Generating it on-demand...")
                     try {
                         mitmModule.callAttr("MITMCertManager")
-                        ProxyService.addLogLine("CA certificate generated successfully on-demand at: ${file.absolutePath}")
+                        ProxyService.addLogLine(
+                            "CA certificate generated successfully on-demand at: ${file.absolutePath}"
+                        )
                     } catch (genEx: Exception) {
                         Timber.e(genEx, "Failed to generate CA certificate on-demand")
                         ProxyService.addLogLine("Error generating CA certificate: ${genEx.message}")
