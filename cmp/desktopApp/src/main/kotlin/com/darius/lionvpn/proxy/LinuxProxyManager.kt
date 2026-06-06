@@ -4,7 +4,7 @@ import com.darius.lionvpn.getPlatform
 import java.lang.ProcessBuilder
 
 object LinuxProxyManager : ProxyManager {
-    
+
     private fun runCommand(vararg command: String) {
         try {
             ProcessBuilder(*command).start().waitFor()
