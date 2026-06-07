@@ -7,11 +7,19 @@ plugins {
     alias(libs.plugins.detekt)
 }
 
+detekt {
+    toolVersion = libs.versions.detekt.get()
+    config.setFrom(file("${rootDir}/dependencies/detekt/detekt.yml"))
+    buildUponDefaultConfig = true
+    autoCorrect = true
+}
+
 dependencies {
+    detektPlugins(libs.detekt.formatting)
     implementation(projects.shared)
-    implementation(compose.foundation)
+    implementation(libs.foundation)
     implementation(compose.desktop.currentOs)
-    implementation(compose.components.resources)
+    implementation(libs.components.resources)
     implementation(libs.kotlinx.coroutinesSwing)
     implementation(libs.kotlinx.serialization)
 
@@ -20,11 +28,11 @@ dependencies {
     implementation(libs.koin.core)
     implementation(libs.koin.compose)
     implementation(libs.koin.compose.viewmodel)
-    implementation(libs.koin.test)
 }
 
 
 val prepareAppResourcesForPackaging = tasks.register<Copy>("prepareAppResourcesForPackaging") {
+    description = "Bundle the python executable into resources"
     dependsOn("bundlePythonExecutable")
     val os = System.getProperty("os.name").lowercase()
     val platformDirName = when {
@@ -102,7 +110,7 @@ tasks.register<Exec>("bundlePythonExecutable") {
         "python3"
     }
 
-    commandLine(pythonCmd, "cmp/bundle_for_gui.py")
+    commandLine(pythonCmd, "cmp/desktopApp/bundle_python.py")
 }
 
 // Hook the bundle task into standard execution and packaging tasks

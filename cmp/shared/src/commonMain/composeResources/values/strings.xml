@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Existing Strings -->
     <string name="connection_lost">Connection lost!</string>
@@ -33,7 +34,7 @@
     <!-- Scripts Tab -->
     <string name="scripts_management">Script Management</string>
     <string name="add_script_icon_desc">Add Script Profile Icon</string>
-    <string name="add_script">Add Script</string>
+    <string name="add_script">Add</string>
     <string name="selected_check_desc">Selected Checkmark</string>
     <string name="deployment_id">Deployment ID: %1$s</string>
     <string name="active">Active</string>
@@ -116,6 +117,8 @@ To fully bypass this, you can create multiple deployments on one or more Google 
     <string name="about_project_gui_fork">GUI fork</string>
     <string name="about_project_upstream">upstream project</string>
     <string name="about_project_github_desc">Official GitHub Repository</string>
+    <string name="app_version_title">Version</string>
+
 
     <!-- Settings Tab -->
     <string name="tab_settings">Settings</string>
@@ -156,4 +159,24 @@ To fully bypass this, you can create multiple deployments on one or more Google 
     <string name="cert_uninstall_android_note">CA certificates must be uninstalled manually from system security settings.</string>
     <string name="cert_status_trusted">CA Certificate Trusted &amp; Active</string>
     <string name="cert_status_not_trusted">CA Certificate Not Trusted</string>
+
+    <!-- Limitations Dialog -->
+    <string name="stat_limitations_title">Limitations</string>
+    <string name="stat_limitations_value">READ</string>
+    <string name="limitations_dialog_title">SYSTEM LIMITATIONS</string>
+    <string name="limitations_dialog_intro">Because this application operates purely at the application layer as an HTTP relay proxy, there are specific Android platform limitations to be aware of:</string>
+    <string name="limitations_bullet1_title">Proxy Configuration</string>
+    <string name="limitations_bullet1_desc">System-wide proxy settings are not enforced by the OS. Applications like Firefox and Telegram have their own internal proxy settings and must be configured manually.</string>
+    <string name="limitations_bullet2_title">Browser-Only Access</string>
+    <string name="limitations_bullet2_desc">Although a system-wide proxy is configured and native apps like X (Twitter) respect it, it will not work due to Android's security measures. Users are pretty much limited to using web browsers on Android.</string>
+    <string name="limitations_bullet3_title">Manual CA Certificate Installation</string>
+    <string name="limitations_bullet3_desc">Installing a CA certificate is required to route secure HTTPS traffic. On Android, strict OS security makes manual installation highly difficult. This is a task you must perform manually, as the app cannot do it for you.</string>
+    <string name="limitations_dialog_got_it">Got it</string>
+
+    <!-- Desktop Limitations Dialog -->
+    <string name="desktop_limitations_dialog_intro">Because this application operates as a local HTTP relay proxy, there are specific desktop platform parameters to be aware of:</string>
+    <string name="desktop_limitations_bullet1_title">Manual Proxy Configuration</string>
+    <string name="desktop_limitations_bullet1_desc">System-wide proxy settings are not enforced by the OS. Applications like Firefox and Telegram bypass system settings and require you to configure their internal proxy settings manually.</string>
+    <string name="desktop_limitations_bullet2_title">CA Installation</string>
+    <string name="desktop_limitations_bullet2_desc">Installing a CA certificate is required to relay HTTPS traffic. This is a simple one-click action that requires minimal effort.</string>
 </resources>

@@ -1,22 +1,28 @@
 package com.darius.lionvpn
 
-import java.lang.ProcessBuilder
-import kotlin.concurrent.thread
-import java.io.File
+import com.darius.lionvpn.config.getUserDataDirectory
+import com.darius.lionvpn.config.loadRawConfig
+import com.darius.lionvpn.proxy.ProxyManager
+import com.darius.lionvpn.ui.home.ConnectionState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.intOrNull
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 import okio.IOException
-import kotlin.collections.plus
 import org.koin.mp.KoinPlatform.getKoin
-import com.darius.lionvpn.proxy.ProxyManager
-import com.darius.lionvpn.config.*
-import com.darius.lionvpn.ui.home.ConnectionState
-import kotlinx.serialization.json.*
+import java.io.File
+import java.lang.ProcessBuilder
+import kotlin.concurrent.thread
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 object ProcessRunner {
+
+    private const val DEFAULT_HTTP_PROXY_PORT = 8085
 
     private val platform = JvmPlatform()
     private val binaryPath = getPythonExecutablePath()
@@ -35,13 +41,18 @@ object ProcessRunner {
         _vpnLogs.value = emptyList()
     }
 
+    private fun addLogLine(line: String) {
+        _vpnLogs.update { it.appendCappedLog(line) }
+    }
+
     suspend fun installCert(): Boolean = withContext(Dispatchers.IO) {
         println("Installing Certificate for: $binaryPath")
 
         val configFile = File(getUserDataDirectory(), Constants.Config.FILE_NAME)
-        val processBuilder = when(platform.os) {
+        val processBuilder = when (platform.os) {
             JvmPlatform.OS.WIN,
-            JvmPlatform.OS.MAC -> ProcessBuilder(binaryPath, "--config", configFile.absolutePath, "--install-cert")
+            JvmPlatform.OS.MAC,
+            -> ProcessBuilder(binaryPath, "--config", configFile.absolutePath, "--install-cert")
             else -> ProcessBuilder("pkexec", binaryPath, "--config", configFile.absolutePath, "--install-cert")
         }
 
@@ -71,9 +82,10 @@ object ProcessRunner {
         println("Uninstalling Certificate for: $binaryPath")
 
         val configFile = File(getUserDataDirectory(), Constants.Config.FILE_NAME)
-        val processBuilder = when(platform.os) {
+        val processBuilder = when (platform.os) {
             JvmPlatform.OS.WIN,
-            JvmPlatform.OS.MAC -> ProcessBuilder(binaryPath, "--config", configFile.absolutePath, "--uninstall-cert")
+            JvmPlatform.OS.MAC,
+            -> ProcessBuilder(binaryPath, "--config", configFile.absolutePath, "--uninstall-cert")
             else -> ProcessBuilder("pkexec", binaryPath, "--config", configFile.absolutePath, "--uninstall-cert")
         }
 
@@ -143,9 +155,9 @@ object ProcessRunner {
         }
 
         println("Launching Python VPN binary: $binaryPath")
-        
+
         // Log starting message instantly in English only matching log timestamp pattern
-        _vpnLogs.value += VpnLogger.formatInfo("VPN process is starting... warming up")
+        addLogLine(VpnLogger.formatInfo("VPN process is starting... warming up"))
 
         _vpnState.value = ConnectionState.CONNECTING
 
@@ -157,7 +169,7 @@ object ProcessRunner {
             isSystemProxyEnabled = isSystemProxyEnabled,
             onExit = {
                 println("[VPN Process] Process stopped!")
-                _vpnLogs.value += VpnLogger.formatInfo("VPN process stopped")
+                addLogLine(VpnLogger.formatInfo("VPN process stopped"))
                 _vpnState.value = ConnectionState.DISCONNECTED
                 _isVpnRunning.value = false
                 if (isSystemProxyEnabled) {
@@ -165,7 +177,7 @@ object ProcessRunner {
                 }
             }
         )
-        
+
         if (process != null) {
             _isVpnRunning.value = true
         } else {
@@ -222,39 +234,44 @@ object ProcessRunner {
                 try {
                     process.inputStream.bufferedReader().useLines { lines ->
                         lines.forEach { line ->
-                            _vpnLogs.value += line
+                            addLogLine(line)
                             println("[VPN Process] $line")
-                            
+
                             if (isVpnLogger && _vpnState.value == ConnectionState.CONNECTING) {
                                 if (VpnLogger.isConnectionSuccessLog(line)) {
                                     _vpnState.value = ConnectionState.CONNECTED
-                                    
+
                                     if (isSystemProxyEnabled) {
                                         // Parse configured dynamic HTTP port and host from config.json
                                         val rawConfig = loadRawConfig()
-                                        val (host, port) = try {
-                                            val configObj = Json.parseToJsonElement(rawConfig).jsonObject
-                                            val h = configObj["listen_host"]?.jsonPrimitive?.content ?: "127.0.0.1"
-                                            val p = configObj["http_port"]?.jsonPrimitive?.intOrNull ?: 8085
-                                            h to p
-                                        } catch (e: Exception) {
-                                            "127.0.0.1" to 8085
-                                        }
-                                        println("[VPN Process] Enabling system proxy forwarding on dynamic address: $host:$port")
-                                        proxyManager.enableProxy(host, port)
+                                         val (host, port) = try {
+                                             val configObj = Json.parseToJsonElement(rawConfig).jsonObject
+                                             val h = configObj["listen_host"]?.jsonPrimitive?.content ?: "127.0.0.1"
+                                             val p = configObj["http_port"]
+                                                 ?.jsonPrimitive?.intOrNull
+                                                 ?: DEFAULT_HTTP_PROXY_PORT
+                                             h to p
+                                         } catch (e: Exception) {
+                                             "127.0.0.1" to DEFAULT_HTTP_PROXY_PORT
+                                         }
+                                         println(
+                                             "[VPN Process] Enabling system proxy forwarding on " +
+                                                     "dynamic address: $host:$port"
+                                         )
+                                         proxyManager.enableProxy(host, port)
                                     }
                                 }
                             }
                         }
                     }
                 } catch (e: IOException) {
-                    _vpnLogs.value += VpnLogger.formatInfo("Logger thread error: ${e.message}")
+                    addLogLine(VpnLogger.formatInfo("Logger thread error: ${e.message}"))
                     println("[VPN Process] Logger thread error: ${e.message}")
                 }
             }
             process
         } catch (e: IOException) {
-            _vpnLogs.value += VpnLogger.formatInfo("Failed to start process: ${e.message}")
+            addLogLine(VpnLogger.formatInfo("Failed to start process: ${e.message}"))
             println("[VPN Process] Failed to start process: ${e.message}")
             _isVpnRunning.value = false
             _vpnState.value = ConnectionState.DISCONNECTED

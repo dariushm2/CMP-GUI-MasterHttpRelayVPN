@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Lion VPN</string>
+
+    <string name="announcements_name">اطلاعیه‌ها</string>
+
+    <!-- CA Certificate Installation Dialog -->
+    <string name="cert_dialog_title">نصب گواهی HTTPS CA</string>
+    <string name="cert_dialog_desc">برای رهگیری و رله موفقیت‌آمیز ترافیک HTTPS، باید گواهی CA ایجاد شده را به عنوان یک اعتبارنامه مورد اعتماد (Trusted Credential) روی دستگاه خود نصب کنید.</string>
+    <string name="cert_dialog_steps_intro">لطفاً این مراحل دستی را دقیقاً دنبال کنید:</string>
+    <string name="cert_dialog_step1">۱. مکان‌یابی فایل: گواهی در حافظه شما با نام \'lion_vpn_ca.crt\' ذخیره شده است.</string>
+    <string name="cert_dialog_step2">۲. باز کردن تنظیمات امنیت: روی دکمه \'باز کردن تنظیمات امنیت\' در زیر ضربه بزنید.</string>
+    <string name="cert_dialog_step3">۳. رفتن به بخش گواهی‌ها: مسیر \'More security settings\' -&gt; \'Encryption &amp; credentials\' (یا \'Install from device storage\') را پیدا کنید.</string>
+    <string name="cert_dialog_step4">۴. انتخاب گواهی CA: روی \'Install a certificate\' -&gt; \'CA certificate\' ضربه بزنید.</string>
+    <string name="cert_dialog_step5">۵. تأیید هشدار: در هشدار امنیتی نمایش داده شده، روی \'Install anyway\' ضربه بزنید.</string>
+    <string name="cert_dialog_step6">۶. انتخاب فایل: فایل \'lion_vpn_ca.crt\' را از پوشه ذخیره شده پیدا و انتخاب کنید.</string>
+    <string name="cert_dialog_btn_open_settings">باز کردن تنظیمات امنیت</string>
+    <string name="cert_dialog_btn_close">بستن</string>
+    <string name="cert_dialog_err_open_settings">تنظیمات سیستم به صورت خودکار باز نشد.</string>
+</resources>

@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Existing Strings -->
     <string name="connection_lost">اتصال قطع شد!</string>
@@ -33,7 +34,7 @@
     <!-- Scripts Tab -->
     <string name="scripts_management">مدیریت اسکریپت‌ها</string>
     <string name="add_script_icon_desc">آیکون افزودن پروفایل اسکریپت</string>
-    <string name="add_script">افزودن اسکریپت</string>
+    <string name="add_script">افزودن</string>
     <string name="selected_check_desc">علامت انتخاب شده</string>
     <string name="deployment_id">شناسه استقرار: %1$s</string>
     <string name="active">فعال</string>
@@ -116,6 +117,8 @@
     <string name="about_project_gui_fork">نسخه فورک شده</string>
     <string name="about_project_upstream">مخزن اصلی (Upstream)</string>
     <string name="about_project_github_desc">مخزن رسمی گیت‌هاب</string>
+    <string name="app_version_title">نسخه</string>
+
 
     <!-- Settings Tab -->
     <string name="tab_settings">تنظیمات</string>
@@ -156,4 +159,24 @@
     <string name="cert_uninstall_android_note">گواهی‌های CA باید به صورت دستی از تنظیمات امنیت سیستم حذف شوند.</string>
     <string name="cert_status_trusted">گواهی CA مورد اعتماد و فعال است</string>
     <string name="cert_status_not_trusted">گواهی CA مورد اعتماد سیستم نیست</string>
+
+    <!-- Limitations Dialog -->
+    <string name="stat_limitations_title">محدودیت‌ها</string>
+    <string name="stat_limitations_value">مشاهده</string>
+    <string name="limitations_dialog_title">محدودیت‌های سیستم</string>
+    <string name="limitations_dialog_intro">از آنجایی که این برنامه صرفاً در لایه اپلیکیشن به عنوان یک پروکسی رله HTTP عمل می‌کند، محدودیت‌های پلتفرمی خاصی در اندروید وجود دارد که باید از آنها آگاه باشید:</string>
+    <string name="limitations_bullet1_title">پیکربندی دستی پروکسی</string>
+    <string name="limitations_bullet1_desc">تنظیمات پروکسی سراسری توسط سیستم‌عامل اجباری نیستند. برنامه‌هایی مانند فایرفاکس و تلگرام دارای تنظیمات پروکسی داخلی خود هستند و باید به صورت دستی پیکربندی شوند.</string>
+    <string name="limitations_bullet2_title">دسترسی فقط از طریق مرورگر</string>
+    <string name="limitations_bullet2_desc">اگرچه پروکسی سراسری تنظیم شده و برنامه‌هایی مانند X (توییتر) آن را رعایت می‌کنند، اما به دلیل تدابیر امنیتی اندروید کار نخواهند کرد. کاربران در اندروید عملاً به استفاده از مرورگر وب محدود هستند.</string>
+    <string name="limitations_bullet3_title">نصب دستی گواهی CA</string>
+    <string name="limitations_bullet3_desc">نصب گواهی CA برای رله ترافیک HTTPS ضروری است. در اندروید به دلایل امنیتی، سیستم‌عامل نصب این گواهی را بسیار دشوار کرده است و این کاری است که خود کاربر باید به صورت دستی انجام دهد و برنامه نمی‌تواند آن را به صورت خودکار انجام دهد.</string>
+    <string name="limitations_dialog_got_it">متوجه شدم</string>
+
+    <!-- Desktop Limitations Dialog -->
+    <string name="desktop_limitations_dialog_intro">از آنجایی که این برنامه به عنوان یک پروکسی رله HTTP محلی عمل می‌کند، ویژگی‌ها و پارامترهای خاصی در دسکتاپ وجود دارد که باید از آنها آگاه باشید:</string>
+    <string name="desktop_limitations_bullet1_title">پیکربندی پروکسی</string>
+    <string name="desktop_limitations_bullet1_desc">با اینکه تنظیمات پروکسی به صورت سراسری اعمال می شود اما استفاده از این تنظیمات توسط اپ ها اجباری نیست. برنامه‌هایی مانند فایرفاکس و تلگرام تنظیمات سیستم را نادیده می‌گیرند و نیاز دارند که تنظیمات پروکسی داخلی آن‌ها را به صورت دستی پیکربندی کنید.</string>
+    <string name="desktop_limitations_bullet2_title">نصب گواهی</string>
+    <string name="desktop_limitations_bullet2_desc">نصب گواهی CA برای رله ترافیک HTTPS ضروری است. این یک فرآیند ساده با یک کلیک است و نیاز به انجام کار خاص دیگری ندارد.</string>
 </resources>

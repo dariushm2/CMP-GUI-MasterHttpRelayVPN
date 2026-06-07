@@ -1,14 +1,13 @@
 package com.darius.lionvpn.config
 
-import java.io.File
+import com.darius.lionvpn.Constants
+import com.darius.lionvpn.findRepoRoot
+import com.darius.lionvpn.findResourcesDir
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.jsonObject
-import com.darius.lionvpn.Constants
-import com.darius.lionvpn.findResourcesDir
-import com.darius.lionvpn.findRepoRoot
-import com.darius.lionvpn.ui.model.SavedConfig
+import java.io.File
 
 fun saveConfigLocally(deploymentId: String, authKey: String): Boolean {
     return try {
@@ -29,17 +28,17 @@ fun saveConfigLocally(deploymentId: String, authKey: String): Boolean {
         }
 
         val content = fileToRead.readText(Charsets.UTF_8)
-        
+
         // Parse current content and merge script fields
         val jsonMap = try {
             Json.parseToJsonElement(content).jsonObject.toMutableMap()
         } catch (e: Exception) {
             mutableMapOf()
         }
-        
+
         jsonMap[Constants.Config.SCRIPT_ID] = JsonPrimitive(deploymentId)
         jsonMap[Constants.Config.AUTH_KEY] = JsonPrimitive(authKey)
-        
+
         val finalObject = JsonObject(jsonMap)
         val prettyJson = Json { prettyPrint = true }
         val outputString = prettyJson.encodeToString(JsonObject.serializer(), finalObject)
@@ -58,7 +57,7 @@ fun saveConfigLocally(deploymentId: String, authKey: String): Boolean {
 fun loadRawConfig(): String {
     return try {
         val configFile = File(getUserDataDirectory(), Constants.Config.FILE_NAME)
-        
+
         var fileToRead = configFile
         if (!fileToRead.exists()) {
             val root = findResourcesDir()
@@ -67,7 +66,7 @@ fun loadRawConfig(): String {
                 exampleFile = File(findRepoRoot(), Constants.Config.TEMPLATE_FILE_NAME)
             }
             ensureExampleFileReadOnly(exampleFile)
-            
+
             // Create user's config.json from example template on first load
             try {
                 getUserDataDirectory().mkdirs()
@@ -79,7 +78,7 @@ fun loadRawConfig(): String {
                 fileToRead = exampleFile
             }
         }
-        
+
         if (fileToRead.exists()) {
             fileToRead.readText(Charsets.UTF_8)
         } else {
@@ -94,7 +93,7 @@ fun loadRawConfig(): String {
 fun saveRawConfig(content: String): Boolean {
     return try {
         val configFile = File(getUserDataDirectory(), Constants.Config.FILE_NAME)
-        
+
         configFile.parentFile?.mkdirs()
         configFile.writeText(content, Charsets.UTF_8)
         println("[Config JVM] Saved raw config.json to: ${configFile.absolutePath}")
@@ -113,28 +112,28 @@ fun loadDefaultConfigContent(): String {
             exampleFile = File(findRepoRoot(), Constants.Config.TEMPLATE_FILE_NAME)
         }
         ensureExampleFileReadOnly(exampleFile)
-        
+
         if (exampleFile.exists()) {
             val content = exampleFile.readText(Charsets.UTF_8)
-            
+
             // Load active script details to merge
             val configs = loadSavedScripts()
             val index = loadActiveScriptIndex()
             val active = if (index in configs.indices) configs[index] else null
-            
+
             val deploymentId = active?.id ?: ""
             val authKey = active?.key ?: ""
-            
+
             // Parse and merge script details
             val jsonMap = try {
                 Json.parseToJsonElement(content).jsonObject.toMutableMap()
             } catch (e: Exception) {
                 mutableMapOf()
             }
-            
+
             jsonMap[Constants.Config.SCRIPT_ID] = JsonPrimitive(deploymentId)
             jsonMap[Constants.Config.AUTH_KEY] = JsonPrimitive(authKey)
-            
+
             val finalObject = JsonObject(jsonMap)
             val prettyJson = Json { prettyPrint = true }
             prettyJson.encodeToString(JsonObject.serializer(), finalObject)

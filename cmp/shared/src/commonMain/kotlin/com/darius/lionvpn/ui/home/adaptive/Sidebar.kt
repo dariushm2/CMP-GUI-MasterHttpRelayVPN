@@ -3,7 +3,24 @@ package com.darius.lionvpn.ui.home.adaptive
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Dashboard
 import androidx.compose.material.icons.filled.Info
@@ -23,9 +40,23 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.darius.lionvpn.SharedBuildConfig
 import com.darius.lionvpn.ui.home.HomeTab
-import com.darius.lionvpn.ui.theme.*
+import com.darius.lionvpn.ui.theme.surfaceContainerLowest
+import com.darius.lionvpn.ui.theme.secondary
+import com.darius.lionvpn.ui.theme.primary
+import com.darius.lionvpn.ui.theme.roundedDefault
+import com.darius.lionvpn.ui.theme.gutter
+import com.darius.lionvpn.ui.theme.stackLg
+import com.darius.lionvpn.ui.theme.headlineMd
+import com.darius.lionvpn.ui.theme.monoCode
+import com.darius.lionvpn.ui.theme.onSurfaceVariant
+import com.darius.lionvpn.ui.theme.bodyMd
 import org.jetbrains.compose.resources.stringResource
-import lion_vpn.shared.generated.resources.*
+import lion_vpn.shared.generated.resources.Res
+import lion_vpn.shared.generated.resources.app_name
+import lion_vpn.shared.generated.resources.tab_dashboard
+import lion_vpn.shared.generated.resources.tab_scripts
+import lion_vpn.shared.generated.resources.tab_settings
+import lion_vpn.shared.generated.resources.tab_about
 
 @Composable
 fun Sidebar(
@@ -35,6 +66,7 @@ fun Sidebar(
 ) {
     Column(
         modifier = modifier
+            .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Start))
             .width(240.dp)
             .fillMaxHeight()
             .background(surfaceContainerLowest)
@@ -57,7 +89,7 @@ fun Sidebar(
                     .size(40.dp)
                     .background(primary.copy(alpha = 0.15f), roundedDefault)
                     .border(1.dp, primary.copy(alpha = 0.3f), roundedDefault)
-                    .offset(y = 2.dp)
+                    .offset(y = 1.dp)
             )
             Spacer(modifier = Modifier.width(12.dp))
             Column {

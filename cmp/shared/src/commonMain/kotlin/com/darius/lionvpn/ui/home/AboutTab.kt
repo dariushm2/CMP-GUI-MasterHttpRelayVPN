@@ -2,40 +2,105 @@ package com.darius.lionvpn.ui.home
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
-import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.CloudQueue
-import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.automirrored.filled.HelpOutline
-import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material.icons.filled.CloudQueue
 import androidx.compose.material.icons.filled.Code
-import androidx.compose.ui.platform.LocalUriHandler
-import androidx.compose.foundation.text.ClickableText
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.material3.*
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Language
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.darius.lionvpn.ui.theme.*
+import com.darius.lionvpn.ui.theme.bodyMd
+import com.darius.lionvpn.ui.theme.bodySm
+import com.darius.lionvpn.ui.theme.borderStrokeGlass
+import com.darius.lionvpn.ui.theme.containerPadding
+import com.darius.lionvpn.ui.theme.gutter
+import com.darius.lionvpn.ui.theme.headlineMd
+import com.darius.lionvpn.ui.theme.onSurface
+import com.darius.lionvpn.ui.theme.onSurfaceVariant
+import com.darius.lionvpn.ui.theme.outlineVariant
+import com.darius.lionvpn.ui.theme.primary
+import com.darius.lionvpn.ui.theme.roundedLg
+import com.darius.lionvpn.ui.theme.secondary
+import com.darius.lionvpn.ui.theme.surfaceContainerLowest
+import com.darius.lionvpn.ui.theme.tertiary
+import com.darius.lionvpn.ui.theme.titleSm
+import lion_vpn.shared.generated.resources.Res
+import lion_vpn.shared.generated.resources.about_desc_benefits_icon
+import lion_vpn.shared.generated.resources.about_desc_destination_icon
+import lion_vpn.shared.generated.resources.about_desc_device_icon
+import lion_vpn.shared.generated.resources.about_desc_flow_icon
+import lion_vpn.shared.generated.resources.about_desc_info_icon
+import lion_vpn.shared.generated.resources.about_desc_relay_icon
+import lion_vpn.shared.generated.resources.about_desc_warning_icon
+import lion_vpn.shared.generated.resources.about_description
+import lion_vpn.shared.generated.resources.about_diagram_title
+import lion_vpn.shared.generated.resources.about_feature_1
+import lion_vpn.shared.generated.resources.about_feature_2
+import lion_vpn.shared.generated.resources.about_feature_3
+import lion_vpn.shared.generated.resources.about_features_title
+import lion_vpn.shared.generated.resources.about_limits_description
+import lion_vpn.shared.generated.resources.about_limits_title
+import lion_vpn.shared.generated.resources.about_project_desc_part1
+import lion_vpn.shared.generated.resources.about_project_desc_part2
+import lion_vpn.shared.generated.resources.about_project_desc_part3
+import lion_vpn.shared.generated.resources.about_project_desc_part4
+import lion_vpn.shared.generated.resources.about_project_github_desc
+import lion_vpn.shared.generated.resources.about_project_gui_fork
+import lion_vpn.shared.generated.resources.about_project_title
+import lion_vpn.shared.generated.resources.about_project_upstream
+import lion_vpn.shared.generated.resources.about_step_destination
+import lion_vpn.shared.generated.resources.about_step_destination_desc
+import lion_vpn.shared.generated.resources.about_step_device
+import lion_vpn.shared.generated.resources.about_step_device_desc
+import lion_vpn.shared.generated.resources.about_step_relay
+import lion_vpn.shared.generated.resources.about_step_relay_desc
+import lion_vpn.shared.generated.resources.about_subtitle
+import lion_vpn.shared.generated.resources.about_title
+import lion_vpn.shared.generated.resources.tab_about
+import lion_vpn.shared.generated.resources.app_version_title
 import org.jetbrains.compose.resources.stringResource
-import lion_vpn.shared.generated.resources.*
-import androidx.compose.ui.platform.LocalLayoutDirection
-import androidx.compose.ui.unit.LayoutDirection
+import androidx.compose.ui.text.style.TextDirection
+import com.darius.lionvpn.SharedBuildConfig
+import com.darius.lionvpn.ui.theme.monoCode
 
 @Composable
 fun AboutTab(
@@ -89,6 +154,10 @@ fun AboutTab(
                 ProjectCard()
             }
         }
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        VersionFooter(modifier = Modifier.align(Alignment.CenterHorizontally))
     }
 }
 
@@ -98,9 +167,7 @@ private fun TrafficFlowDiagramCard(
 ) {
     Card(
         shape = roundedLg,
-        colors = CardDefaults.cardColors(
-            containerColor = surfaceContainerLowest
-        ),
+        colors = CardDefaults.cardColors(containerColor = surfaceContainerLowest),
         border = borderStrokeGlass(),
         modifier = modifier.fillMaxWidth()
     ) {
@@ -126,131 +193,99 @@ private fun TrafficFlowDiagramCard(
                     horizontalArrangement = Arrangement.SpaceEvenly,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    // Step 1: Device (Client)
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(6.dp)
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .size(54.dp)
-                                .background(primary.copy(alpha = 0.1f), CircleShape)
-                                .border(1.5.dp, primary.copy(alpha = 0.4f), CircleShape),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Lock,
-                                contentDescription = stringResource(Res.string.about_desc_device_icon),
-                                tint = primary,
-                                modifier = Modifier.size(24.dp)
-                            )
-                        }
-                        Text(
-                            text = stringResource(Res.string.about_step_device),
-                            style = bodySm.copy(fontWeight = FontWeight.Bold, color = onSurface)
-                        )
-                        Text(
-                            text = stringResource(Res.string.about_step_device_desc),
-                            style = bodySm.copy(fontSize = 10.sp, color = onSurfaceVariant)
-                        )
-                    }
+                    FlowStepNode(
+                        title = stringResource(Res.string.about_step_device),
+                        desc = stringResource(Res.string.about_step_device_desc),
+                        icon = Icons.Default.Lock,
+                        iconDesc = stringResource(Res.string.about_desc_device_icon),
+                        color = primary
+                    )
 
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(6.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-                            contentDescription = stringResource(Res.string.about_desc_flow_icon),
-                            tint = secondary.copy(alpha = 0.6f),
-                            modifier = Modifier.size(24.dp)
-                        )
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = stringResource(Res.string.about_desc_flow_icon),
-                            tint = secondary.copy(alpha = 0.6f),
-                            modifier = Modifier.size(24.dp)
-                        )
-                    }
+                    FlowArrowIndicator()
 
-                    // Step 2: Google Servers (Relay)
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(6.dp)
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .size(54.dp)
-                                .background(secondary.copy(alpha = 0.1f), CircleShape)
-                                .border(1.5.dp, secondary.copy(alpha = 0.4f), CircleShape),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.CloudQueue,
-                                contentDescription = stringResource(Res.string.about_desc_relay_icon),
-                                tint = secondary,
-                                modifier = Modifier.size(24.dp)
-                            )
-                        }
-                        Text(
-                            text = stringResource(Res.string.about_step_relay),
-                            style = bodySm.copy(fontWeight = FontWeight.Bold, color = onSurface)
-                        )
-                        Text(
-                            text = stringResource(Res.string.about_step_relay_desc),
-                            style = bodySm.copy(fontSize = 10.sp, color = onSurfaceVariant)
-                        )
-                    }
+                    FlowStepNode(
+                        title = stringResource(Res.string.about_step_relay),
+                        desc = stringResource(Res.string.about_step_relay_desc),
+                        icon = Icons.Default.CloudQueue,
+                        iconDesc = stringResource(Res.string.about_desc_relay_icon),
+                        color = secondary
+                    )
 
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(6.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-                            contentDescription = stringResource(Res.string.about_desc_flow_icon),
-                            tint = secondary.copy(alpha = 0.6f),
-                            modifier = Modifier.size(24.dp)
-                        )
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = stringResource(Res.string.about_desc_flow_icon),
-                            tint = secondary.copy(alpha = 0.6f),
-                            modifier = Modifier.size(24.dp)
-                        )
-                    }
+                    FlowArrowIndicator()
 
-                    // Step 3: Original Website
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(6.dp)
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .size(54.dp)
-                                .background(tertiary.copy(alpha = 0.1f), CircleShape)
-                                .border(1.5.dp, tertiary.copy(alpha = 0.4f), CircleShape),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Language,
-                                contentDescription = stringResource(Res.string.about_desc_destination_icon),
-                                tint = tertiary,
-                                modifier = Modifier.size(24.dp)
-                            )
-                        }
-                        Text(
-                            text = stringResource(Res.string.about_step_destination),
-                            style = bodySm.copy(fontWeight = FontWeight.Bold, color = onSurface)
-                        )
-                        Text(
-                            text = stringResource(Res.string.about_step_destination_desc),
-                            style = bodySm.copy(fontSize = 10.sp, color = onSurfaceVariant)
-                        )
-                    }
+                    FlowStepNode(
+                        title = stringResource(Res.string.about_step_destination),
+                        desc = stringResource(Res.string.about_step_destination_desc),
+                        icon = Icons.Default.Language,
+                        iconDesc = stringResource(Res.string.about_desc_destination_icon),
+                        color = tertiary
+                    )
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun FlowStepNode(
+    title: String,
+    desc: String,
+    icon: ImageVector,
+    iconDesc: String,
+    color: Color,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(6.dp),
+        modifier = modifier
+    ) {
+        Box(
+            modifier = Modifier
+                .size(54.dp)
+                .background(color.copy(alpha = 0.1f), CircleShape)
+                .border(1.5.dp, color.copy(alpha = 0.4f), CircleShape),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = iconDesc,
+                tint = color,
+                modifier = Modifier.size(24.dp)
+            )
+        }
+        Text(
+            text = title,
+            style = bodySm.copy(fontWeight = FontWeight.Bold, color = onSurface)
+        )
+        Text(
+            text = desc,
+            style = bodySm.copy(fontSize = 10.sp, color = onSurfaceVariant)
+        )
+    }
+}
+
+@Composable
+private fun FlowArrowIndicator(
+    modifier: Modifier = Modifier
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(6.dp),
+        modifier = modifier
+    ) {
+        Icon(
+            imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+            contentDescription = stringResource(Res.string.about_desc_flow_icon),
+            tint = secondary.copy(alpha = 0.6f),
+            modifier = Modifier.size(24.dp)
+        )
+        Icon(
+            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+            contentDescription = stringResource(Res.string.about_desc_flow_icon),
+            tint = secondary.copy(alpha = 0.6f),
+            modifier = Modifier.size(24.dp)
+        )
     }
 }
 
@@ -260,9 +295,7 @@ private fun DescriptionCard(
 ) {
     Card(
         shape = roundedLg,
-        colors = CardDefaults.cardColors(
-            containerColor = surfaceContainerLowest
-        ),
+        colors = CardDefaults.cardColors(containerColor = surfaceContainerLowest),
         border = borderStrokeGlass(),
         modifier = modifier.fillMaxWidth()
     ) {
@@ -302,9 +335,7 @@ private fun FeaturesCard(
 ) {
     Card(
         shape = roundedLg,
-        colors = CardDefaults.cardColors(
-            containerColor = surfaceContainerLowest
-        ),
+        colors = CardDefaults.cardColors(containerColor = surfaceContainerLowest),
         border = borderStrokeGlass(),
         modifier = modifier.fillMaxWidth()
     ) {
@@ -356,9 +387,7 @@ private fun LimitsCard(
 ) {
     Card(
         shape = roundedLg,
-        colors = CardDefaults.cardColors(
-            containerColor = surfaceContainerLowest
-        ),
+        colors = CardDefaults.cardColors(containerColor = surfaceContainerLowest),
         border = borderStrokeGlass(),
         modifier = modifier.fillMaxWidth()
     ) {
@@ -396,15 +425,12 @@ private fun LimitsCard(
 private fun ProjectCard(
     modifier: Modifier = Modifier
 ) {
-    val uriHandler = LocalUriHandler.current
     val upstreamUrl = "https://github.com/masterking32/MasterHttpRelayVPN"
     val forkUrl = "https://github.com/dariushm2/CMP-GUI-MasterHttpRelayVPN"
 
     Card(
         shape = roundedLg,
-        colors = CardDefaults.cardColors(
-            containerColor = surfaceContainerLowest
-        ),
+        colors = CardDefaults.cardColors(containerColor = surfaceContainerLowest),
         border = borderStrokeGlass(),
         modifier = modifier.fillMaxWidth()
     ) {
@@ -430,53 +456,92 @@ private fun ProjectCard(
                 )
             }
 
-            val descPart1 = stringResource(Res.string.about_project_desc_part1)
-            val descPart2 = stringResource(Res.string.about_project_desc_part2)
-            val descPart3 = stringResource(Res.string.about_project_desc_part3)
-            val descPart4 = stringResource(Res.string.about_project_desc_part4)
-            val guiForkLabel = stringResource(Res.string.about_project_gui_fork)
-            val upstreamLabel = stringResource(Res.string.about_project_upstream)
-
-            val annotatedString = buildAnnotatedString {
-                append(descPart1)
-
-                pushStringAnnotation(tag = "UPSTREAM", annotation = upstreamUrl)
-                withStyle(style = SpanStyle(color = primary, textDecoration = TextDecoration.Underline, fontWeight = FontWeight.Bold)) {
-                    append("MasterHttpRelayVPN")
-                }
-                pop()
-
-                append(descPart2)
-
-                pushStringAnnotation(tag = "FORK", annotation = forkUrl)
-                withStyle(style = SpanStyle(color = primary, textDecoration = TextDecoration.Underline, fontWeight = FontWeight.Bold)) {
-                    append(guiForkLabel)
-                }
-                pop()
-
-                append(descPart3)
-
-                pushStringAnnotation(tag = "UPSTREAM", annotation = upstreamUrl)
-                withStyle(style = SpanStyle(color = primary, textDecoration = TextDecoration.Underline, fontWeight = FontWeight.Bold)) {
-                    append(upstreamLabel)
-                }
-                pop()
-
-                append(descPart4)
-            }
-
-            ClickableText(
-                text = annotatedString,
-                style = bodyMd.copy(color = onSurfaceVariant, lineHeight = 24.sp),
-                onClick = { offset ->
-                    annotatedString.getStringAnnotations(tag = "UPSTREAM", start = offset, end = offset).firstOrNull()?.let { annotation ->
-                        uriHandler.openUri(annotation.item)
-                    }
-                    annotatedString.getStringAnnotations(tag = "FORK", start = offset, end = offset).firstOrNull()?.let { annotation ->
-                        uriHandler.openUri(annotation.item)
-                    }
-                }
-            )
+            ProjectClickableDescription(upstreamUrl = upstreamUrl, forkUrl = forkUrl)
         }
+    }
+}
+
+@Composable
+private fun ProjectClickableDescription(
+    upstreamUrl: String,
+    forkUrl: String,
+    modifier: Modifier = Modifier
+) {
+    val uriHandler = LocalUriHandler.current
+    val descPart1 = stringResource(Res.string.about_project_desc_part1)
+    val descPart2 = stringResource(Res.string.about_project_desc_part2)
+    val descPart3 = stringResource(Res.string.about_project_desc_part3)
+    val descPart4 = stringResource(Res.string.about_project_desc_part4)
+    val guiForkLabel = stringResource(Res.string.about_project_gui_fork)
+    val upstreamLabel = stringResource(Res.string.about_project_upstream)
+
+    val annotatedString = buildAnnotatedString {
+        append(descPart1)
+
+        pushStringAnnotation(tag = "UPSTREAM", annotation = upstreamUrl)
+        withStyle(style = SpanStyle(color = primary, textDecoration = TextDecoration.Underline, fontWeight = FontWeight.Bold)) {
+            append("MasterHttpRelayVPN")
+        }
+        pop()
+
+        append(descPart2)
+
+        pushStringAnnotation(tag = "FORK", annotation = forkUrl)
+        withStyle(style = SpanStyle(color = primary, textDecoration = TextDecoration.Underline, fontWeight = FontWeight.Bold)) {
+            append(guiForkLabel)
+        }
+        pop()
+
+        append(descPart3)
+
+        pushStringAnnotation(tag = "UPSTREAM", annotation = upstreamUrl)
+        withStyle(style = SpanStyle(color = primary, textDecoration = TextDecoration.Underline, fontWeight = FontWeight.Bold)) {
+            append(upstreamLabel)
+        }
+        pop()
+
+        append(descPart4)
+    }
+
+    ClickableText(
+        text = annotatedString,
+        style = bodyMd.copy(color = onSurfaceVariant, lineHeight = 24.sp),
+        onClick = { offset ->
+            annotatedString.getStringAnnotations(tag = "UPSTREAM", start = offset, end = offset).firstOrNull()?.let { annotation ->
+                uriHandler.openUri(annotation.item)
+            }
+            annotatedString.getStringAnnotations(tag = "FORK", start = offset, end = offset).firstOrNull()?.let { annotation ->
+                uriHandler.openUri(annotation.item)
+            }
+        },
+        modifier = modifier
+    )
+}
+
+@Composable
+private fun VersionFooter(
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
+        Text(
+            text = stringResource(Res.string.app_version_title),
+            style = bodySm.copy(
+                fontSize = 11.sp,
+                fontWeight = FontWeight.Bold,
+                color = onSurfaceVariant.copy(alpha = 0.4f)
+            )
+        )
+        Text(
+            text = SharedBuildConfig.APP_VERSION,
+            style = monoCode.copy(
+                fontSize = 11.sp,
+                color = onSurfaceVariant.copy(alpha = 0.6f),
+                textDirection = TextDirection.Ltr
+            )
+        )
     }
 }

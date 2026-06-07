@@ -5,10 +5,10 @@ import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
-import android.net.ProxyInfo
-import android.net.VpnService
 import android.content.Context
 import android.content.Intent
+import android.net.ProxyInfo
+import android.net.VpnService
 import android.os.Build
 import android.os.IBinder
 import android.os.ParcelFileDescriptor
@@ -19,6 +19,7 @@ import com.darius.lionvpn.ui.home.ConnectionState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import timber.log.Timber
 
 @SuppressLint("VpnServicePolicy")
@@ -54,6 +55,12 @@ class ProxyService : VpnService() {
         } else if (action == ACTION_START) {
             val configJson = intent.getStringExtra(EXTRA_CONFIG) ?: "{}"
             startProxy(configJson)
+        } else if (action == ACTION_REPOST_NOTIFICATION) {
+            if (_isVpnRunning.value) {
+                Timber.i("Notification swiped away while VPN is running. Re-posting...")
+                val notification = createNotification()
+                startForeground(NOTIFICATION_ID, notification)
+            }
         }
 
         return START_STICKY
@@ -70,7 +77,7 @@ class ProxyService : VpnService() {
 
         _vpnState.value = ConnectionState.CONNECTING
         _isVpnRunning.value = true
-        
+
         // Log starting message instantly in English only matching log timestamp pattern
         _vpnLogs.value = listOf(VpnLogger.formatInfo("VPN process is starting... warming up"))
 
@@ -109,14 +116,15 @@ class ProxyService : VpnService() {
             }
             val builder = Builder()
             builder.setSession("Lion VPN Session")
-                .addAddress("10.8.0.2", 24)
-                .addRoute("10.8.0.0", 24) // Dummy route to satisfy establish requirement without blackholing internet
-            
+                .addAddress("10.8.0.2", VPN_ADDRESS_PREFIX_LENGTH)
+                // Dummy route to satisfy establish requirement without blackholing internet
+                .addRoute("10.8.0.0", VPN_ADDRESS_PREFIX_LENGTH)
+
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                val proxyInfo = ProxyInfo.buildDirectProxy("127.0.0.1", 8085)
+                val proxyInfo = ProxyInfo.buildDirectProxy("127.0.0.1", PROXY_PORT)
                 builder.setHttpProxy(proxyInfo)
             }
-            
+
             vpnInterface = builder.establish()
             addLogLine(VpnLogger.formatInfo("System-wide VPN proxy established successfully"))
         } catch (e: Exception) {
@@ -138,7 +146,7 @@ class ProxyService : VpnService() {
     private fun stopProxy() {
         Timber.i("Stopping ProxyService...")
         stopVpn()
-        
+
         val threadToStop = pythonThread
         pythonThread = null
         _vpnState.value = ConnectionState.DISCONNECTED
@@ -160,7 +168,7 @@ class ProxyService : VpnService() {
             if (threadToStop != null && threadToStop.isAlive) {
                 try {
                     Timber.i("Waiting for Python proxy thread to join in background...")
-                    threadToStop.join(2000) // Wait up to 2 seconds for clean unbind/shutdown
+                    threadToStop.join(THREAD_JOIN_TIMEOUT_MS) // Wait up to 2 seconds for clean unbind/shutdown
                     if (threadToStop.isAlive) {
                         Timber.w("Python proxy thread did not exit within 2 seconds. Interrupting...")
                         threadToStop.interrupt()
@@ -210,7 +218,7 @@ class ProxyService : VpnService() {
         val stopIntent = Intent(this, ProxyService::class.java).apply {
             action = ACTION_STOP
         }
-        
+
         // Handle API 31+ pending intent flags
         val pendingIntentFlags =
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
@@ -224,16 +232,27 @@ class ProxyService : VpnService() {
             this, 0, mainIntent, pendingIntentFlags
         )
 
-        return NotificationCompat.Builder(this, CHANNEL_ID)
+        val deleteIntent = Intent(this, ProxyService::class.java).apply {
+            action = ACTION_REPOST_NOTIFICATION
+        }
+        val deletePendingIntent = PendingIntent.getService(
+            this, 1, deleteIntent, pendingIntentFlags
+        )
+
+        val notification = NotificationCompat.Builder(this, CHANNEL_ID)
             .setContentTitle("Lion VPN Server Active")
             .setContentText("HTTP & SOCKS5 proxy running in background")
             .setSmallIcon(android.R.drawable.ic_menu_share) // Using standard system icon
             .setContentIntent(mainPendingIntent)
+            .setDeleteIntent(deletePendingIntent)
             .setOngoing(true)
             .setCategory(NotificationCompat.CATEGORY_SERVICE)
             .setPriority(NotificationCompat.PRIORITY_LOW)
             .addAction(android.R.drawable.ic_menu_close_clear_cancel, "Disconnect", stopPendingIntent)
             .build()
+
+        notification.flags = notification.flags or Notification.FLAG_NO_CLEAR or Notification.FLAG_ONGOING_EVENT
+        return notification
     }
 
     companion object {
@@ -242,7 +261,12 @@ class ProxyService : VpnService() {
 
         const val ACTION_START = "START"
         const val ACTION_STOP = "STOP"
+        const val ACTION_REPOST_NOTIFICATION = "REPOST_NOTIFICATION"
         const val EXTRA_CONFIG = "CONFIG"
+
+        private const val VPN_ADDRESS_PREFIX_LENGTH = 24
+        private const val PROXY_PORT = 8085
+        private const val THREAD_JOIN_TIMEOUT_MS = 2000L
 
         private val _isVpnRunning = MutableStateFlow(false)
         val isVpnRunning: StateFlow<Boolean> = _isVpnRunning.asStateFlow()
@@ -257,21 +281,15 @@ class ProxyService : VpnService() {
         @JvmStatic
         fun addLogLine(line: String) {
             Timber.d("[Python log] %s", line)
-            
+
             // Watch for HTTP proxy start logs to transition to CONNECTED state on Android
             if (_vpnState.value == ConnectionState.CONNECTING) {
                 if (VpnLogger.isConnectionSuccessLog(line)) {
                     _vpnState.value = ConnectionState.CONNECTED
                 }
             }
-            
-            val currentList = _vpnLogs.value.toMutableList()
-            // Cap log buffer size at 300 entries to prevent memory leaks
-            if (currentList.size > 300) {
-                currentList.removeAt(0)
-            }
-            currentList.add(line)
-            _vpnLogs.value = currentList
+
+            _vpnLogs.update { it.appendCappedLog(line) }
         }
 
         @JvmStatic

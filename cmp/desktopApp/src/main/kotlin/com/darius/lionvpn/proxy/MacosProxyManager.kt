@@ -5,7 +5,7 @@ import java.io.BufferedReader
 import java.io.InputStreamReader
 
 object MacosProxyManager : ProxyManager {
-    
+
     private fun runCommand(vararg command: String): String {
         return try {
             val process = ProcessBuilder(*command).start()

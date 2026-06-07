@@ -28,6 +28,7 @@ import com.darius.lionvpn.ui.home.adaptive.Sidebar
 import com.darius.lionvpn.ui.home.adaptive.WindowWidthSizeClass
 import com.darius.lionvpn.ui.home.adaptive.calculateWindowWidthSizeClass
 import com.darius.lionvpn.ui.home.dashboard.DashboardTab
+import com.darius.lionvpn.ui.home.scripts.ScriptsTab
 import com.darius.lionvpn.ui.home.settings.SettingsTab
 import com.darius.lionvpn.ui.theme.background
 import com.darius.lionvpn.ui.theme.primary
@@ -67,59 +68,91 @@ fun HomeScreen(
                 modifier = Modifier
                     .fillMaxSize()
             ) {
-                // Side Navigation: Medium (Rail) vs. Expanded (Sidebar)
-                when {
-                    isMedium -> {
-                        NavigationRailBar(
-                            activeTab = activeTab,
-                            onTabSelect = { activeTab = it }
-                        )
-                    }
-                    isExpanded -> {
-                        Sidebar(
-                            activeTab = activeTab,
-                            onTabSelect = { activeTab = it }
-                        )
-                    }
-                }
+                HomeSideNavigation(
+                    isMedium = isMedium,
+                    isExpanded = isExpanded,
+                    activeTab = activeTab,
+                    onTabSelect = { activeTab = it }
+                )
 
-                // Main Content Area with elegant fade transitions
-                Box(
+                HomeMainContent(
+                    activeTab = activeTab,
+                    state = state,
+                    onClick = onClick,
                     modifier = Modifier
                         .weight(1f)
                         .fillMaxHeight()
-                        .background(background)
                         .padding(innerPadding)
-                ) {
-                    // Soft background glow gradient
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(
-                                Brush.radialGradient(
-                                    colors = listOf(
-                                        primary.copy(alpha = 0.05f),
-                                        Color.Transparent
-                                    )
-                                )
-                            )
-                    )
+                )
+            }
+        }
+    }
+}
 
-                    // Tab contents
-                    AnimatedContent(
-                        targetState = activeTab,
-                        transitionSpec = {
-                            fadeIn() with fadeOut()
-                        }
-                    ) { targetTab ->
-                        when (targetTab) {
-                            HomeTab.Dashboard -> DashboardTab(state, onClick)
-                            HomeTab.Scripts -> ScriptsTab(state, onClick)
-                            HomeTab.Settings -> SettingsTab(state, onClick)
-                            HomeTab.About -> AboutTab()
-                        }
-                    }
-                }
+@Composable
+private fun HomeSideNavigation(
+    isMedium: Boolean,
+    isExpanded: Boolean,
+    activeTab: HomeTab,
+    onTabSelect: (HomeTab) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    when {
+        isMedium -> {
+            NavigationRailBar(
+                activeTab = activeTab,
+                onTabSelect = onTabSelect,
+                modifier = modifier
+            )
+        }
+        isExpanded -> {
+            Sidebar(
+                activeTab = activeTab,
+                onTabSelect = onTabSelect,
+                modifier = modifier
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalAnimationApi::class)
+@Composable
+private fun HomeMainContent(
+    activeTab: HomeTab,
+    state: HomeState,
+    onClick: (Event) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Box(
+        modifier = modifier
+            .background(background)
+    ) {
+        // Soft background glow gradient
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    Brush.radialGradient(
+                        colors = listOf(
+                            primary.copy(alpha = 0.05f),
+                            Color.Transparent
+                        )
+                    )
+                )
+        )
+
+        // Tab contents
+        AnimatedContent(
+            targetState = activeTab,
+            transitionSpec = {
+                fadeIn() with fadeOut()
+            }
+        ) { targetTab ->
+            when (targetTab) {
+                HomeTab.Dashboard -> DashboardTab(state, onClick)
+                HomeTab.Scripts -> ScriptsTab(state, onClick)
+                HomeTab.Settings -> SettingsTab(state, onClick)
+                HomeTab.About -> AboutTab()
             }
         }
     }

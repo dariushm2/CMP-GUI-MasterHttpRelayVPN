@@ -14,7 +14,11 @@ object WindowsProxyManager : ProxyManager {
     }
 
     private fun refreshSystemSettings() {
-        val refreshCmd = "[void](Add-Type -MemberDefinition '[DllImport(\"wininet.dll\")] public static extern bool InternetSetOption(IntPtr hInternet, int dwOption, IntPtr lpBuffer, int dwBufferLength);' -Name WinInet -Namespace Win32 -PassThru)::InternetSetOption([IntPtr]::Zero, 39, [IntPtr]::Zero, 0); [void]([Win32.WinInet]::InternetSetOption([IntPtr]::Zero, 37, [IntPtr]::Zero, 0))"
+        val memberDef = "'[DllImport(\"wininet.dll\")] public static extern bool " +
+                "InternetSetOption(IntPtr hInternet, int dwOption, IntPtr lpBuffer, int dwBufferLength);'"
+        val refreshCmd = "[void](Add-Type -MemberDefinition $memberDef -Name WinInet -Namespace Win32 -PassThru)" +
+                "::InternetSetOption([IntPtr]::Zero, 39, [IntPtr]::Zero, 0); " +
+                "[void]([Win32.WinInet]::InternetSetOption([IntPtr]::Zero, 37, [IntPtr]::Zero, 0))"
         runCommand("powershell", "-NoProfile", "-Command", refreshCmd)
     }
 
@@ -22,9 +26,13 @@ object WindowsProxyManager : ProxyManager {
         if (!getPlatform().isWin()) return
 
         println("[Proxy Manager] Enabling Windows system proxy to $host:$port")
-        runCommand("reg", "add", "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings", "/v", "ProxyEnable", "/t", "REG_DWORD", "/d", "1", "/f")
-        runCommand("reg", "add", "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings", "/v", "ProxyServer", "/t", "REG_SZ", "/d", "$host:$port", "/f")
-        runCommand("reg", "add", "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings", "/v", "ProxyOverride", "/t", "REG_SZ", "/d", "<local>;localhost;127.0.0.1", "/f")
+        val regKey = "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings"
+        runCommand("reg", "add", regKey, "/v", "ProxyEnable", "/t", "REG_DWORD", "/d", "1", "/f")
+        runCommand("reg", "add", regKey, "/v", "ProxyServer", "/t", "REG_SZ", "/d", "$host:$port", "/f")
+        runCommand(
+            "reg", "add", regKey, "/v", "ProxyOverride", "/t",
+            "REG_SZ", "/d", "<local>;localhost;127.0.0.1", "/f"
+        )
         refreshSystemSettings()
     }
 
@@ -32,7 +40,8 @@ object WindowsProxyManager : ProxyManager {
         if (!getPlatform().isWin()) return
 
         println("[Proxy Manager] Disabling Windows system proxy")
-        runCommand("reg", "add", "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings", "/v", "ProxyEnable", "/t", "REG_DWORD", "/d", "0", "/f")
+        val regKey = "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings"
+        runCommand("reg", "add", regKey, "/v", "ProxyEnable", "/t", "REG_DWORD", "/d", "0", "/f")
         refreshSystemSettings()
     }
 }

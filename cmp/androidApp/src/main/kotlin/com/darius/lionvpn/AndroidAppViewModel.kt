@@ -3,9 +3,9 @@ package com.darius.lionvpn
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.darius.lionvpn.model.AndroidUiEffect
+import com.darius.lionvpn.ui.home.ConnectionState
 import com.darius.lionvpn.ui.home.Event
 import com.darius.lionvpn.ui.home.HomeState
-import com.darius.lionvpn.ui.home.ConnectionState
 import com.darius.lionvpn.ui.model.Lang
 import com.darius.lionvpn.ui.model.SavedConfig
 import com.darius.lionvpn.ui.home.CertOperationResult
@@ -20,6 +20,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonObject
 
 class AndroidAppViewModel : ViewModel() {
@@ -48,6 +49,7 @@ class AndroidAppViewModel : ViewModel() {
     private val _isCertBusy = MutableStateFlow(false)
 
     // Expose dynamic HomeState compiled reactively from underlying flows using stateIn
+    @Suppress("UNCHECKED_CAST")
     val homeState: StateFlow<HomeState> = combine(
         vpnState,
         vpnLogs,
@@ -59,15 +61,15 @@ class AndroidAppViewModel : ViewModel() {
         _certOperationResult,
         _isCertBusy
     ) { array ->
-        val state = array[0] as ConnectionState
-        val logs = array[1] as List<String>
-        val configs = array[2] as List<SavedConfig>
-        val index = array[3] as Int
-        val configJson = array[4] as String
-        val resetTrigger = array[5] as Int
-        val lang = array[6] as Lang
-        val certResult = array[7] as CertOperationResult?
-        val certBusy = array[8] as Boolean
+        val state = array[INDEX_VPN_STATE] as ConnectionState
+        val logs = array[INDEX_VPN_LOGS] as List<String>
+        val configs = array[INDEX_SAVED_CONFIGS] as List<SavedConfig>
+        val index = array[INDEX_SELECTED_CONFIG_INDEX] as Int
+        val configJson = array[INDEX_RAW_CONFIG_JSON] as String
+        val resetTrigger = array[INDEX_CONFIG_RESET_TRIGGER] as Int
+        val lang = array[INDEX_LANGUAGE] as Lang
+        val certResult = array[INDEX_CERT_OPERATION_RESULT] as CertOperationResult?
+        val certBusy = array[INDEX_IS_CERT_BUSY] as Boolean
 
         HomeState(
             connectionState = state,
@@ -94,7 +96,7 @@ class AndroidAppViewModel : ViewModel() {
         configs: List<SavedConfig>,
         selectedIndex: Int,
         rawConfig: String,
-        lang: Lang
+        lang: Lang,
     ) {
         _savedConfigs.value = configs
         _selectedConfigIndex.value = selectedIndex
@@ -161,7 +163,7 @@ class AndroidAppViewModel : ViewModel() {
                 jsonMap[Constants.Config.SCRIPT_ID] = kotlinx.serialization.json.JsonPrimitive(id)
                 jsonMap[Constants.Config.AUTH_KEY] = kotlinx.serialization.json.JsonPrimitive(key)
                 val prettyJson = kotlinx.serialization.json.Json { prettyPrint = true }
-                prettyJson.encodeToString(kotlinx.serialization.json.JsonObject.serializer(), kotlinx.serialization.json.JsonObject(jsonMap))
+                prettyJson.encodeToString(JsonObject.serializer(), JsonObject(jsonMap))
             } else {
                 ""
             }
@@ -231,5 +233,17 @@ class AndroidAppViewModel : ViewModel() {
             val active = _savedConfigs.value[index]
             updateRawConfigWithActiveProfile(active.id, active.key)
         }
+    }
+
+    companion object {
+        private const val INDEX_VPN_STATE = 0
+        private const val INDEX_VPN_LOGS = 1
+        private const val INDEX_SAVED_CONFIGS = 2
+        private const val INDEX_SELECTED_CONFIG_INDEX = 3
+        private const val INDEX_RAW_CONFIG_JSON = 4
+        private const val INDEX_CONFIG_RESET_TRIGGER = 5
+        private const val INDEX_LANGUAGE = 6
+        private const val INDEX_CERT_OPERATION_RESULT = 7
+        private const val INDEX_IS_CERT_BUSY = 8
     }
 }
