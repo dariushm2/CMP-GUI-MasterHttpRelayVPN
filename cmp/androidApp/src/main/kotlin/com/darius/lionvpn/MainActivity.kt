@@ -31,6 +31,8 @@ import org.koin.android.ext.android.getKoin
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.compose.koinInject
+import android.content.Intent
+import android.provider.Settings
 import java.io.File
 
 class MainActivity : ComponentActivity() {
@@ -153,6 +155,23 @@ class MainActivity : ComponentActivity() {
             }
             is AndroidUiEffect.CheckAndSaveCertificate -> {
                 handleCheckAndSaveCertificate()
+            }
+            is AndroidUiEffect.UninstallCertificate -> {
+                val intent = Intent(Settings.ACTION_SECURITY_SETTINGS)
+                try {
+                    startActivity(intent)
+                } catch (e: Exception) {
+                    try {
+                        startActivity(Intent(Settings.ACTION_SETTINGS))
+                    } catch (ex: Exception) {
+                        ProxyService.addLogLine("Error opening Settings: ${ex.message}")
+                        Toast.makeText(
+                            this@MainActivity,
+                            "Could not open system settings automatically.",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                }
             }
         }
     }

@@ -25,3 +25,7 @@ actual fun isDebugBuild(): Boolean =
 actual fun getCurrentTimeString(): String {
     return java.time.LocalTime.now().format(java.time.format.DateTimeFormatter.ofPattern("HH:mm:ss"))
 }
+
+actual fun getCurrentTimeMillis(): Long {
+    return System.currentTimeMillis()
+}

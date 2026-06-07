@@ -18,7 +18,6 @@ This skill enforces critical coding standards, architectural patterns, and struc
   2. Create a sub-package and distribute the sub-composables across multiple separate, descriptive files.
 - **Modifier Parameter**: Always add `modifier: Modifier = Modifier` (or equivalent) as the **last parameter** to every Composable function. This enables standard modifier chaining and layout customizability from the parent caller.
 - **Line Limit**: Never exceed 60 lines of code inside a single Composable function. If a Composable function grows beyond 60 lines, immediately decompose it into smaller helper Composables or separate files.
-- **Normal Function Line Limit**: Never exceed 40 lines of code inside a normal, non-Compose function. If a logic or utility function grows beyond 40 lines, immediately refactor and decompose it into smaller helper functions.
 
 ## Rule 3: ViewModel Context Guidelines
 - **Rule**: Never inject `Context` (Android Context) into any `ViewModel`.
@@ -47,10 +46,9 @@ This skill enforces critical coding standards, architectural patterns, and struc
 - **Limit**: Files generally **must not exceed 500 lines**. If a file grows beyond 500 lines, refactor, decompose, and split it into multiple files or sub-packages.
 
 ## Rule 8: GitHub Pull Request Standards
-- **Rule 8a (Fork Target)**: Always target and open pull requests against our own fork (`dariushm2/CMP-GUI-MasterHttpRelayVPN`) unless explicitly asked by the user to target the upstream repository.
-- **Rule 8b (Title)**: Every pull request title must be clear, concise, and descriptive, starting with a standard semantic commit type prefix (e.g., `feat:`, `fix:`, `docs:`, `chore:`, `refactor:`).
+- **Rule 8a (Title)**: Every pull request title must be clear, concise, and descriptive, starting with a standard semantic commit type prefix (e.g., `feat:`, `fix:`, `docs:`, `chore:`, `refactor:`).
   - *Example*: `docs: add CMP development rules and guidelines skill`
-- **Rule 8c (Description)**: The pull request description must clearly summarize the changes made, the files affected, and how the changes were verified.
+- **Rule 8b (Description)**: The pull request description must clearly summarize the changes made, the files affected, and how the changes were verified.
 ## Rule 9: Project Context & Localization
 - **VPN Core Wrapper**: Remember that this project is a graphical user interface (GUI) wrapper designed to package, run, and manage an underlying Python VPN relay script. Maintain seamless, clean JNI or external process bridges to the Python engine.
 - **App Localization**: Remember that the application is primarily Persian (Farsi) but includes comprehensive English support. Ensure proper localization practices, robust Right-to-Left (RTL) layout compatibility, and structured translations.
